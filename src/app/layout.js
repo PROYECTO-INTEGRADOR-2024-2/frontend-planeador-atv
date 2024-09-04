@@ -1,7 +1,11 @@
-import { Inter } from "next/font/google";
 import "./globals.css";
+import { Roboto } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const myFont = Roboto({
+  weight: "400",
+  subsets: ["latin"],
+  variable: "--my-font-family",
+});
 
 export const metadata = {
   title: "Agendador ATV",
@@ -11,7 +15,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={inter.className}>{children}</body>
+      <body className={myFont.className}>{children}</body>
     </html>
   );
 }
