@@ -1,8 +1,13 @@
+"use client"; // This is a client component 👈🏽
 import Image from "next/image";
 import React from "react";
-import logoATV from "../public/images/logoATV.png";
+import logoATV from "../../public/images/logoATV.png";
+import { useRouter } from "next/navigation";
+import Link from "next/link"
 
 const Navbar = () => {
+  const router = useRouter();
+
   return (
     <div className="bg-[#6f7e91]">
       <div className="h-40 px-8 flex items-center">
@@ -15,12 +20,14 @@ const Navbar = () => {
         <button
           type="button"
           class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-xl px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+          onClick={()=> router.push('../login')}
         >
           Iniciar Sesión
         </button>
         <button
           type="button"
           class="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-xl px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700"
+          onClick={()=> router.push('../register')}
         >
           Registrarme
         </button>
