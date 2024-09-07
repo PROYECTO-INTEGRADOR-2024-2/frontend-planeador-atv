@@ -1,11 +1,8 @@
-import React from 'react'
+import React from "react";
 
 //rafce
 const login = () => {
+  return <div>Login</div>;
+};
 
-  return (
-   
-  )
-}
-
-export default login
+export default login;
