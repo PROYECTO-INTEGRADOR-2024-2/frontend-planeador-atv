@@ -8,14 +8,14 @@ const login = () => {
       
       <div class="bg-slate-500 h-screen" > 
         <div class="flex items-center justify-center h-screen">
-          <img src="/images/image.png" class = ""></img>
+          <img src="/images/bg-login.png" class = ""></img>
         </div>
       </div>
     
      
-      <div>
-      <div className="basis-full h-[100vh] md:basis-2/5">
-        <div className="px-[5vw] 2xl:mt-[15vh] sm:mt-[10vh] min-[300px]:mt-[10vh]">
+      <div className="items-center">
+      <div className="basis-full h-[100vh] md:basis-2/5 overflow-auto">
+        <div className="px-[5vw] 2xl:mt-[15vh] sm:mt-[25vh] min-[300px]:mt-[30vh] items-center">
           <div className="text-center pb-[3vh]">
             <div className="flex justify-center h-[50px]">
               <Image
@@ -40,6 +40,22 @@ const login = () => {
                   name="correo-electronico"
                   id="correo-electronico"
                   placeholder="Correo electronico"
+                  className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
+                  required=""
+                />
+              </div>
+              <div>
+                <label
+                  for="password-login"
+                  className="block mb-2 text-sm font-medium text-gray-900"
+                >
+                  
+                </label>
+                <input
+                  type="password-login"
+                  name="password-login"
+                  id="password-login"
+                  placeholder="Contraseña"
                   className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
                   required=""
                 />
