@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.1.6",
+    "lucide-react": "^0.263.1",
     "next": "^14.2.7",
     "planeador-atv": "file:",
     "react": "^18",
