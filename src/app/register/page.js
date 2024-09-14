@@ -5,8 +5,10 @@ const register = () => {
   return (
     <div className="flex flex-row ">
       <div className="basis-0  bg-no-repeat md:basis-3/5 bg-cover bg-slate-500 h-screen ">
-        <img src="/images/bg-login.png"
-        className="object-full shadow-blue-500/50 h-screen" ></img>
+        <img
+          src="/images/bg-login.png"
+          className="object-full shadow-blue-500/50 h-screen"
+        ></img>
       </div>
       <div className="basis-full h-[100vh] md:basis-2/5 overflow-auto">
         <div className="px-[5vw] 2xl:mt-[15vh] sm:my-[8vh]  min-[300px]:mt-[10vh]">
@@ -166,7 +168,10 @@ const register = () => {
             </button>
             <p className="text-sm font-light text-gray-500">
               ¿Ya tienes una cuenta?{" "}
-              <a href="../login" className="font-medium text-blue-600 hover:underline">
+              <a
+                href="../login"
+                className="font-medium text-blue-600 hover:underline"
+              >
                 Inicia Sesión aqui.
               </a>
             </p>

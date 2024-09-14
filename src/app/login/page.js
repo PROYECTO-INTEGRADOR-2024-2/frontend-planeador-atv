@@ -5,36 +5,32 @@ import Image from "next/image";
 const login = () => {
   return (
     <div class="grid grid-cols-2 ">
-      
-      <div class="bg-slate-500 h-screen" > 
+      <div class="bg-slate-500 h-screen">
         <div class="flex items-center justify-center h-screen">
-          <img src="/images/bg-login.png" class = ""></img>
+          <img src="/images/bg-login.png"></img>
         </div>
       </div>
-    
-     
+
       <div className="items-center">
-      <div className="basis-full h-[100vh] md:basis-2/5 overflow-auto">
-        <div className="px-[5vw] 2xl:mt-[15vh] sm:mt-[25vh] min-[300px]:mt-[30vh] items-center">
-          <div className="text-center pb-[3vh]">
-            <div className="flex justify-center h-[50px]">
-              <Image
-                src={"/images/logo-lock.png"}
-                alt={"lock"}
-                height={50}
-                width={50}
-              />
+        <div className="basis-full h-[100vh] md:basis-2/5 overflow-auto">
+          <div className="px-[5vw] 2xl:mt-[15vh] sm:mt-[25vh] min-[300px]:mt-[30vh] items-center">
+            <div className="text-center pb-[3vh]">
+              <div className="flex justify-center h-[50px]">
+                <Image
+                  src={"/images/logo-lock.png"}
+                  alt={"lock"}
+                  height={50}
+                  width={50}
+                />
+              </div>
+              <h1 className="font-bold text-2xl">Iniciar Sesión</h1>
             </div>
-            <h1 className="font-bold text-2xl">Iniciar Sesión</h1>
-          </div>
-          <form className="space-y-4 md:space-y-2" action="#">
-            <div>
+            <form className="space-y-4 md:space-y-2" action="#">
+              <div>
                 <label
                   for="correo-electronico"
                   className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  
-                </label>
+                ></label>
                 <input
                   type="correo-electronico"
                   name="correo-electronico"
@@ -48,9 +44,7 @@ const login = () => {
                 <label
                   for="password-login"
                   className="block mb-2 text-sm font-medium text-gray-900"
-                >
-                  
-                </label>
+                ></label>
                 <input
                   type="password-login"
                   name="password-login"
@@ -60,22 +54,25 @@ const login = () => {
                   required=""
                 />
               </div>
-            
-            <button
-              type="submit"
-              className="w-full text-white bg-gray-600 hover:bg-gray-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 2xl:py-2.5 text-center md:p-1"
-            >
-              Iniciar Sesión
-            </button>
-            <p className="text-sm font-light text-gray-500">
-              ¿Aun no tienes una cuenta?{" "}
-              <a href="../register" className="font-medium text-blue-600 hover:underline">
-                Registrate aqui.
-              </a>
-            </p>
-          </form>
+
+              <button
+                type="submit"
+                className="w-full text-white bg-gray-600 hover:bg-gray-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 2xl:py-2.5 text-center md:p-1"
+              >
+                Iniciar Sesión
+              </button>
+              <p className="text-sm font-light text-gray-500">
+                ¿Aun no tienes una cuenta?{" "}
+                <a
+                  href="../register"
+                  className="font-medium text-blue-600 hover:underline"
+                >
+                  Registrate aqui.
+                </a>
+              </p>
+            </form>
+          </div>
         </div>
-      </div>
       </div>
     </div>
   );
