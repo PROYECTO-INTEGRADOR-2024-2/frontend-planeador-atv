@@ -1,12 +1,14 @@
 "use client"; // This is a client component 👈🏽
 
-import { Image } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const TutorialForm = () => {
   const [startDate, setStartDate] = useState(new Date());
+  // const routerr = useRouter();
+
   return (
     <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
       <div className="w-full text-center my-[3vh]">
@@ -14,7 +16,7 @@ const TutorialForm = () => {
           Información del espacio
         </h1>
       </div>
-      <form className="space-y-4 md:space-y-2" action="#">
+      <form className="space-y-4 md:space-y-2" action="/landing">
         <div>
           <label
             for="asignatura"
@@ -119,6 +121,7 @@ const TutorialForm = () => {
           <button
             type="submit"
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
+            // onClick={routerr.push("/landing")}
           >
             Confirmar tutoria
           </button>
