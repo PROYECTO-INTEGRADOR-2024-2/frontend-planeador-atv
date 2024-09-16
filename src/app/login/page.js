@@ -46,7 +46,7 @@ const login = () => {
                   className="block mb-2 text-sm font-medium text-gray-900"
                 ></label>
                 <input
-                  type="password-login"
+                  type="password"
                   name="password-login"
                   id="password-login"
                   placeholder="Contraseña"
