@@ -1,5 +1,4 @@
 "use client";
-import { FormInput } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 
@@ -7,13 +6,17 @@ const RegisterPersonForm = () => {
   const PERSON_API_BASE_URL = "http://localhost:8080/api/v1/persons";
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState({
-    id: "",
-    name: "",
-    lastName: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
+    user_id: "",
+    user_id_type: "",
+    user_name: "",
+    user_lastname: "",
+    user_email: "",
+    user_password: "",
+    user_phone: "",
+    user_department: "",
+    user_city: "",
+    user_state: "",
+    user_role: "",
     success: "",
   });
 
@@ -38,7 +41,6 @@ const RegisterPersonForm = () => {
   const handleChangeConfirm = (event) => {
     const value = event.target.value;
     setConfirmPassword(value);
-    console.log(confirmPassword);
   };
 
   const savePerson = async (e) => {
@@ -79,13 +81,17 @@ const RegisterPersonForm = () => {
 
     // Inicializamos un objeto con los errores de entrada
     let inputError = {
-      id: "",
-      name: "",
-      lastName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-      phone: "",
+      user_id: "",
+      user_id_type: "",
+      user_name: "",
+      user_lastname: "",
+      user_email: "",
+      user_password: "",
+      user_phone: "",
+      user_department: "Antioquia",
+      user_city: "Bello",
+      user_state: "1",
+      user_role: "Student",
     };
     let confirmPWD = "";
 
@@ -138,6 +144,13 @@ const RegisterPersonForm = () => {
       });
       return;
     }
+    if (!person.user_email.match(/\D+@udea.edu.co$/gi)) {
+      setFormError({
+        ...inputError,
+        email: "Por favor ingrese su correo electrónico de la universidad.",
+      });
+      return;
+    }
     if (!person.user_password) {
       setFormError({
         ...inputError,
@@ -145,7 +158,7 @@ const RegisterPersonForm = () => {
       });
       return;
     }
-    if (confirmPassword !== person.password) {
+    if (confirmPassword !== person.user_password) {
       setFormError({
         ...inputError,
         confirmPassword: "Las contraseñas no coinciden",
@@ -161,9 +174,8 @@ const RegisterPersonForm = () => {
     }
 
     setFormError(inputError);
-    setPerson((prevState) => ({
-      ...prevState,
-    }));
+    savePerson(event);
+    setConfirmPassword("");
   };
 
   return (
@@ -273,7 +285,6 @@ const RegisterPersonForm = () => {
               type="user_email"
               name="user_email"
               id="user_email"
-              // pattern="/\D+@udea.edu.co/"
               title="Utiliza tu correo UdeA"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
               placeholder="name@udea.edu.co"
