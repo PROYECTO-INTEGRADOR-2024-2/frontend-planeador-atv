@@ -14,9 +14,7 @@ const TutorialForm = () => {
   useEffect(() => {
     const fetchDataSubject = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8080/api/v1/subject/"
-        );
+        const response = await fetch("http://localhost:8080/api/v1/subject/");
         if (!response.ok) {
           throw new error("Respuesta no valida");
         }
@@ -36,7 +34,7 @@ const TutorialForm = () => {
 
   useEffect(() => {
     const fetchDataTutor = async () => {
-      try { 
+      try {
         const response = await fetch(
           "http://localhost:8080/api/v1/persons/tutor"
         );
@@ -45,14 +43,13 @@ const TutorialForm = () => {
         }
         const result = await response.json();
         setDataTutor(result.map((item) => Object.values(item)));
-       
       } catch (error) {
         setError(error.message);
       }
     };
     fetchDataTutor();
   }, []);
-  
+
   return (
     <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
       <div className="w-full text-center my-[3vh]">
@@ -71,14 +68,10 @@ const TutorialForm = () => {
           <select
             id="asignatura"
             class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
-      
           >
-            {dataSubject.map((item) => (
-            <option >
-              {item[1]}
-            </option>
-          ))}
-          
+            {dataSubject.map((item, index) => (
+              <option key={index}>{item[1]}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -157,11 +150,9 @@ const TutorialForm = () => {
             id="tutor"
             class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
           >
-             {dataTutor.map((item) => (
-            <option >
-              {item[2] +" "+ item[3]}
-            </option>
-          ))}
+            {dataTutor.map((item, index) => (
+              <option key={index}>{item[2] + " " + item[3]}</option>
+            ))}
             {/* <option>Jonathan Granda</option>
             <option>Cristian Muñoz</option>
             <option>Brandon Duque</option> */}
