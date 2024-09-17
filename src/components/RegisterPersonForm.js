@@ -1,9 +1,21 @@
 "use client";
+import { FormInput } from "lucide-react";
 import Image from "next/image";
 import React, { useState } from "react";
 
 const RegisterPersonForm = () => {
   const PERSON_API_BASE_URL = "http://localhost:8080/api/v1/persons";
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [formError, setFormError] = useState({
+    id: "",
+    name: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    phone: "",
+    success: "",
+  });
 
   const [person, setPerson] = useState({
     user_id: "",
@@ -22,6 +34,11 @@ const RegisterPersonForm = () => {
   const handleChange = (event) => {
     const value = event.target.value;
     setPerson({ ...person, [event.target.name]: value });
+  };
+  const handleChangeConfirm = (event) => {
+    const value = event.target.value;
+    setConfirmPassword(value);
+    console.log(confirmPassword);
   };
 
   const savePerson = async (e) => {
@@ -57,6 +74,98 @@ const RegisterPersonForm = () => {
     });
   };
 
+  const validateFormInput = (event) => {
+    event.preventDefault();
+
+    // Inicializamos un objeto con los errores de entrada
+    let inputError = {
+      id: "",
+      name: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      phone: "",
+    };
+    let confirmPWD = "";
+
+    // Verificamos si el email o la contraseña están vacíos
+    if (
+      !person.user_name &&
+      !person.user_email &&
+      !person.user_id &&
+      !person.user_lastname &&
+      !person.user_password &&
+      !person.phone
+    ) {
+      setFormError({
+        ...inputError,
+        id: "Por favor ingrese su identificación",
+        name: "Por favor ingrese su nombre",
+        lastName: "Por favor ingrese su apellido",
+        email: "Ingrese un email válido",
+        password: "La contraseña no debería estar vacía",
+        phone: "Por favor ingrese su número de teléfono",
+      });
+      return;
+    }
+
+    if (!person.user_id) {
+      setFormError({
+        ...inputError,
+        id: "Por favor ingrese su identificación",
+      });
+      return;
+    }
+    if (!person.user_name) {
+      setFormError({
+        ...inputError,
+        name: "Por favor ingrese su nombre",
+      });
+      return;
+    }
+    if (!person.user_lastname) {
+      setFormError({
+        ...inputError,
+        lastName: "Por favor ingrese su apellido",
+      });
+      return;
+    }
+    if (!person.user_email) {
+      setFormError({
+        ...inputError,
+        email: "Por favor ingrese su correo electrónico",
+      });
+      return;
+    }
+    if (!person.user_password) {
+      setFormError({
+        ...inputError,
+        password: "La contraseña no debería de estar vacía",
+      });
+      return;
+    }
+    if (confirmPassword !== person.password) {
+      setFormError({
+        ...inputError,
+        confirmPassword: "Las contraseñas no coinciden",
+      });
+      return;
+    }
+    if (!person.user_phone) {
+      setFormError({
+        ...inputError,
+        phone: "Por favor ingrese su número de teléfono",
+      });
+      return;
+    }
+
+    setFormError(inputError);
+    setPerson((prevState) => ({
+      ...prevState,
+    }));
+  };
+
   return (
     <div className="basis-full h-[100vh] md:basis-2/5 overflow-auto">
       <div className="px-[5vw] 2xl:mt-[5vh] sm:my-[8vh]  min-[300px]:mt-[10vh]">
@@ -71,7 +180,7 @@ const RegisterPersonForm = () => {
           </div>
           <h1 className="font-bold text-2xl">Registro</h1>
         </div>
-        <form className="space-y-4 md:space-y-2" action="/">
+        <form className="space-y-4 md:space-y-2" onSubmit={validateFormInput}>
           <div>
             <label
               for="user_id_type"
@@ -111,6 +220,7 @@ const RegisterPersonForm = () => {
               value={person.user_id}
               onChange={(e) => handleChange(e)}
             />
+            <p className="text-red-500 text-xs">{formError.id}</p>
           </div>
           <div>
             <label
@@ -130,6 +240,7 @@ const RegisterPersonForm = () => {
               value={person.user_name}
               onChange={(e) => handleChange(e)}
             />
+            <p className="text-red-500 text-xs">{formError.name}</p>
           </div>
           <div>
             <label
@@ -149,6 +260,7 @@ const RegisterPersonForm = () => {
               value={person.user_lastname}
               onChange={(e) => handleChange(e)}
             />
+            <p className="text-red-500 text-xs">{formError.lastName}</p>
           </div>
           <div>
             <label
@@ -169,6 +281,7 @@ const RegisterPersonForm = () => {
               value={person.user_email}
               onChange={(e) => handleChange(e)}
             />
+            <p className="text-red-500 text-xs">{formError.email}</p>
           </div>
           <div>
             <label
@@ -187,6 +300,7 @@ const RegisterPersonForm = () => {
               value={person.user_password}
               onChange={(e) => handleChange(e)}
             />
+            <p className="text-red-500 text-xs">{formError.password}</p>
           </div>
 
           <div>
@@ -203,8 +317,9 @@ const RegisterPersonForm = () => {
               placeholder="••••••••"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
               required=""
+              onChange={(e) => handleChangeConfirm(e)}
             />
-            <span id="passwordError" class="error"></span>
+            <p className="text-red-500 text-xs">{formError.confirmPassword}</p>
           </div>
           <div>
             <label
@@ -220,11 +335,12 @@ const RegisterPersonForm = () => {
               inputMode="numeric"
               pattern="[0-9]{10}"
               placeholder="Número de teléfono"
-              title="Utiliza solo números"
+              title="Utiliza solo números y numeros de teléfono correctos xxx-xxx-xxxx"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
               value={person.user_phone}
               onChange={(e) => handleChange(e)}
             />
+            <p className="text-red-500 text-xs">{formError.phone}</p>
           </div>
           <div className="flex items-start">
             <div className="flex items-center h-5">
@@ -253,7 +369,7 @@ const RegisterPersonForm = () => {
             name="submitBtn"
             type="submit"
             className="w-full text-white bg-gray-600 hover:bg-gray-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 2xl:py-2.5 text-center md:p-1"
-            onClick={savePerson}
+            // onClick={savePerson}
           >
             Crear cuenta
           </button>
