@@ -1,12 +1,55 @@
 "use client"; // This is a client component 👈🏽
 
-import { Image } from "lucide-react";
-import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const TutorialForm = () => {
+  const [dataTutor, setDataTutor] = useState([]);
+  const [errorTutor, setErrorTutor] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
+  // const routerr = useRouter();
+  const [dataSubject, setDataSubject] = useState([]);
+  const [errorSubject, setErrorSubject] = useState(null);
+
+  // Petición para traer las asignaturas de la base de datos
+  useEffect(() => {
+    const fetchDataSubject = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/v1/subject/");
+        if (!response.ok) {
+          throw new error("Respuesta no valida");
+        }
+        const result = await response.json();
+        setDataSubject(result.map((item) => Object.values(item)));
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    fetchDataSubject();
+  }, []);
+
+  //"2da petición"
+
+  useEffect(() => {
+    const fetchDataTutor = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8080/api/v1/persons/tutor"
+        );
+        if (!response.ok) {
+          throw new error("Respuesta no valida");
+        }
+        const result = await response.json();
+        setDataTutor(result.map((item) => Object.values(item)));
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    fetchDataTutor();
+  }, []);
+
   return (
     <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
       <div className="w-full text-center my-[3vh]">
@@ -14,7 +57,7 @@ const TutorialForm = () => {
           Información del espacio
         </h1>
       </div>
-      <form className="space-y-4 md:space-y-2" action="#">
+      <form className="space-y-4 md:space-y-2" action="/landing">
         <div>
           <label
             for="asignatura"
@@ -26,12 +69,9 @@ const TutorialForm = () => {
             id="asignatura"
             class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
           >
-            <option>Física Mecánica</option>
-            <option>Calculo Integral</option>
-            <option>Cálculo Diferencial</option>
-            <option>Algebra y Trigonometría</option>
-            <option>Ecuaciones Diferenciales</option>
-            <option>Métodos Estadísticos</option>
+            {dataSubject.map((item, index) => (
+              <option key={index}>{item[1]}</option>
+            ))}
           </select>
         </div>
         <div>
@@ -110,15 +150,19 @@ const TutorialForm = () => {
             id="tutor"
             class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
           >
-            <option>Jonathan Granda</option>
+            {dataTutor.map((item, index) => (
+              <option key={index}>{item[2] + " " + item[3]}</option>
+            ))}
+            {/* <option>Jonathan Granda</option>
             <option>Cristian Muñoz</option>
-            <option>Brandon Duque</option>
+            <option>Brandon Duque</option> */}
           </select>
         </div>
         <div className="flex justify-center pt-8">
           <button
             type="submit"
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
+            // onClick={routerr.push("/landing")}
           >
             Confirmar tutoria
           </button>

@@ -2,16 +2,15 @@
 import React from "react";
 import { useEffect, useState } from "react";
 
-const Table = () => {
+const TableDegrees = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
 
+  const handleOpenEliminar = (id) => {};
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://66e0cd542fb67ac16f2a9ccb.mockapi.io/api/atv/tutorias"
-        );
+        const response = await fetch("http://localhost:8080/api/v1/degree");
         if (!response.ok) {
           throw new error("Respuesta no valida");
         }
@@ -37,7 +36,7 @@ const Table = () => {
     <div className="bg-gray-100 rounded-lg shadow-md py-2 ">
       <div className="bg-gray-200 mx-auto border border-slate-400 ">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">
-          Solicitudes pendientes
+          Carreras registradas
         </h1>
       </div>
       <div className="p-8">
@@ -45,19 +44,16 @@ const Table = () => {
           <thead className="bg-gray-50 border border-gray-400">
             <tr className="border border-slate-500">
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
-                Fecha y Hora
+                Código
               </th>
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider  border border-slate-500">
-                Estudiante
+                Nombre
               </th>
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider  border border-slate-500">
-                Materia
+                Modalidad
               </th>
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
-                Tema(s)
-              </th>
-              <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider  border border-slate-500">
-                Estado Solicitud
+                Facultad
               </th>
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
                 Acciones
@@ -67,16 +63,22 @@ const Table = () => {
           <tbody className="border border-slate-500">
             {data.map((item, index) => (
               <tr key={index}>
-                <td className="px-6 py-4 whitespace-nowrap">{item.fecha}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.nombre}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.asignatura}
+                  {item.degree_id}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.Tema}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.Estado.toString()}
+                  {item.degree_name}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{item.Acciones}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {item.degree_modality}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {item.degree_department}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <button>Editar</button>
+                  <button>Eliminar</button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -85,4 +87,4 @@ const Table = () => {
     </div>
   );
 };
-export default Table;
+export default TableDegrees;
