@@ -2,11 +2,12 @@
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
 
-
-
 const RegisterPersonForm = () => {
+  let selectedDepartment;
+  let selected;
   const PERSON_API_BASE_URL = "http://localhost:8080/api/v1/persons";
-  const DEPARTMENT_DATA_URL = "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json"
+  const DEPARTMENT_DATA_URL =
+    "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json";
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState({
     user_id: "",
@@ -37,7 +38,6 @@ const RegisterPersonForm = () => {
     user_role: "Student",
   });
 
-
   const handleChange = (event) => {
     const value = event.target.value;
     setPerson({ ...person, [event.target.name]: value });
@@ -63,44 +63,23 @@ const RegisterPersonForm = () => {
     reset(e);
   };
 
-  const[data, setData] =useState();
+  const [data, setData] = useState();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch(
-          "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json"
-        );
+        const response = await fetch(DEPARTMENT_DATA_URL);
         if (!response.ok) {
           throw new error("Respuesta no valida");
         }
         const result = await response.json();
-        setData(result.map((item) => Object.values(item)));
+        console.log(result);
+        setData(result);
       } catch (error) {
         setError(error.message);
       }
     };
     fetchData();
   }, []);
-
-  // const obtainData = async () => {
-  //   await fetch(DEPARTMENT_DATA_URL)
-  //   .then((data) => {
-  //       return data.json();
-  // })
-    
-  // }
-
-  const dataDprtmnt = async () => {
-    let dataDepartment = await fetch(
-      "https://www.datos.gov.co/resource/xdk5-pm3f.json"
-    )
-      .then((data) => {
-          return data.json();
-    })
-    return dataDepartment
-    }
-
-  console.log(dataDprtmnt())
 
   const reset = (e) => {
     e.preventDefault();
@@ -339,22 +318,54 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              htmlFor="user_id_type"
+              htmlFor="department"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Departamento
             </label>
             <select
-              id="user_id_type"
-              name="user_id_type"
+              id="department"
+              name="department"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
               onChange={(e) => handleChange(e)}
-              value={person.user_id_type}
+              value={person.department}
             >
-              {/* {data.map((item, index) => (
-              <option key={index}>{item.departamento}</option>
-            ))} */}
-              
+              {data?.map((item, index) => (
+                <option
+                  key={index}
+                  onClick={
+                    (selectedDepartment = document.getElementById("department"))
+                  }
+                >
+                  {item.departamento}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="city"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Ciudad
+            </label>
+            <select
+              id="city"
+              name="city"
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+              onChange={(e) => handleChange(e)}
+              value={person.city}
+            >
+              {
+                (selected =
+                  selectedDepartment?.options[selectedDepartment.selectedIndex]
+                    ?.text)
+              }
+              {data
+                ?.find((element) => element.departamento == `${selected}`)
+                ?.ciudades?.map((item, index) => (
+                  <option key={index}>{item}</option>
+                ))}
             </select>
           </div>
           <div>
@@ -443,7 +454,6 @@ const RegisterPersonForm = () => {
             name="submitBtn"
             type="submit"
             className="w-full text-white bg-gray-600 hover:bg-gray-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 2xl:py-2.5 text-center md:p-1"
-          // onClick={savePerson}
           >
             Crear cuenta
           </button>
