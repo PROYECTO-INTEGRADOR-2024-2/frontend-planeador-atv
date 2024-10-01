@@ -2,12 +2,14 @@
 import React, { useEffect, useState } from "react";
 import DeleteDegreeModal from "./DeleteDegreeModal";
 import EditDegreeModal from "./EditDegreeModal";
+import AddDegreeModal from "./AddDegreeModal";
 
 const TableDegrees = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const [openEliminar, setOpenEliminar] = useState(false); 
-  const [openEditar, setOpenEditar] = useState(false); 
+  const [openEliminar, setOpenEliminar] = useState(false);
+  const [openEditar, setOpenEditar] = useState(false);
+  const [openAgregar, setOpenAgregar] = useState(false);
   const [id, setId] = useState(null);
 
   const handleModalEliminar = (id) => {
@@ -16,7 +18,7 @@ const TableDegrees = () => {
   };
 
   const closeModalEliminar = () => {
-    setOpenEliminar(false); 
+    setOpenEliminar(false);
     setId(null);
   };
 
@@ -26,8 +28,13 @@ const TableDegrees = () => {
   };
 
   const closeModalEditar = () => {
-    setOpenEditar(false); 
-    setId(null); 
+    setOpenEditar(false);
+    setId(null);
+  };
+
+  const handleModalAgregar = (id) => {
+    setId(id);
+    setOpenAgregar(true);
   };
 
   useEffect(() => {
@@ -50,10 +57,16 @@ const TableDegrees = () => {
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
-      <div className="bg-gray-200 mx-auto border border-slate-400">
+      <div className="bg-gray-200 mx-auto border border-slate-400 flex flex-row justify-between">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">
           Carreras registradas
         </h1>
+        <button
+          className="ml-5 bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded h-10 mt-4 mr-4"
+          onClick={handleModalAgregar}
+        >
+          Agregar carrera
+        </button>
       </div>
       <div className="p-8">
         <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-500">
@@ -116,12 +129,12 @@ const TableDegrees = () => {
       <DeleteDegreeModal
         open={openEliminar}
         id={id}
-        onClose={closeModalEliminar} 
+        onClose={closeModalEliminar}
       />
-      <EditDegreeModal
-        open={openEditar}
-        id={id}
-        onClose={closeModalEditar} 
+      <EditDegreeModal open={openEditar} id={id} onClose={closeModalEditar} />
+      <AddDegreeModal
+        open={openAgregar}
+        onClose={() => setOpenAgregar(false)} // Función para cerrar el modal de agregar
       />
     </div>
   );

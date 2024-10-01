@@ -3,7 +3,7 @@ import React from "react";
 import { useState } from "react";
 import DegreeRegisterForm from "@/components/DegreeRegisterForm";
 import NavbarHome from "@/components/NavbarHome";
-import Table from "@/components/TableDegrees";
+import TableDegrees from "@/components/TableDegrees";
 
 function Page() {
   const [open, setOpen] = useState(false);
@@ -20,18 +20,7 @@ function Page() {
   return (
     <div>
       <NavbarHome name={"Juan"} rol={"Admin"} admin />
-      <Table
-        columns={[
-          "Fecha y Hora",
-          "Estudiante",
-          "Materia",
-          "Tema(s)",
-          "Estado Solicitud",
-          "Acciones",
-          "ID",
-        ]}
-        title={"Gestión de Asignaturas"}
-      />
+      <TableDegrees title={"Gestión de Asignaturas"} />
       <DegreeRegisterForm open={open}></DegreeRegisterForm>
     </div>
   );
