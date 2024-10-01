@@ -1,9 +1,12 @@
 "use client";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
+
 
 const RegisterPersonForm = () => {
   const PERSON_API_BASE_URL = "http://localhost:8080/api/v1/persons";
+  const DEPARTMENT_DATA_URL = "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json"
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState({
     user_id: "",
@@ -28,11 +31,12 @@ const RegisterPersonForm = () => {
     user_email: "",
     user_password: "",
     user_phone: "",
-    user_department: "Antioquia",
-    user_city: "Bello",
+    user_department: "",
+    user_city: "",
     user_state: "1",
     user_role: "Student",
   });
+
 
   const handleChange = (event) => {
     const value = event.target.value;
@@ -58,6 +62,45 @@ const RegisterPersonForm = () => {
     const _person = await response.json();
     reset(e);
   };
+
+  const[data, setData] =useState();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json"
+        );
+        if (!response.ok) {
+          throw new error("Respuesta no valida");
+        }
+        const result = await response.json();
+        setData(result.map((item) => Object.values(item)));
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    fetchData();
+  }, []);
+
+  // const obtainData = async () => {
+  //   await fetch(DEPARTMENT_DATA_URL)
+  //   .then((data) => {
+  //       return data.json();
+  // })
+    
+  // }
+
+  const dataDprtmnt = async () => {
+    let dataDepartment = await fetch(
+      "https://www.datos.gov.co/resource/xdk5-pm3f.json"
+    )
+      .then((data) => {
+          return data.json();
+    })
+    return dataDepartment
+    }
+
+  console.log(dataDprtmnt())
 
   const reset = (e) => {
     e.preventDefault();
@@ -195,15 +238,15 @@ const RegisterPersonForm = () => {
         <form className="space-y-4 md:space-y-2" onSubmit={validateFormInput}>
           <div>
             <label
-              for="user_id_type"
-              class="block mb-2 text-sm font-medium text-gray-900"
+              htmlFor="user_id_type"
+              className="block mb-2 text-sm font-medium text-gray-900"
             >
               Seleccione su tipo de documento
             </label>
             <select
               id="user_id_type"
               name="user_id_type"
-              class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
               onChange={(e) => handleChange(e)}
               value={person.user_id_type}
             >
@@ -215,7 +258,7 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              for="user_id"
+              htmlFor="user_id"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Digite su número de documento
@@ -236,7 +279,7 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              for="user_name"
+              htmlFor="user_name"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Nombre (Sin apellidos)
@@ -256,7 +299,7 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              for="user_lastname"
+              htmlFor="user_lastname"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Apellidos
@@ -276,7 +319,7 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              for="user_email"
+              htmlFor="user_email"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Correo electrónico
@@ -296,7 +339,27 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              for="user_password"
+              htmlFor="user_id_type"
+              className="block mb-2 text-sm font-medium text-gray-900"
+            >
+              Departamento
+            </label>
+            <select
+              id="user_id_type"
+              name="user_id_type"
+              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+              onChange={(e) => handleChange(e)}
+              value={person.user_id_type}
+            >
+              {/* {data.map((item, index) => (
+              <option key={index}>{item.departamento}</option>
+            ))} */}
+              
+            </select>
+          </div>
+          <div>
+            <label
+              htmlFor="user_password"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Contraseña
@@ -316,7 +379,7 @@ const RegisterPersonForm = () => {
 
           <div>
             <label
-              for="confirm_password"
+              htmlFor="confirm_password"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Confirme su contraseña
@@ -334,7 +397,7 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              for="user_phone"
+              htmlFor="user_phone"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Número de teléfono
@@ -364,7 +427,7 @@ const RegisterPersonForm = () => {
               />
             </div>
             <div className="ml-3 text-sm">
-              <label for="terms" className="font-light text-gray-500">
+              <label htmlFor="terms" className="font-light text-gray-500">
                 Acepto los{" "}
                 <a
                   className="font-medium text-blue-700 hover:underline"
@@ -380,7 +443,7 @@ const RegisterPersonForm = () => {
             name="submitBtn"
             type="submit"
             className="w-full text-white bg-gray-600 hover:bg-gray-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 2xl:py-2.5 text-center md:p-1"
-            // onClick={savePerson}
+          // onClick={savePerson}
           >
             Crear cuenta
           </button>

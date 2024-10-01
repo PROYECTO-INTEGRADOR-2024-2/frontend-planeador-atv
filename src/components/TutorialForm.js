@@ -6,6 +6,8 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
 const TutorialForm = () => {
+  const [dataTutor, setDataTutor] = useState([]);
+  const [errorTutor, setErrorTutor] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
   // const routerr = useRouter();
   const [dataSubject, setDataSubject] = useState([]);
