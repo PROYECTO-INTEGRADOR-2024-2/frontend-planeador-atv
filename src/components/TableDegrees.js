@@ -1,42 +1,56 @@
 "use client";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const TableDegrees = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
+  const [openEliminar, setOpenEliminar] = useState(false);
+  const [openEditar, setOpenEditar] = useState(false);
+  const [id, setId] = useState(null);
 
   const handleOpenEliminar = (id) => {
     console.log("Eliminar: " + id);
   };
+
+  const handleOpenEditar = (id) => {
+    console.log("Editar: " + id);
+  };
+
+  useEffect(() => {
+    if (openEliminar && id) {
+      console.log("openEliminar: " + openEliminar);
+      handleOpenEliminar(id);
+    }
+  }, [openEliminar, id]);
+
+  useEffect(() => {
+    if (openEditar && id) {
+      console.log("openEditar: " + openEditar);
+      handleOpenEditar(id);
+    }
+  }, [openEditar, id]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/v1/degree");
         if (!response.ok) {
-          throw new error("Respuesta no valida");
+          throw new Error("Respuesta no válida");
         }
         const result = await response.json();
         setData(result);
-        console.log(
-          "-------------------------------------------------------------"
-        );
-        console.log(result);
+        console.log("Datos obtenidos: ", result);
       } catch (error) {
         setError(error.message);
-        console.log(
-          "-------------------------------------------------------------"
-        );
-        console.log(error.message);
+        console.log("Error al obtener datos: ", error.message);
       }
     };
     fetchData();
-  }, [error]);
-  console.log("cantidad de datos en la extraccion de la API:" + data.length);
+  }, []);
 
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md py-2 ">
-      <div className="bg-gray-200 mx-auto border border-slate-400 ">
+    <div className="bg-gray-100 rounded-lg shadow-md py-2">
+      <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">
           Carreras registradas
         </h1>
@@ -63,8 +77,8 @@ const TableDegrees = () => {
             </tr>
           </thead>
           <tbody className="border border-slate-500">
-            {data.map((item, index) => (
-              <tr key={index}>
+            {data.map((item) => (
+              <tr key={item.degree_id}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {item.degree_id}
                 </td>
@@ -78,12 +92,21 @@ const TableDegrees = () => {
                   {item.degree_department}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                  <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    onClick={() => {
+                      setId(item.degree_id);
+                      setOpenEditar(true);
+                    }}
+                  >
                     Editar
                   </button>
                   <button
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={handleOpenEliminar(item.degree_id)}
+                    onClick={() => {
+                      setId(item.degree_id);
+                      setOpenEliminar(true);
+                    }}
                   >
                     Eliminar
                   </button>
