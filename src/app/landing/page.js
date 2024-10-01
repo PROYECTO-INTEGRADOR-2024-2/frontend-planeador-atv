@@ -15,7 +15,7 @@ function landing() {
           "Estudiante",
           "Materia",
           "Tema(s)",
-          "Estado Solicitud",
+          "Fecha",
           "Acciones",
         ]}
         title={"Solicitudes Pendientes"}
