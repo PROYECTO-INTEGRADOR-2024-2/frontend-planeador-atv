@@ -1,18 +1,49 @@
 import React from "react";
 import Modal from "react-modal";
+import { useState, useEffect } from "react";
+function EditDegreeModal({ open, id, onClose }) {
 
-function DeleteDegreeModal({ open, id, onClose }) {
-  const editDegree = async (id) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/v1/degree/${id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
+  const [degree, setDegree] = useState({
+    degree_name: "",
+    degree_modality: "",
+    degree_department: "",
+  });
+
+  useEffect(() => {
+    const fetchDegreeData = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/v1/degree/${id}`);
+        if (!response.ok) {
+          throw new Error("Error al obtener los datos de la carrera");
         }
-      );
+        const data = await response.json();
+        setDegree(data);
+      } catch (error) {
+        console.error(error.message);
+      }
+    };
+    if (id) {
+      fetchDegreeData();
+    }
+  }, [id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setDegree((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const editDegree = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/v1/degree/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(degree),
+      });
 
       if (!response.ok) {
         throw new Error("Respuesta no válida");
@@ -23,38 +54,46 @@ function DeleteDegreeModal({ open, id, onClose }) {
       onClose();
       window.location.reload();
     } catch (error) {
-      console.error("Error al eliminar carrera:", error.message);
+      console.error("Error al editar carrera:", error.message);
     }
   };
 
   return (
-    <Modal
-      isOpen={open}
-      className="absolute flex flex-col w-[40vw] left-[35vw] top-[15vh]"
-    >
-      <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
-        <div className="w-full text-center my-[3vh]">
-          <h1 className="mb-4 text-xl font-extrabold leading-none tracking-tight text-red-500 md:text-2xl lg:text-4xl dark:text-black">
-            Editar carrera
-          </h1>
-        </div>
-        <div className="flex justify-center pt-8">
-          <button
-            className="w-[50%] text-white bg-yellow-400 hover:bg-yellow-600 focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
-            onClick={() => deleteDegree(id)}
-          >
-            Borrar carrera
-          </button>
-          <button
-            className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
-            onClick={onClose}
-          >
-            Cancelar
-          </button>
-        </div>
+    <Modal isOpen={open} onRequestClose={onClose}>
+      <h2>Editar Carrera</h2>
+      <div>
+        <label>
+          Nombre:
+          <input
+            type="text"
+            name="degree_name"
+            value={degree.degree_name}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Modalidad:
+          <input
+            type="text"
+            name="degree_modality"
+            value={degree.degree_modality}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Facultad:
+          <input
+            type="text"
+            name="degree_department"
+            value={degree.degree_department}
+            onChange={handleChange}
+          />
+        </label>
+        <button onClick={editDegree}>Editar carrera</button>
+        <button onClick={onClose}>Cancelar</button>
       </div>
     </Modal>
   );
 }
 
-export default DeleteDegreeModal;
+export default EditDegreeModal;
