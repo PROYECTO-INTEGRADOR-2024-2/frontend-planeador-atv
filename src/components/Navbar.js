@@ -11,7 +11,7 @@ const Navbar = () => {
   return (
     <div className="bg-[#6f7e91]">
       <div className="h-20 px-8 flex items-center">
-        <Image src={logoATV} alt="Logo ATV" width={90} height={75} />
+        <Image src={logoATV} alt="Logo ATV" style={{ width: "90px", height: "auto" }}  />
         <p className="text-white font-bold text-center flex-auto text-xl">
           ANTIVIRUS PARA LA DESERCIÓN
           <br />

@@ -14,7 +14,7 @@ const NavbarHome = ({ name, rol, admin }) => {
     <nav className="bg-slate-500 px-8 h-[80px]">
       <div className="flex justify-between content-center ">
         <div className="text-white ">
-          <Image src={logoATV} alt="Logo ATV" width={90} height={75} />
+          <Image src={logoATV} alt="Logo ATV" style={{ width: "90px", height: "auto" }}  />
         </div>
 
         <div className={`flex items-center text-xl`}>
