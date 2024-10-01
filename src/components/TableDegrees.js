@@ -6,7 +6,9 @@ const TableDegrees = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
 
-  const handleOpenEliminar = (id) => {};
+  const handleOpenEliminar = (id) => {
+    console.log("Eliminar: " + id);
+  };
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -76,8 +78,15 @@ const TableDegrees = () => {
                   {item.degree_department}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <button>Editar</button>
-                  <button>Eliminar</button>
+                  <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                    Editar
+                  </button>
+                  <button
+                    className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                    onClick={handleOpenEliminar(item.degree_id)}
+                  >
+                    Eliminar
+                  </button>
                 </td>
               </tr>
             ))}
