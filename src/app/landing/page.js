@@ -11,7 +11,7 @@ function landing() {
       <Table
         columns={[
           "ID",
-          "Fecha y Hora",
+          "Estado",
           "Estudiante",
           "Materia",
           "Tema(s)",

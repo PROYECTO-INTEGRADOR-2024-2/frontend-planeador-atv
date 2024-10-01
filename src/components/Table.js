@@ -10,7 +10,7 @@ const Table = ({ title, columns }) => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "https://66e0cd542fb67ac16f2a9ccb.mockapi.io/api/atv/tutorias"
+          "http://localhost:8080/api/v1/session/tutos"
         );
         if (!response.ok) {
           throw new error("Respuesta no valida");
