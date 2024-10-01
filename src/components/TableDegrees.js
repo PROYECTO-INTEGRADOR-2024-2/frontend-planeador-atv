@@ -134,7 +134,7 @@ const TableDegrees = () => {
       <EditDegreeModal open={openEditar} id={id} onClose={closeModalEditar} />
       <AddDegreeModal
         open={openAgregar}
-        onClose={() => setOpenAgregar(false)} // Función para cerrar el modal de agregar
+        onClose={() => setOpenAgregar(false)}
       />
     </div>
   );
