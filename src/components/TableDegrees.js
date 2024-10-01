@@ -1,21 +1,33 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import DeleteDegreeModal from "./DeleteDegreeModal";
+import EditDegreeModal from "./EditDegreeModal";
 
 const TableDegrees = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const [openEliminar, setOpenEliminar] = useState(false); // Controla visibilidad del modal de eliminar
+  const [openEliminar, setOpenEliminar] = useState(false); 
+  const [openEditar, setOpenEditar] = useState(false); 
   const [id, setId] = useState(null);
 
   const handleModalEliminar = (id) => {
     setId(id);
-    setOpenEliminar(true); // Abre el modal
+    setOpenEliminar(true);
   };
 
   const closeModalEliminar = () => {
-    setOpenEliminar(false); // Cierra el modal
-    setId(null); // Limpia el id
+    setOpenEliminar(false); 
+    setId(null);
+  };
+
+  const handleModalEditar = (id) => {
+    setId(id);
+    setOpenEditar(true);
+  };
+
+  const closeModalEditar = () => {
+    setOpenEditar(false); 
+    setId(null); 
   };
 
   useEffect(() => {
@@ -84,7 +96,7 @@ const TableDegrees = () => {
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
                       setId(item.degree_id);
-                      // Aquí puedes agregar la lógica para editar
+                      handleModalEditar(item.degree_id);
                     }}
                   >
                     Editar
@@ -104,7 +116,12 @@ const TableDegrees = () => {
       <DeleteDegreeModal
         open={openEliminar}
         id={id}
-        onClose={closeModalEliminar} // Cierra el modal al cancelar o al eliminar
+        onClose={closeModalEliminar} 
+      />
+      <EditDegreeModal
+        open={openEditar}
+        id={id}
+        onClose={closeModalEditar} 
       />
     </div>
   );
