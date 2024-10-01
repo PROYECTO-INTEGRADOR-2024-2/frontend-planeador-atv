@@ -2,6 +2,7 @@ import React from "react";
 import Card from "@/components/Card";
 import NavbarHome from "@/components/NavbarHome";
 import Table from "@/components/Table";
+import Footer from "../../components/Footer"
 
 function landing() {
   return (
@@ -32,6 +33,7 @@ function landing() {
         text_button="¡Quiero ser parte del equipo!"
         ruta="../register"
       ></Card>
+      <Footer></Footer>
     </>
   );
 }

@@ -33,6 +33,7 @@ function Page() {
         title={"Gestión de Asignaturas"}
       />
       <DegreeRegisterForm open={open}></DegreeRegisterForm>
+      
     </div>
   );
 }
