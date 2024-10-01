@@ -1,34 +1,22 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import DeleteDegreeModal from "./DeleteDegreeModal";
 
 const TableDegrees = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
-  const [openEliminar, setOpenEliminar] = useState(false);
-  const [openEditar, setOpenEditar] = useState(false);
+  const [openEliminar, setOpenEliminar] = useState(false); // Controla visibilidad del modal de eliminar
   const [id, setId] = useState(null);
 
-  const handleOpenEliminar = (id) => {
-    console.log("Eliminar: " + id);
+  const handleModalEliminar = (id) => {
+    setId(id);
+    setOpenEliminar(true); // Abre el modal
   };
 
-  const handleOpenEditar = (id) => {
-    console.log("Editar: " + id);
+  const closeModalEliminar = () => {
+    setOpenEliminar(false); // Cierra el modal
+    setId(null); // Limpia el id
   };
-
-  useEffect(() => {
-    if (openEliminar && id) {
-      console.log("openEliminar: " + openEliminar);
-      handleOpenEliminar(id);
-    }
-  }, [openEliminar, id]);
-
-  useEffect(() => {
-    if (openEditar && id) {
-      console.log("openEditar: " + openEditar);
-      handleOpenEditar(id);
-    }
-  }, [openEditar, id]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,7 +50,7 @@ const TableDegrees = () => {
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
                 Código
               </th>
-              <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider  border border-slate-500">
+              <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
                 Nombre
               </th>
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider  border border-slate-500">
@@ -96,17 +84,14 @@ const TableDegrees = () => {
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
                       setId(item.degree_id);
-                      setOpenEditar(true);
+                      // Aquí puedes agregar la lógica para editar
                     }}
                   >
                     Editar
                   </button>
                   <button
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => {
-                      setId(item.degree_id);
-                      setOpenEliminar(true);
-                    }}
+                    onClick={() => handleModalEliminar(item.degree_id)}
                   >
                     Eliminar
                   </button>
@@ -116,7 +101,13 @@ const TableDegrees = () => {
           </tbody>
         </table>
       </div>
+      <DeleteDegreeModal
+        open={openEliminar}
+        id={id}
+        onClose={closeModalEliminar} // Cierra el modal al cancelar o al eliminar
+      />
     </div>
   );
 };
+
 export default TableDegrees;
