@@ -3,7 +3,7 @@ import { Menu, X } from "lucide-react";
 import { React } from "react";
 import { useState } from "react";
 import logoATV from "../../public/images/logoATV.png";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 const NavbarHome = ({ name, rol, admin }) => {
   const [MenuOpen, setMenuOpen] = useState(false);
@@ -14,7 +14,11 @@ const NavbarHome = ({ name, rol, admin }) => {
     <nav className="bg-slate-500 px-8 h-[80px]">
       <div className="flex justify-between content-center ">
         <div className="text-white ">
-          <Image src={logoATV} alt="Logo ATV" style={{ width: "90px", height: "auto" }}  />
+          <Image
+            src={logoATV}
+            alt="Logo ATV"
+            style={{ width: "90px", height: "auto" }}
+          />
         </div>
 
         <div className={`flex items-center text-xl`}>

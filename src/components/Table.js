@@ -7,8 +7,6 @@ const Table = ({ title, columns }) => {
   const [error, setError] = useState(null);
   const [subject, setSubject] = useState([]);
 
-
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -25,15 +23,12 @@ const Table = ({ title, columns }) => {
       }
     };
     fetchData();
-    
   }, []);
 
   useEffect(() => {
     const fetchDataSubject = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8080/api/v1/subject/"
-        );
+        const response = await fetch("http://localhost:8080/api/v1/subject/");
         if (!response.ok) {
           throw new error("Respuesta no valida");
         }
@@ -45,26 +40,17 @@ const Table = ({ title, columns }) => {
       return;
     };
     fetchDataSubject();
-    
   }, []);
- 
+
   function getNom(data1, dataSub) {
     let nombre;
     for (var i = 0; i < data1.lenght; i++) {
-      if(data1[i][4] == dataSub[i][0]){
-        nombre = datasub[i][1]
-        console.log(data1)
-        console.log(dataSub)
-        console.log("----------------------------")
+      if (data1[i][4] == dataSub[i][0]) {
+        nombre = datasub[i][1];
       }
     }
-    
-    console.log(nombre)
     return nombre;
   }
- 
-  console.log( data)
-  console.log( subject)
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2 ">
@@ -85,31 +71,19 @@ const Table = ({ title, columns }) => {
               ))}
             </tr>
           </thead>
-          <tbody className="border border-slate-500" >
-          {data.map((item) => (
+          <tbody className="border border-slate-500">
+            {data.map((item) => (
               <tr key={item.class_id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {item[0]}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {item[1]}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {item[2]}
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{item[0]}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{item[2]}</td>
 
                 <td className="px-6 py-4 whitespace-nowrap">
-                {subject.find((element) => element[0] == item[4])[1]}
-                 
-                  
+                  {subject.find((element) => element[0] == item[4])[1]}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {item[5]}
-                </td>
-                {/*Hora*/ }
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {item[6]}
-                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{item[5]}</td>
+                {/*Hora*/}
+                <td className="px-6 py-4 whitespace-nowrap">{item[6]}</td>
                 <td className="px-6 py-4 whitespace-nowrap flex flex-center">
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -128,7 +102,7 @@ const Table = ({ title, columns }) => {
                   </button>
                 </td>
               </tr>
-            ))} 
+            ))}
           </tbody>
         </table>
       </div>

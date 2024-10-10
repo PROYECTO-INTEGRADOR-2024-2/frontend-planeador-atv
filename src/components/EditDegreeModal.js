@@ -54,7 +54,6 @@ function EditDegreeModal({ open, id, onClose }) {
       }
 
       const result = await response.json();
-      console.log("Carrera editada:", result);
       onClose();
       window.location.reload();
     } catch (error) {

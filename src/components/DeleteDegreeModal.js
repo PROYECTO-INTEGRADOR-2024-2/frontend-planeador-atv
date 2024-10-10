@@ -19,7 +19,6 @@ function DeleteDegreeModal({ open, id, onClose }) {
       }
 
       const result = await response.json();
-      console.log("Carrera eliminada:", result);
       onClose();
       window.location.reload();
     } catch (error) {

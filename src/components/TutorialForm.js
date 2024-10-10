@@ -31,9 +31,6 @@ const TutorialForm = () => {
 
   //"2da petición"
 
-  const [dataTutor, setDataTutor] = useState([]);
-  const [errorTutor, setErrorTutor] = useState(null);
-
   useEffect(() => {
     const fetchDataTutor = async () => {
       try {

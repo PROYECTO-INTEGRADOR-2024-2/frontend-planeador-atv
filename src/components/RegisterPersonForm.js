@@ -1,35 +1,36 @@
 "use client";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import React, { useState, useEffect } from "react";
 
 const RegisterPersonForm = () => {
   let selectedDepartment;
   let selected;
-  const PERSON_API_BASE_URL = "http://localhost:8080/api/v1/persons";
+  const PERSON_API_BASE_URL = "http://localhost:8080/api/v1/auth/register";
   const DEPARTMENT_DATA_URL =
     "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json";
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState({
     user_id: "",
     user_id_type: "",
-    user_name: "",
+    user_firstname: "",
     user_lastname: "",
-    user_email: "",
+    userEmail: "",
     user_password: "",
+    user_confirmPassword: "",
     user_phone: "",
     user_department: "",
     user_city: "",
     user_state: "",
-    user_role: "",
+    user_role: "STUDENT",
     success: "",
   });
 
   const [person, setPerson] = useState({
     user_id: "",
     user_id_type: "",
-    user_name: "",
+    user_firstname: "",
     user_lastname: "",
-    user_email: "",
+    userEmail: "",
     user_password: "",
     user_phone: "",
     user_department: "",
@@ -72,7 +73,6 @@ const RegisterPersonForm = () => {
           throw new error("Respuesta no valida");
         }
         const result = await response.json();
-        console.log(result);
         setData(result);
       } catch (error) {
         setError(error.message);
@@ -86,15 +86,15 @@ const RegisterPersonForm = () => {
     setPerson({
       user_id: "",
       user_id_type: "",
-      user_name: "",
+      user_firstname: "",
       user_lastname: "",
-      user_email: "",
+      userEmail: "",
       user_password: "",
       user_phone: "",
-      user_department: "Antioquia",
-      user_city: "Bello",
+      user_department: "",
+      user_city: "",
       user_state: "1",
-      user_role: "Student",
+      user_role: "STUDENT",
     });
   };
 
@@ -105,39 +105,54 @@ const RegisterPersonForm = () => {
     let inputError = {
       user_id: "",
       user_id_type: "",
-      user_name: "",
+      user_firstname: "",
       user_lastname: "",
-      user_email: "",
+      userEmail: "",
       user_password: "",
       user_phone: "",
-      user_department: "Antioquia",
-      user_city: "Bello",
+      user_department: "",
+      user_city: "",
       user_state: "1",
-      user_role: "Student",
+      user_role: "STUDENT",
     };
-    let confirmPWD = "";
 
     // Verificamos si el email o la contraseña están vacíos
     if (
-      !person.user_name &&
-      !person.user_email &&
+      !person.user_firstname &&
+      !person.userEmail &&
       !person.user_id &&
       !person.user_lastname &&
       !person.user_password &&
-      !person.phone
+      !person.phone &&
+      !person.user_id_type &&
+      !person.user_department &&
+      !person.user_city
     ) {
       setFormError({
         ...inputError,
+        user_id_type: "Por favor seleccione el tipo de identificación",
         id: "Por favor ingrese su identificación",
         name: "Por favor ingrese su nombre",
         lastName: "Por favor ingrese su apellido",
         email: "Ingrese un email válido",
         password: "La contraseña no debería estar vacía",
         phone: "Por favor ingrese su número de teléfono",
+        department: "Por favor seleccione su departamento",
+        city: "Por favor seleccione su ciudad",
       });
       return;
     }
 
+    if (
+      !person.user_id_type ||
+      (person.user_id_type != "C.C" && person.user_id_type != "T.I")
+    ) {
+      setFormError({
+        ...inputError,
+        user_id_type: "Por favor elija el tipo de su identificación",
+      });
+      return;
+    }
     if (!person.user_id) {
       setFormError({
         ...inputError,
@@ -145,7 +160,7 @@ const RegisterPersonForm = () => {
       });
       return;
     }
-    if (!person.user_name) {
+    if (!person.user_firstname) {
       setFormError({
         ...inputError,
         name: "Por favor ingrese su nombre",
@@ -159,17 +174,31 @@ const RegisterPersonForm = () => {
       });
       return;
     }
-    if (!person.user_email) {
+    if (!person.userEmail) {
       setFormError({
         ...inputError,
         email: "Por favor ingrese su correo electrónico",
       });
       return;
     }
-    if (!person.user_email.match(/\D+@udea.edu.co$/gi)) {
+    if (!person.userEmail.match(/\D+@udea.edu.co$/gi)) {
       setFormError({
         ...inputError,
         email: "Por favor ingrese su correo electrónico de la universidad.",
+      });
+      return;
+    }
+    if (!person.user_department) {
+      setFormError({
+        ...inputError,
+        department: "Por favor seleccione el departamento",
+      });
+      return;
+    }
+    if (!person.user_city) {
+      setFormError({
+        ...inputError,
+        city: "Por favor seleccione la ciudad",
       });
       return;
     }
@@ -229,11 +258,11 @@ const RegisterPersonForm = () => {
               onChange={(e) => handleChange(e)}
               value={person.user_id_type}
             >
+              <option>Seleccione su tipo de ID</option>
               <option>C.C</option>
               <option>T.I</option>
-              <option>Opción 3</option>
-              <option>Opción 4</option>
             </select>
+            <p className="text-red-500 text-xs">{formError.user_id_type}</p>
           </div>
           <div>
             <label
@@ -258,20 +287,20 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              htmlFor="user_name"
+              htmlFor="user_firstname"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Nombre (Sin apellidos)
             </label>
             <input
               type="text"
-              id="user_name"
-              name="user_name"
+              id="user_firstname"
+              name="user_firstname"
               pattern="\D+"
               placeholder="Nombres"
               title="Utiliza solo letras"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
-              value={person.user_name}
+              value={person.user_firstname}
               onChange={(e) => handleChange(e)}
             />
             <p className="text-red-500 text-xs">{formError.name}</p>
@@ -298,20 +327,20 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              htmlFor="user_email"
+              htmlFor="userEmail"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Correo electrónico
             </label>
             <input
-              type="user_email"
-              name="user_email"
-              id="user_email"
+              type="userEmail"
+              name="userEmail"
+              id="userEmail"
               title="Utiliza tu correo UdeA"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
               placeholder="name@udea.edu.co"
               required=""
-              value={person.user_email}
+              value={person.userEmail}
               onChange={(e) => handleChange(e)}
             />
             <p className="text-red-500 text-xs">{formError.email}</p>
@@ -325,10 +354,10 @@ const RegisterPersonForm = () => {
             </label>
             <select
               id="department"
-              name="department"
+              name="user_department"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
               onChange={(e) => handleChange(e)}
-              value={person.department}
+              value={person.user_department}
             >
               {data?.map((item, index) => (
                 <option
@@ -341,6 +370,7 @@ const RegisterPersonForm = () => {
                 </option>
               ))}
             </select>
+            <p className="text-red-500 text-xs">{formError.department}</p>
           </div>
           <div>
             <label
@@ -351,10 +381,10 @@ const RegisterPersonForm = () => {
             </label>
             <select
               id="city"
-              name="city"
+              name="user_city"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
               onChange={(e) => handleChange(e)}
-              value={person.city}
+              value={person.user_city}
             >
               {
                 (selected =
@@ -367,6 +397,7 @@ const RegisterPersonForm = () => {
                   <option key={index}>{item}</option>
                 ))}
             </select>
+            <p className="text-red-500 text-xs">{formError.city}</p>
           </div>
           <div>
             <label
@@ -402,6 +433,7 @@ const RegisterPersonForm = () => {
               placeholder="••••••••"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
               required=""
+              value={confirmPassword}
               onChange={(e) => handleChangeConfirm(e)}
             />
             <p className="text-red-500 text-xs">{formError.confirmPassword}</p>
