@@ -28,7 +28,7 @@ const login = () => {
             <form className="space-y-4 md:space-y-2" action="#">
               <div>
                 <label
-                  for="correo-electronico"
+                  htmlFor="correo-electronico"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 ></label>
                 <input
@@ -42,7 +42,7 @@ const login = () => {
               </div>
               <div>
                 <label
-                  for="password-login"
+                  htmlFor="password-login"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 ></label>
                 <input

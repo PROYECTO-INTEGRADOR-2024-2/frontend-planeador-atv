@@ -59,7 +59,7 @@ const TutorialForm = () => {
       <form className="space-y-4 md:space-y-2" action="/landing">
         <div>
           <label
-            for="asignatura"
+            htmlFor="asignatura"
             class="block my-2 text-sm font-bold text-gray-900"
           >
             Asignatura
@@ -75,7 +75,7 @@ const TutorialForm = () => {
         </div>
         <div>
           <label
-            for="tematica"
+            htmlFor="tematica"
             className="block my-2 text-sm font-bold text-gray-900"
           >
             Temática
@@ -91,7 +91,7 @@ const TutorialForm = () => {
           <div className="flex justify-between bg-white p-2 px-8 pb-4">
             <div>
               <label
-                for="datePicker"
+                htmlFor="datePicker"
                 className="block text-sm font-bold text-gray-900"
               >
                 Fecha
@@ -108,7 +108,7 @@ const TutorialForm = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
                   class="size-6 left-20"
                 >
@@ -122,7 +122,7 @@ const TutorialForm = () => {
             </div>
             <div>
               <label
-                for="timePicker"
+                htmlFor="timePicker"
                 className="block text-sm font-bold text-gray-900"
               >
                 Hora
@@ -140,7 +140,7 @@ const TutorialForm = () => {
         </div>
         <div>
           <label
-            for="tutor"
+            htmlFor="tutor"
             class="block my-2 text-sm font-bold text-gray-900 text-center"
           >
             Seleccione el tutor disponible
