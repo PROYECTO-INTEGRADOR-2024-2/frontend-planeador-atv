@@ -51,30 +51,30 @@ const DegreeRegisterForm = ({ open }) => {
               {/*AQUI SE TIENE QUE IMPLEMENTAR LOS NOMBRES DE TODAS LAS CARRERAS*/}
               <h1 className="text-sm font-bold py-2">Modalidad</h1>
               <div className="grid grid-cols-3">
-                <div classname="flex items-center mb-4">
+                <div className="flex items-center mb-4">
                   <input
                     id="modPresencial"
                     type="checkbox"
                     value={"modPresencial"}
-                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
                     htmlFor="modPresencial"
-                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    className="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Modalidad Presencial
                   </label>
                 </div>
-                <div classname="flex items-center mb-4">
+                <div className="flex items-center mb-4">
                   <input
                     id="department"
                     type="checkbox"
                     value={"department"}
-                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
                     htmlFor="modVirtual"
-                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    className="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Modalidad Virtual
                   </label>

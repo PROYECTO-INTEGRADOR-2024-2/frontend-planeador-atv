@@ -60,13 +60,13 @@ const TutorialForm = () => {
         <div>
           <label
             htmlFor="asignatura"
-            classname="block my-2 text-sm font-bold text-gray-900"
+            className="block my-2 text-sm font-bold text-gray-900"
           >
             Asignatura
           </label>
           <select
             id="asignatura"
-            classname="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
           >
             {dataSubject.map((item, index) => (
               <option key={index}>{item[1]}</option>
@@ -110,7 +110,7 @@ const TutorialForm = () => {
                   viewBox="0 0 24 24"
                   strokeWidth="1.5"
                   stroke="currentColor"
-                  classname="size-6 left-20"
+                  className="size-6 left-20"
                 >
                   <path
                     strokeLinecap="round"
@@ -141,13 +141,13 @@ const TutorialForm = () => {
         <div>
           <label
             htmlFor="tutor"
-            classname="block my-2 text-sm font-bold text-gray-900 text-center"
+            className="block my-2 text-sm font-bold text-gray-900 text-center"
           >
             Seleccione el tutor disponible
           </label>
           <select
             id="tutor"
-            classname="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
           >
             {dataTutor.map((item, index) => (
               <option key={index}>{item[2] + " " + item[3]}</option>
