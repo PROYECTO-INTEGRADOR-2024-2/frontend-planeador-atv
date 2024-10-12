@@ -4,9 +4,9 @@ import Image from "next/image";
 //rafce
 const login = () => {
   return (
-    <div class="grid grid-cols-2 ">
-      <div class="bg-slate-500 h-screen">
-        <div class="flex items-center justify-center h-screen">
+    <div classname="grid grid-cols-2 ">
+      <div className="bg-slate-500 h-screen">
+        <div className="flex items-center justify-center h-screen">
           <img src="/images/bg-login.png"></img>
         </div>
       </div>

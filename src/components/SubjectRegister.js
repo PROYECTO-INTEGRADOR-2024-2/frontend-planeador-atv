@@ -20,7 +20,7 @@ const SubjectRegister = ({ useStates }) => {
             <form className="space-y-4 md:space-y-2" action="#">
               <div>
                 <label
-                  for="subjectID"
+                  htmlFor="subjectID"
                   className="block my-2 text-sm font-bold text-gray-900"
                 >
                   Código de la asignatura
@@ -35,7 +35,7 @@ const SubjectRegister = ({ useStates }) => {
               </div>
               <div>
                 <label
-                  for="subjectName"
+                  htmlFor="subjectName"
                   className="block my-2 text-sm font-bold text-gray-900"
                 >
                   Nombre de la asignatura
@@ -51,128 +51,128 @@ const SubjectRegister = ({ useStates }) => {
               {/*AQUI SE TIENE QUE IMPLEMENTAR LOS NOMBRES DE TODAS LAS CARRERAS*/}
               <h1 className="text-sm font-bold py-2">Carreras Asociadas</h1>
               <div className="grid grid-cols-3">
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="carrera-1"
                     type="checkbox"
                     value={"carrera-1"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-1"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-1"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 1
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="carrera-2"
                     type="checkbox"
                     value={"carrera-2"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-2"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-2"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 2
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="carrera-3"
                     type="checkbox"
                     value={"carrera-3"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-3"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-3"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 3
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="carrera-4"
                     type="checkbox"
                     value={"carrera-4"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-4"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-4"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 4
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="carrera-5"
                     type="checkbox"
                     value={"carrera-5"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-5"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-5"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 5
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="carrera-6"
                     type="checkbox"
                     value={"carrera-6"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-6"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-6"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 6
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="carrera-7"
                     type="checkbox"
                     value={"carrera-7"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-7"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-7"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 7
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="carrera-8"
                     type="checkbox"
                     value={"carrera-8"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-8"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-8"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 8
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div classname="flex items-center mb-4">
                   <input
                     id="default-checkbox"
                     type="checkbox"
                     value={"carrera-9"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    classname="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="carrera-9"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="carrera-9"
+                    classname="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Carrera 9
                   </label>
