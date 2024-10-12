@@ -23,16 +23,13 @@ const TutorialForm = () => {
         const result = await response.json();
         setDataSubject(result.map((item) => Object.values(item)));
       } catch (error) {
-        setError(error.message);
+        setErrorSubject(error.message);
       }
     };
     fetchDataSubject();
   }, []);
 
   //"2da petición"
-
-  const [dataTutor, setDataTutor] = useState([]);
-  const [errorTutor, setErrorTutor] = useState(null);
 
   useEffect(() => {
     const fetchDataTutor = async () => {
@@ -46,7 +43,7 @@ const TutorialForm = () => {
         const result = await response.json();
         setDataTutor(result.map((item) => Object.values(item)));
       } catch (error) {
-        setError(error.message);
+        setErrorTutor(error.message);
       }
     };
     fetchDataTutor();
