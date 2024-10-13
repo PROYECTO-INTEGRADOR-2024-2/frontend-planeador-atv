@@ -10,7 +10,7 @@ const Navbar = () => {
 
   return (
     <div className="bg-[#6f7e91]">
-      <div className="h-20 px-8 flex items-center">
+      <div className="h-22 px-8 flex items-center">
         <Image
           src={logoATV}
           alt="Logo ATV"
