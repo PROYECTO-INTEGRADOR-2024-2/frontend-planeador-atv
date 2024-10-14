@@ -57,7 +57,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
     const method = subjectToEdit ? "PUT" : "POST"; // Determine method based on editing
     const endpoint = subjectToEdit
       ? `http://localhost:8080/api/v1/subject/${subject.subject_id}` // Use the subject_id for editing
-      : "http://localhost:8080/api/v1/subject"; // For adding
+      : "http://localhost:8080/api/v1/subject/"; // For adding
 
     try {
       const response = await fetch(endpoint, {
