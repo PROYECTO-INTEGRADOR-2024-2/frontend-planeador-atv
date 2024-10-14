@@ -20,7 +20,7 @@ const DegreeRegisterForm = ({ open }) => {
             <form className="space-y-4 md:space-y-2" action="#">
               <div>
                 <label
-                  for="degreeID"
+                  htmlFor="degreeID"
                   className="block my-2 text-sm font-bold text-gray-900"
                 >
                   Código de la carrera
@@ -35,7 +35,7 @@ const DegreeRegisterForm = ({ open }) => {
               </div>
               <div>
                 <label
-                  for="degreeName"
+                  htmlFor="degreeName"
                   className="block my-2 text-sm font-bold text-gray-900"
                 >
                   Nombre de la carrera
@@ -51,30 +51,30 @@ const DegreeRegisterForm = ({ open }) => {
               {/*AQUI SE TIENE QUE IMPLEMENTAR LOS NOMBRES DE TODAS LAS CARRERAS*/}
               <h1 className="text-sm font-bold py-2">Modalidad</h1>
               <div className="grid grid-cols-3">
-                <div class="flex items-center mb-4">
+                <div className="flex items-center mb-4">
                   <input
                     id="modPresencial"
                     type="checkbox"
                     value={"modPresencial"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="modPresencial"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="modPresencial"
+                    className="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Modalidad Presencial
                   </label>
                 </div>
-                <div class="flex items-center mb-4">
+                <div className="flex items-center mb-4">
                   <input
                     id="department"
                     type="checkbox"
                     value={"department"}
-                    class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                    className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
                   />
                   <label
-                    for="modVirtual"
-                    class="ms-2 text-sm font-medium text-gray-900 dark:text-black"
+                    htmlFor="modVirtual"
+                    className="ms-2 text-sm font-medium text-gray-900 dark:text-black"
                   >
                     Modalidad Virtual
                   </label>
@@ -82,7 +82,7 @@ const DegreeRegisterForm = ({ open }) => {
               </div>
               <div>
                 <label
-                  for="deparment"
+                  htmlFor="deparment"
                   className="block my-2 text-sm font-bold text-gray-900"
                 >
                   Facultad a la que pertenece

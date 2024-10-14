@@ -1,7 +1,9 @@
 import RegisterPersonForm from "@/components/RegisterPersonForm";
+
 import Image from "next/legacy/image";
 
-const register = () => {
+
+const Register = () => {
   return (
     <div className="flex flex-row ">
       <div className="basis-0  bg-no-repeat md:basis-3/5 bg-cover bg-slate-500 h-screen relative">
@@ -12,9 +14,11 @@ const register = () => {
           layout="fill"
         />
       </div>
-      <RegisterPersonForm />
+      <div className="flex-grow">
+        <RegisterPersonForm />
+      </div>
     </div>
   );
 };
 
-export default register;
+export default Register;

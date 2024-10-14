@@ -23,7 +23,7 @@ const TutorialForm = () => {
         const result = await response.json();
         setDataSubject(result.map((item) => Object.values(item)));
       } catch (error) {
-        setError(error.message);
+        setErrorSubject(error.message);
       }
     };
     fetchDataSubject();
@@ -43,7 +43,7 @@ const TutorialForm = () => {
         const result = await response.json();
         setDataTutor(result.map((item) => Object.values(item)));
       } catch (error) {
-        setError(error.message);
+        setErrorTutor(error.message);
       }
     };
     fetchDataTutor();
@@ -59,23 +59,23 @@ const TutorialForm = () => {
       <form className="space-y-4 md:space-y-2" action="/landing">
         <div>
           <label
-            for="asignatura"
-            class="block my-2 text-sm font-bold text-gray-900"
+            htmlFor="asignatura"
+            className="block my-2 text-sm font-bold text-gray-900"
           >
             Asignatura
           </label>
           <select
             id="asignatura"
-            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
           >
             {dataSubject.map((item, index) => (
-              <option key={index}>{item[1]}</option>
+              <option key={index}>{item[2]}</option>
             ))}
           </select>
         </div>
         <div>
           <label
-            for="tematica"
+            htmlFor="tematica"
             className="block my-2 text-sm font-bold text-gray-900"
           >
             Temática
@@ -91,7 +91,7 @@ const TutorialForm = () => {
           <div className="flex justify-between bg-white p-2 px-8 pb-4">
             <div>
               <label
-                for="datePicker"
+                htmlFor="datePicker"
                 className="block text-sm font-bold text-gray-900"
               >
                 Fecha
@@ -108,9 +108,9 @@ const TutorialForm = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
-                  class="size-6 left-20"
+                  className="size-6 left-20"
                 >
                   <path
                     strokeLinecap="round"
@@ -122,7 +122,7 @@ const TutorialForm = () => {
             </div>
             <div>
               <label
-                for="timePicker"
+                htmlFor="timePicker"
                 className="block text-sm font-bold text-gray-900"
               >
                 Hora
@@ -140,14 +140,14 @@ const TutorialForm = () => {
         </div>
         <div>
           <label
-            for="tutor"
-            class="block my-2 text-sm font-bold text-gray-900 text-center"
+            htmlFor="tutor"
+            className="block my-2 text-sm font-bold text-gray-900 text-center"
           >
             Seleccione el tutor disponible
           </label>
           <select
             id="tutor"
-            class="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
           >
             {dataTutor.map((item, index) => (
               <option key={index}>{item[2] + " " + item[3]}</option>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 const ApiDataTable = () => {
   const [data, setData] = useState([]);
@@ -8,15 +8,15 @@ const ApiDataTable = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://api.example.com/data');
+        const response = await fetch("https://api.example.com/data");
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error("Network response was not ok");
         }
         const result = await response.json();
         setData(result);
         setLoading(false);
       } catch (error) {
-        setError('Error fetching data: ' + error.message);
+        setError("Error fetching data: " + error.message);
         setLoading(false);
       }
     };
@@ -25,9 +25,11 @@ const ApiDataTable = () => {
   }, []);
 
   if (loading) return <div className="text-center py-4">Loading...</div>;
-  if (error) return <div className="text-center py-4 text-red-500">{error}</div>;
+  if (error)
+    return <div className="text-center py-4 text-red-500">{error}</div>;
 
-  if (data.length === 0) return <div className="text-center py-4">No data available</div>;
+  if (data.length === 0)
+    return <div className="text-center py-4">No data available</div>;
 
   const columns = Object.keys(data[0]);
 
@@ -37,7 +39,10 @@ const ApiDataTable = () => {
         <thead className="bg-gray-100">
           <tr>
             {columns.map((column, index) => (
-              <th key={index} className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              <th
+                key={index}
+                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
                 {column}
               </th>
             ))}
@@ -48,7 +53,7 @@ const ApiDataTable = () => {
             <tr key={rowIndex}>
               {columns.map((column, colIndex) => (
                 <td key={colIndex} className="px-6 py-4 whitespace-nowrap">
-                  {item[column]?.toString() || ''}
+                  {item[column]?.toString() || ""}
                 </td>
               ))}
             </tr>
