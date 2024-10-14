@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Modal from "react-modal";
 
 const SubjectRegister = ({ useStates }) => {
-  const [showModal, setShowModal] = useStates;
+  const [showModal, setShowModal] = useState();
   return (
     <div>
       <div className="flex items-center blur-md">
