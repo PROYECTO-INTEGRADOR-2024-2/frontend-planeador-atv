@@ -1,51 +1,71 @@
 import React from "react";
 import Modal from "react-modal";
 import { useState, useEffect } from "react";
-function EditDegreeModal({ open, id, onClose }) {
-  const [degree, setDegree] = useState({
+
+function EditSubjectModal({ open, id, onClose }) {
+  const [subject, setSubject] = useState({
+    subject_name: "",
+    degree_id: "",
     degree_name: "",
-    degree_modality: "",
-    degree_department: "",
   });
 
   useEffect(() => {
-    const fetchDegreeData = async () => {
+    const fetchSubjectData = async () => {
       try {
-        const response = await fetch(
-          `http://localhost:8080/api/v1/degree/${id}`
+        const subjectResponse = await fetch(
+          `http://localhost:8080/api/v1/subject/${id}`
         );
-        if (!response.ok) {
+        if (!subjectResponse.ok) {
+          throw new Error("Error al obtener los datos de la asignatura");
+        }
+        const subjectData = await subjectResponse.json();
+
+        const degreeResponse = await fetch(
+          `http://localhost:8080/api/v1/degree/${subjectData.degree_id}`
+        );
+        if (!degreeResponse.ok) {
           throw new Error("Error al obtener los datos de la carrera");
         }
-        const data = await response.json();
-        setDegree(data);
+        const degreeData = await degreeResponse.json();
+
+        setSubject({
+          subject_name: subjectData.subject_name,
+          degree_id: subjectData.degree_id,
+          degree_name: degreeData.degree_name,
+        });
       } catch (error) {
         console.error(error.message);
       }
     };
+
     if (id) {
-      fetchDegreeData();
+      fetchSubjectData();
     }
   }, [id]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setDegree((prevData) => ({
+    const newValue = name === "degree_id" ? Number(value) : value;
+    setSubject((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: newValue,
     }));
+    console.log(subject);
   };
 
-  const editDegree = async () => {
+  const editSubject = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/degree/${id}`,
+        `http://localhost:8080/api/v1/subject/${id}`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(degree),
+          body: JSON.stringify({
+            subject_name: subject.subject_name,
+            degree_id: subject.degree_id,
+          }),
         }
       );
 
@@ -54,10 +74,11 @@ function EditDegreeModal({ open, id, onClose }) {
       }
 
       const result = await response.json();
+      console.log("Asignatura editada:", result);
       onClose();
       window.location.reload();
     } catch (error) {
-      console.error("Error al editar carrera:", error.message);
+      console.error("Error al editar asignatura:", error.message);
     }
   };
 
@@ -70,45 +91,46 @@ function EditDegreeModal({ open, id, onClose }) {
       <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
         <div className="w-full text-center my-[3vh]">
           <h1 className="mb-4 text-xl font-extrabold leading-none tracking-tight text-red-500 md:text-2xl lg:text-4xl dark:text-black">
-            Editar carrera
+            Editar asignatura
           </h1>
           <div className="flex justify-center flex-col pt-8">
             <label className="block text-black font-bold md:text-right mb-1 md:mb-0 pr-4">
               Nombre:
               <input
                 type="text"
+                name="subject_name"
+                value={subject.subject_name}
+                onChange={handleChange}
+                className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
+              />
+            </label>
+            <label className="mt-5 block text-black font-bold md:text-right mb-1 md:mb-0 pr-4">
+              Id de la carrera:
+              <input
+                type="text"
+                name="degree_id"
+                value={subject.degree_id}
+                onChange={handleChange}
+                className="bg-gray appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
+                disabled
+              />
+            </label>
+            <label className="mt-5 block text-black font-bold md:text-right mb-1 md:mb-0 pr-4">
+              Nombre de la carrera:
+              <input
+                type="text"
                 name="degree_name"
-                value={degree.degree_name}
-                onChange={handleChange}
-                className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
-              />
-            </label>
-            <label className="mt-5 block text-black font-bold md:text-right mb-1 md:mb-0 pr-4">
-              Modalidad:
-              <input
-                type="text"
-                name="degree_modality"
-                value={degree.degree_modality}
-                onChange={handleChange}
-                className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
-              />
-            </label>
-            <label className="mt-5 block text-black font-bold md:text-right mb-1 md:mb-0 pr-4">
-              Facultad:
-              <input
-                type="text"
-                name="degree_department"
-                value={degree.degree_department}
-                onChange={handleChange}
-                className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
+                value={subject.degree_name}
+                className="bg-gray appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
+                disabled
               />
             </label>
             <div className="flex flex-row justify-center pt-8">
               <button
-                onClick={editDegree}
+                onClick={editSubject}
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
-                Editar carrera
+                Editar asignatura
               </button>
               <button
                 onClick={onClose}
@@ -124,4 +146,4 @@ function EditDegreeModal({ open, id, onClose }) {
   );
 }
 
-export default EditDegreeModal;
+export default EditSubjectModal;

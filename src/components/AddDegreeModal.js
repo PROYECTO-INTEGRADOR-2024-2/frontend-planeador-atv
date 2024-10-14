@@ -31,7 +31,6 @@ function AddDegreeModal({ open, onClose }) {
       }
 
       const result = await response.json();
-      console.log("Carrera agregada:", result);
       onClose();
       window.location.reload();
     } catch (error) {

@@ -1,10 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import DeleteDegreeModal from "./DeleteDegreeModal";
-import EditDegreeModal from "./EditDegreeModal";
-import AddDegreeModal from "./AddDegreeModal";
+import DeleteSubjectModal from "./DeleteSubjectModal";
+import EditSubjectModal from "./EditSubjectModal";
+import AddSubjectModal from "./AddSubjectModal";
 
-const TableDegrees = () => {
+const TableSubjects = () => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [openEliminar, setOpenEliminar] = useState(false);
@@ -40,14 +40,30 @@ const TableDegrees = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/degree");
-        if (!response.ok) {
-          throw new Error("Respuesta no válida");
+        const [subjectsResponse, degreesResponse] = await Promise.all([
+          fetch("http://localhost:8080/api/v1/subject/"),
+          fetch("http://localhost:8080/api/v1/degree"),
+        ]);
+
+        if (!subjectsResponse.ok || !degreesResponse.ok) {
+          throw new Error("Error en una de las respuestas");
         }
-        const result = await response.json();
-        setData(result);
+
+        const subjects = await subjectsResponse.json();
+        const degrees = await degreesResponse.json();
+
+        const subjectsWithNames = subjects.map((subject) => {
+          const degree = degrees.find((d) => d.degree_id === subject.degree_id);
+          return {
+            ...subject,
+            degree_name: degree ? degree.degree_name : "Carrera desconocida",
+          };
+        });
+
+        setData(subjectsWithNames);
       } catch (error) {
         setError(error.message);
+        console.log("Error al obtener datos: ", error.message);
       }
     };
     fetchData();
@@ -63,7 +79,7 @@ const TableDegrees = () => {
           className="ml-5 bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded h-10 mt-4 mr-4"
           onClick={handleModalAgregar}
         >
-          Agregar carrera
+          Agregar asignatura
         </button>
       </div>
       <div className="p-8">
@@ -76,11 +92,8 @@ const TableDegrees = () => {
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
                 Nombre
               </th>
-              <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider  border border-slate-500">
-                Modalidad
-              </th>
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
-                Facultad
+                Carrera asociada
               </th>
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
                 Acciones
@@ -89,32 +102,29 @@ const TableDegrees = () => {
           </thead>
           <tbody className="border border-slate-500">
             {data.map((item) => (
-              <tr key={item.degree_id}>
+              <tr key={item.subject_id}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.degree_id}
+                  {item.subject_id}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {item.subject_name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   {item.degree_name}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.degree_modality}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {item.degree_department}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
-                      setId(item.degree_id);
-                      handleModalEditar(item.degree_id);
+                      setId(item.subject_id);
+                      handleModalEditar(item.subject_id);
                     }}
                   >
                     Editar
                   </button>
                   <button
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleModalEliminar(item.degree_id)}
+                    onClick={() => handleModalEliminar(item.subject_id)}
                   >
                     Eliminar
                   </button>
@@ -124,13 +134,13 @@ const TableDegrees = () => {
           </tbody>
         </table>
       </div>
-      <DeleteDegreeModal
+      <DeleteSubjectModal
         open={openEliminar}
         id={id}
         onClose={closeModalEliminar}
       />
-      <EditDegreeModal open={openEditar} id={id} onClose={closeModalEditar} />
-      <AddDegreeModal
+      <EditSubjectModal open={openEditar} id={id} onClose={closeModalEditar} />
+      <AddSubjectModal
         open={openAgregar}
         onClose={() => setOpenAgregar(false)}
       />
@@ -138,4 +148,4 @@ const TableDegrees = () => {
   );
 };
 
-export default TableDegrees;
+export default TableSubjects;

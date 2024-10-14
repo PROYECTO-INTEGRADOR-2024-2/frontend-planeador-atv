@@ -1,14 +1,16 @@
 import RegisterPersonForm from "@/components/RegisterPersonForm";
-import Image from "next/image";
+
+import Image from "next/legacy/image";
+
 
 const Register = () => {
   return (
-    <div className="flex flex-row">
-      <div className="relative basis-0 md:basis-3/5 bg-no-repeat bg-slate-500 h-screen">
+    <div className="flex flex-row ">
+      <div className="basis-0  bg-no-repeat md:basis-3/5 bg-cover bg-slate-500 h-screen relative">
         <Image
           src="/images/bg-login.png"
           alt="Background login image"
-          className="object-cover shadow-blue-500/50"
+          className="object-full shadow-blue-500/50 Sw-[50%]"
           layout="fill"
         />
       </div>
