@@ -1,8 +1,8 @@
 import NavbarHome from "@/components/NavbarHome";
 import TutorialForm from "@/components/TutorialForm";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import React from "react";
-import Footer from "../../components/Footer"
+import Footer from "../../components/Footer";
 
 const page = () => {
   return (

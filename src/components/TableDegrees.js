@@ -46,10 +46,8 @@ const TableDegrees = () => {
         }
         const result = await response.json();
         setData(result);
-        console.log("Datos obtenidos: ", result);
       } catch (error) {
         setError(error.message);
-        console.log("Error al obtener datos: ", error.message);
       }
     };
     fetchData();

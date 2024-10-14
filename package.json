@@ -13,6 +13,7 @@
     "@headlessui/react": "^2.1.6",
     "lucide-react": "^0.263.1",
     "next": "^14.2.7",
+    "next-auth": "^4.24.8",
     "planeador-atv": "file:",
     "react": "^18",
     "react-datepicker": "^7.3.0",

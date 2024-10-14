@@ -7,7 +7,7 @@ const Hero = () => {
       <img
         src={"/images/bg-landing.jpg"}
         alt="imagen de fondo landing"
-        className="w-full h-[70.5vh] object-cover relative"
+        className="w-full h-[70.5vh] object-cover relative brightness-75"
       />
       <div className="flex justify-center absolute top-8 w-full">
         <img

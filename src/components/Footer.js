@@ -1,6 +1,6 @@
 import React from "react";
 import logoATV from "../../public/images/logoATV.png";
-import Image from "next/image";
+import Image from "next/legacy/image";
 
 const footer = () => {
   return (
