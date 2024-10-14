@@ -3,7 +3,7 @@ import { Menu, X } from "lucide-react";
 import { React } from "react";
 import { useState } from "react";
 import logoATV from "../../public/images/logoATV.png";
-import Image from "next/legacy/image";
+import Image from "next/image";
 
 const NavbarHome = ({ name, rol, admin }) => {
   const [MenuOpen, setMenuOpen] = useState(false);
