@@ -47,7 +47,7 @@ const TablePool = ({ title, columns }) => {
       </div>
       <div className="p-8">
         <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
-          <thead className="bg-gray-50 border border-gray-400 bg-[#E5E7EB]">
+          <thead className="bg-gray-50 border border-gray-400">
             <tr className="border border-slate-500">
               {columns.map((item, rowIndex) => (
                 <th
