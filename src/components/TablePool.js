@@ -74,7 +74,7 @@ const TablePool = ({ title, columns }) => {
                 <td className="px-6 py-4 whitespace-nowrap">{item[6]}</td>
                 <td className="px-6 py-4 whitespace-nowrap flex flex-center">
                   <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
                       setId(item[0]);
                       handleModalEditar(item[0]);

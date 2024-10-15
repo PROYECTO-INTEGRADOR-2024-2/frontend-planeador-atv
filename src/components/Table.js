@@ -124,7 +124,7 @@ const Table = ({ title, columns }) => {
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => handleModalEliminar(item.degree_id)}
                   >
-                    Eliminar
+                    Cancelar
                   </button>
                 </td>
               </tr>
