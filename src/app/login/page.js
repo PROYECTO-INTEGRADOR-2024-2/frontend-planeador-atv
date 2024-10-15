@@ -2,7 +2,7 @@
 import Image from "next/legacy/image";
 import { React, useState } from "react";
 import { useRouter } from "next/navigation";
-import { jwtDecode } from 'jwt-decode'
+import { jwtDecode } from "jwt-decode";
 
 const login = () => {
   const router = useRouter();
@@ -18,7 +18,7 @@ const login = () => {
     setPerson({ ...person, [event.target.name]: value });
   };
   //---------------------------------------VERIFICAR LOGIN------------------------------
-  
+
   const validateLogin = async (e) => {
     e.preventDefault();
     const response = await fetch(PERSON_API_BASE_URL, {
@@ -35,13 +35,12 @@ const login = () => {
     token = res.token;
     const user = jwtDecode(token);
 
-    console.log("--------------------------------------------------")
-    console.log(res)
-    console.log(token)
-    console.log(user)
-     // decode your token here
-    localStorage.setItem('Nombre', user.sub);
-
+    console.log("--------------------------------------------------");
+    console.log(res);
+    console.log(token);
+    console.log(JSON.stringify(user));
+    // decode your token here
+    localStorage.setItem("user", JSON.stringify(user));
     //(token);
     if (token != null) {
       router.push("../landing");
@@ -49,8 +48,6 @@ const login = () => {
     //reset(e);
   };
   //---------------------------------------VERIFICAR LOGIN------------------------------
-
-  
 
   return (
     <div className="grid grid-cols-2 ">
@@ -77,7 +74,6 @@ const login = () => {
             <form className="space-y-4 md:space-y-2" onSubmit={validateLogin}>
               <div>
                 <label
-
                   htmlFor="user_email"
                   className="block mb-2 text-sm font-medium text-gray-900"
                 ></label>

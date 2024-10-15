@@ -12,7 +12,7 @@ function landing() {
         columns={[
           "ID",
           "Estado",
-          "Estudiante",
+          "Tutor",
           "Materia",
           "Tema(s)",
           "Fecha",

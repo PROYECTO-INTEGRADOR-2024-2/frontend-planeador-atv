@@ -1,12 +1,24 @@
 "use client"; // This is a client component
 import { Menu, X } from "lucide-react";
 import { React } from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import logoATV from "../../public/images/logoATV.png";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
-const NavbarHome = ({ name, rol, admin }) => {
+const NavbarHome = () => {
   const [MenuOpen, setMenuOpen] = useState(false);
+  const router = useRouter();
+  const [user, setUser] = useState(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user != null) {
+      setUser(JSON.parse(user));
+    } else {
+      router.push("/landing");
+    }
+  }, [router]);
 
   const abrirMenu = () => setMenuOpen(!MenuOpen);
 
@@ -26,7 +38,9 @@ const NavbarHome = ({ name, rol, admin }) => {
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
             fill="#ffffff"
-            className={`${admin ? "hidden" : "block"} size-8`}
+            className={`${
+              user.user_role == "Admin" ? "hidden" : "block"
+            } size-8`}
           >
             <path
               fillRule="evenodd"
@@ -35,7 +49,9 @@ const NavbarHome = ({ name, rol, admin }) => {
             />
           </svg>
           <span
-            className={`${admin ? "block" : "hidden"} mr-2 px-2 text-white`}
+            className={`${
+              user.user_role == "Admin" ? "block" : "hidden"
+            } mr-2 px-2 text-white`}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -57,8 +73,14 @@ const NavbarHome = ({ name, rol, admin }) => {
               />
             </svg>
           </span>
-          <span className="mr-2 px-2 text-white">Hola, {name}</span>
-          <span className="mr-2 px-2 text-white">{rol ? rol : ""}</span>
+          <span className="mr-2 px-2 text-white">Hola, {user.sub}</span>
+          <span className="mr-2 px-2 text-white">
+            {user.user_role
+              ? user.user_role == "Student"
+                ? "Estudiante"
+                : ""
+              : ""}
+          </span>
 
           {/*Menu*/}
 

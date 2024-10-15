@@ -73,7 +73,7 @@ const TableSubjects = () => {
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <div className="bg-gray-200 mx-auto border border-slate-400 flex flex-row justify-between">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">
-          Carreras registradas
+          Gestión de asignaturas
         </h1>
         <button
           className="ml-5 bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded h-10 mt-4 mr-4"

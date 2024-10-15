@@ -1,17 +1,32 @@
 "use client";
 import React from "react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Table = ({ title, columns }) => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [subject, setSubject] = useState([]);
+  const [tutor, setTutor] = useState([]);
+
+  const router = useRouter();
+  const [user, setUser] = useState(false);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user != null) {
+      setUser(JSON.parse(user));
+    } else {
+      router.push("/landing");
+    }
+  }, [router]);
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log("Usuario que quiero: " + user);
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/session/tutos"
+          `http://localhost:8080/api/v1/session/sessionsstudent/${user.user_id}`
         );
         if (!response.ok) {
           throw new error("Respuesta no valida");
@@ -22,8 +37,29 @@ const Table = ({ title, columns }) => {
         setError(error.message);
       }
     };
-    fetchData();
-  }, [error]);
+    if (user) fetchData();
+  }, [user]);
+
+  // Método para traer el tutor por id
+  useEffect(() => {
+    const fetchTutor = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:8080/api/v1/persons/${data[0][3]}`
+        );
+        console.log(data);
+        if (!response.ok) {
+          throw new error("Respuesta no valida");
+        }
+        const result = await response.json();
+        setTutor(result.map((item) => Object.values(item)));
+        console.log("Tutor: " + result);
+      } catch (error) {
+        setError(error.message);
+      }
+    };
+    fetchTutor();
+  }, [data]);
 
   useEffect(() => {
     const fetchDataSubject = async () => {
@@ -41,16 +77,6 @@ const Table = ({ title, columns }) => {
     };
     fetchDataSubject();
   }, [error]);
-
-  function getNom(data1, dataSub) {
-    let nombre;
-    for (var i = 0; i < data1.lenght; i++) {
-      if (data1[i][4] == dataSub[i][0]) {
-        nombre = datasub[i][1];
-      }
-    }
-    return nombre;
-  }
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2 ">
@@ -76,7 +102,7 @@ const Table = ({ title, columns }) => {
               <tr key={item.class_id}>
                 <td className="px-6 py-4 whitespace-nowrap">{item[0]}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item[2]}</td>
+                <td className="px-6 py-4 whitespace-nowrap">{item[3]}</td>
 
                 <td className="px-6 py-4 whitespace-nowrap">
                   {subject.find((element) => element[0] == item[4])[1]}
