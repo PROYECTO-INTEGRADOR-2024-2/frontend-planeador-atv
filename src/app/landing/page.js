@@ -2,12 +2,12 @@ import React from "react";
 import Card from "@/components/Card";
 import NavbarHome from "@/components/NavbarHome";
 import Table from "@/components/Table";
-import Footer from "../../components/Footer"
+import Footer from "../../components/Footer";
 
 function landing() {
   return (
     <>
-      <NavbarHome name={"Juan"} rol={"Student"}/>
+      <NavbarHome name={"Juan"} rol={"Student"} />
       <Table
         columns={[
           "ID",
