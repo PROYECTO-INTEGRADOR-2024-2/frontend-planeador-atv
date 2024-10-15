@@ -54,8 +54,8 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
   const addOrUpdateSubject = async () => {
     const method = subjectToEdit ? "PUT" : "POST";
     const endpoint = subjectToEdit
-      ? `http://localhost:8080/api/v1/subject/${subject.subject_id}`
-      : "http://localhost:8080/api/v1/subject";
+      ? `http://localhost:8080/api/v1/subject/${subject.subject_id}` // Use the subject_id for editing
+      : "http://localhost:8080/api/v1/subject/"; // For adding
 
     try {
       const response = await fetch(endpoint, {

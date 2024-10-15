@@ -1,6 +1,8 @@
 "use client";
 import Image from "next/legacy/image";
 import React, { useState, useEffect } from "react";
+import Modal from "react-modal";
+import ModalRegister from "./ModalRegister";
 
 const RegisterPersonForm = () => {
   let selectedDepartment;
@@ -97,6 +99,9 @@ const RegisterPersonForm = () => {
       user_role: "STUDENT",
     });
   };
+
+
+
 
   const validateFormInput = (event) => {
     event.preventDefault();
@@ -227,10 +232,21 @@ const RegisterPersonForm = () => {
     setFormError(inputError);
     savePerson(event);
     setConfirmPassword("");
+    setOpenRegister(true)
+  };
+  const [openRegister, setOpenRegister] = useState(false);
+
+  const handleModalRegister = () => {
+    setOpenRegister(true);
+  };
+
+  const closeModalRegister = () => {
+    setOpenRegister(false);
   };
 
   return (
     <div className="basis-full h-[100vh] md:basis-2/5 overflow-auto">
+
       <div className="px-[5vw] 2xl:mt-[5vh] sm:my-[8vh]  min-[300px]:mt-[10vh]">
         <div className="text-center pb-[3vh] overflow-auto">
           <div className="flex justify-center h-[50px]">
@@ -486,6 +502,7 @@ const RegisterPersonForm = () => {
             name="submitBtn"
             type="submit"
             className="w-full text-white bg-gray-600 hover:bg-gray-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 2xl:py-2.5 text-center md:p-1"
+            
           >
             Crear cuenta
           </button>
@@ -499,8 +516,14 @@ const RegisterPersonForm = () => {
             </a>
           </p>
         </form>
+
       </div>
+      <ModalRegister
+        open={openRegister}
+        onClose={() => setOpenRegister(false)}
+      />
     </div>
+
   );
 };
 

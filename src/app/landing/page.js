@@ -7,7 +7,7 @@ import Footer from "../../components/Footer"
 function landing() {
   return (
     <>
-      <NavbarHome name={"Juan"} />
+      <NavbarHome name={"Juan"} rol={"Student"}/>
       <Table
         columns={[
           "ID",
