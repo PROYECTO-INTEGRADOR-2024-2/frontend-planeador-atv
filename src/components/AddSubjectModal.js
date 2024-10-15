@@ -27,7 +27,6 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
     if (open) {
       fetchDegrees();
 
-      // If editing, set the subject state with the provided subject data
       if (subjectToEdit) {
         setSubject({
           subject_id: subjectToEdit.subject_id,
@@ -35,7 +34,6 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
           degree_id: subjectToEdit.degree_id,
         });
       } else {
-        // Reset the subject state for adding a new subject
         setSubject({
           subject_id: "",
           subject_name: "",
@@ -43,7 +41,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
         });
       }
     }
-  }, [open, subjectToEdit]); // Add subjectToEdit as a dependency
+  }, [open, subjectToEdit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -54,7 +52,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
   };
 
   const addOrUpdateSubject = async () => {
-    const method = subjectToEdit ? "PUT" : "POST"; // Determine method based on editing
+    const method = subjectToEdit ? "PUT" : "POST";
     const endpoint = subjectToEdit
       ? `http://localhost:8080/api/v1/subject/${subject.subject_id}` // Use the subject_id for editing
       : "http://localhost:8080/api/v1/subject/"; // For adding
