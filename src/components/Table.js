@@ -23,7 +23,7 @@ const Table = ({ title, columns }) => {
       }
     };
     fetchData();
-  }, []);
+  }, [error]);
 
   useEffect(() => {
     const fetchDataSubject = async () => {
@@ -40,7 +40,7 @@ const Table = ({ title, columns }) => {
       return;
     };
     fetchDataSubject();
-  }, []);
+  }, [error]);
 
   function getNom(data1, dataSub) {
     let nombre;
