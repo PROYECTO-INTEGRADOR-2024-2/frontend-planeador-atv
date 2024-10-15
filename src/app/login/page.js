@@ -27,17 +27,21 @@ const login = () => {
       body: JSON.stringify(person),
     });
     if (!response.ok) {
-      throw new Error("Something went wrong");
+      //throw new Error("Something went wrong");
+      
     }
     const res = await response.json();
     token = res.token;
     //(token);
-    if (token) {
-      router.push("../register");
+    if (token != null) {
+      router.push("../landing");
     }
     //reset(e);
   };
   //---------------------------------------VERIFICAR LOGIN------------------------------
+
+  
+
   return (
     <div className="grid grid-cols-2 ">
       <div className="bg-slate-500 h-screen">
