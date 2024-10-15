@@ -2,6 +2,7 @@
 import Image from "next/legacy/image";
 import { React, useState } from "react";
 import { useRouter } from "next/navigation";
+import { jwtDecode } from 'jwt-decode'
 
 const login = () => {
   const router = useRouter();
@@ -17,6 +18,7 @@ const login = () => {
     setPerson({ ...person, [event.target.name]: value });
   };
   //---------------------------------------VERIFICAR LOGIN------------------------------
+  
   const validateLogin = async (e) => {
     e.preventDefault();
     const response = await fetch(PERSON_API_BASE_URL, {
@@ -27,11 +29,19 @@ const login = () => {
       body: JSON.stringify(person),
     });
     if (!response.ok) {
-      //throw new Error("Something went wrong");
-      
+      throw new Error("Something went wrong");
     }
     const res = await response.json();
     token = res.token;
+    const user = jwtDecode(token);
+
+    console.log("--------------------------------------------------")
+    console.log(res)
+    console.log(token)
+    console.log(user)
+     // decode your token here
+    localStorage.setItem('Nombre', user.sub);
+
     //(token);
     if (token != null) {
       router.push("../landing");
