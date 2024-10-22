@@ -1,10 +1,53 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const TablePool = ({ title, columns }) => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [subject, setSubject] = useState([]);
+  const [user, setUser] = useState(null);
+
+  const [acceptRequest, setAcceptRequest] = useState({
+    sessionId: "",
+    tutorId: "",
+  });
+
+  // Método para traer el token del usuario logueado
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const user = jwtDecode(token);
+      setUser(user);
+      console.log(user);
+    }
+  }, []);
+
+  const acceptSession = async (id) => {
+    try {
+      const acceptRequest = {
+        sessionId: id,
+        tutorId: user.user_id,
+      };
+      console.log("Aceptando sesión");
+      console.log("Id de la sesión: ", id);
+      console.log("Id del tutor: ", user.user_id);
+      console.log("Datos de la petición: ", acceptRequest);
+      const response = await fetch(
+        `http://localhost:8080/api/v1/session/sessionsPoolAccept`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(acceptRequest),
+        }
+      );
+      window.location.reload();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -76,8 +119,7 @@ const TablePool = ({ title, columns }) => {
                   <button
                     className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
-                      setId(item[0]);
-                      handleModalEditar(item[0]);
+                      acceptSession(item[0]);
                     }}
                   >
                     Aceptar
