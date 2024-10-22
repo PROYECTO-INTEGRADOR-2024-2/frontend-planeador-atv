@@ -38,6 +38,7 @@ const login = () => {
     console.log("--------------------------------------------------");
     console.log(res);
     console.log(token);
+    localStorage.setItem("token", token);
     console.log(JSON.stringify(user));
     // decode your token here
     localStorage.setItem("user", JSON.stringify(user));
