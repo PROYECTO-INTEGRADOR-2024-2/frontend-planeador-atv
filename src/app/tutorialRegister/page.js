@@ -9,7 +9,7 @@ const page = () => {
     <>
       <NavbarHome />
       <div className="relative flex justify-center items-center">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center z-10">
           <h1 className="text-white lg:text-5xl font-bold p-4 md:text-xl">
             Solicitud de tutorías académicas
           </h1>
@@ -19,7 +19,9 @@ const page = () => {
           <Image
             src={"/images/bg-tutorial.png"}
             alt="Bg Tutorial"
-            fill={true}
+            layout={"fill"}
+            // width={200}
+            // height={200}
             className="absolute object-cover -z-10"
           />
         </div>

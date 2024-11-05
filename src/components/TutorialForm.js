@@ -1,6 +1,5 @@
 "use client"; // This is a client component 👈🏽
 
-import { useRouter } from "next/navigation";
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -9,7 +8,6 @@ const TutorialForm = () => {
   const [dataTutor, setDataTutor] = useState([]);
   const [errorTutor, setErrorTutor] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
-  // const routerr = useRouter();
   const [dataSubject, setDataSubject] = useState([]);
   const [errorSubject, setErrorSubject] = useState(null);
 
@@ -152,16 +150,12 @@ const TutorialForm = () => {
             {dataTutor.map((item, index) => (
               <option key={index}>{item[2] + " " + item[3]}</option>
             ))}
-            {/* <option>Jonathan Granda</option>
-            <option>Cristian Muñoz</option>
-            <option>Brandon Duque</option> */}
           </select>
         </div>
         <div className="flex justify-center pt-8">
           <button
             type="submit"
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
-            // onClick={routerr.push("/landing")}
           >
             Confirmar tutoria
           </button>
