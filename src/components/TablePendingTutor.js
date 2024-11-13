@@ -9,7 +9,7 @@ const TablePool = ({ title, columns }) => {
   const [error, setError] = useState(null);
   const [subject, setSubject] = useState([]);
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState('pending');
+  const [activeTab, setActiveTab] = useState("pending");
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -32,11 +32,11 @@ const TablePool = ({ title, columns }) => {
         const response = await fetch(
           `http://localhost:8080/api/v1/session/sessionstutor/${user.user_id}`
         );
-        
+
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
         }
-        
+
         const result = await response.json();
         console.log("Tutorías obtenidas:", result);
 
@@ -44,17 +44,23 @@ const TablePool = ({ title, columns }) => {
         const accepted = [];
         const completed = [];
 
-        result.forEach(tutorial => {
+        result.forEach((tutorial) => {
           const tutorialData = Object.values(tutorial);
           console.log("Datos de tutoría:", tutorialData);
-          
+
           // Actualizar la lógica de clasificación según el estado
           const status = tutorialData[1]?.toLowerCase();
-          if (status === 'pendiente_asignada') {
+          if (status === "pendiente_asignada") {
             pending.push(tutorialData);
-          } else if (status === 'aceptada') {
+          } else if (status === "aceptada") {
             accepted.push(tutorialData);
-          } else if (['valorada_noregistrada', 'registrada_novalorada', 'registrada_valorada'].includes(status)) {
+          } else if (
+            [
+              "valorada_noregistrada",
+              "registrada_novalorada",
+              "registrada_valorada",
+            ].includes(status)
+          ) {
             completed.push(tutorialData);
           }
         });
@@ -62,7 +68,6 @@ const TablePool = ({ title, columns }) => {
         setPendingTutorials(pending);
         setAcceptedTutorials(accepted);
         setCompletedTutorials(completed);
-
       } catch (error) {
         console.error("Error al cargar tutorías:", error);
         setError(error.message);
@@ -165,8 +170,8 @@ const TablePool = ({ title, columns }) => {
   const renderActionButtons = (tutorial) => {
     const status = tutorial[1]?.toLowerCase();
 
-    switch(activeTab) {
-      case 'pending':
+    switch (activeTab) {
+      case "pending":
         return (
           <div className="flex gap-2 justify-center">
             <button
@@ -183,8 +188,8 @@ const TablePool = ({ title, columns }) => {
             </button>
           </div>
         );
-      
-      case 'accepted':
+
+      case "accepted":
         return (
           <button
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -193,10 +198,10 @@ const TablePool = ({ title, columns }) => {
             Cancelar
           </button>
         );
-      
-      case 'completed':
-        switch(status) {
-          case 'valorada_noregistrada':
+
+      case "completed":
+        switch (status) {
+          case "valorada_noregistrada":
             return (
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
@@ -205,13 +210,13 @@ const TablePool = ({ title, columns }) => {
                 Registrar
               </button>
             );
-          case 'registrada_novalorada':
+          case "registrada_novalorada":
             return (
               <span className="text-gray-500">
                 Pendiente de valoración por parte del estudiante
               </span>
             );
-          case 'registrada_valorada':
+          case "registrada_valorada":
             return (
               <span className="text-green-500 font-medium">
                 ¡Tutoría realizada con éxito!
@@ -220,7 +225,7 @@ const TablePool = ({ title, columns }) => {
           default:
             return null;
         }
-      
+
       default:
         return null;
     }
@@ -228,7 +233,9 @@ const TablePool = ({ title, columns }) => {
 
   const renderTable = (tutorials) => {
     if (tutorials.length === 0) {
-      return <div className="text-center py-4">No hay tutorías disponibles</div>;
+      return (
+        <div className="text-center py-4">No hay tutorías disponibles</div>
+      );
     }
 
     return (
@@ -283,40 +290,40 @@ const TablePool = ({ title, columns }) => {
       <div className="flex border-b border-gray-200 mb-4">
         <button
           className={`py-2 px-4 ${
-            activeTab === 'pending'
-              ? 'border-b-2 border-blue-500 text-blue-600'
-              : 'text-gray-600'
+            activeTab === "pending"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600"
           }`}
-          onClick={() => setActiveTab('pending')}
+          onClick={() => setActiveTab("pending")}
         >
           Pendientes ({pendingTutorials.length})
         </button>
         <button
           className={`py-2 px-4 ${
-            activeTab === 'accepted'
-              ? 'border-b-2 border-blue-500 text-blue-600'
-              : 'text-gray-600'
+            activeTab === "accepted"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600"
           }`}
-          onClick={() => setActiveTab('accepted')}
+          onClick={() => setActiveTab("accepted")}
         >
           Aceptadas ({acceptedTutorials.length})
         </button>
         <button
           className={`py-2 px-4 ${
-            activeTab === 'completed'
-              ? 'border-b-2 border-blue-500 text-blue-600'
-              : 'text-gray-600'
+            activeTab === "completed"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600"
           }`}
-          onClick={() => setActiveTab('completed')}
+          onClick={() => setActiveTab("completed")}
         >
           Realizadas ({completedTutorials.length})
         </button>
       </div>
 
       <div className="p-8">
-        {activeTab === 'pending' && renderTable(pendingTutorials)}
-        {activeTab === 'accepted' && renderTable(acceptedTutorials)}
-        {activeTab === 'completed' && renderTable(completedTutorials)}
+        {activeTab === "pending" && renderTable(pendingTutorials)}
+        {activeTab === "accepted" && renderTable(acceptedTutorials)}
+        {activeTab === "completed" && renderTable(completedTutorials)}
       </div>
     </div>
   );

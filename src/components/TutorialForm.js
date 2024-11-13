@@ -3,13 +3,46 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import { jwtDecode } from "jwt-decode";
 
+const TUTORIAL_API_BASE_URL = "http://localhost:8080/api/v1/session/";
 const TutorialForm = () => {
   const [dataTutor, setDataTutor] = useState([]);
   const [errorTutor, setErrorTutor] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
   const [dataSubject, setDataSubject] = useState([]);
   const [errorSubject, setErrorSubject] = useState(null);
+  const [user, setUser] = useState(null);
+  const [tutorial, setTutorial] = useState({
+    class_state: "",
+    student_id: "",
+    tutor_id: "",
+    subject_id: 0,
+    class_topics: "",
+    class_date: "",
+    class_rate: 0,
+  });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const user = jwtDecode(token);
+      setUser(user);
+      setTutorial({ ...tutorial, student_id: user.user_id });
+    }
+  }, []);
+
+  const handleChange = (event) => {
+    const value = event.target.value;
+    setTutorial({ ...tutorial, [event.target.name]: value });
+  };
+  const handleChangeKey = (event, number) => {
+    const key = event.target.value.split("-").shift();
+    console.log(key);
+    number
+      ? setTutorial({ ...tutorial, [event.target.name]: parseInt(key) })
+      : setTutorial({ ...tutorial, [event.target.name]: key });
+  };
 
   useEffect(() => {
     const fetchDataSubject = async () => {
@@ -47,6 +80,24 @@ const TutorialForm = () => {
     fetchDataTutor();
   }, []);
 
+  const saveTutorial = async (e) => {
+    e.preventDefault();
+    const response = await fetch(TUTORIAL_API_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tutorial),
+    });
+    if (!response.ok) {
+      throw new Error("Something went wrong");
+    } else {
+      console.log("Request sent");
+    }
+    const _tutor = await response.json();
+    //reset(e);
+  };
+
   return (
     <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
       <div className="w-full text-center my-[3vh]">
@@ -54,7 +105,7 @@ const TutorialForm = () => {
           Información del espacio
         </h1>
       </div>
-      <form className="space-y-4 md:space-y-2" action="/landing">
+      <form className="space-y-4 md:space-y-2" onSubmit={saveTutorial}>
         <div>
           <label
             htmlFor="asignatura"
@@ -64,25 +115,31 @@ const TutorialForm = () => {
           </label>
           <select
             id="asignatura"
+            name="subject_id"
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+            onChange={(e) => handleChangeKey(e, true)}
+            value={tutorial.subject_id}
           >
-            {dataSubject.map((item, index) => (
-              <option key={index}>{item[2]}</option>
+            {dataSubject.map((item) => (
+              <option key={item[0]}>{item[0] + "-" + item[2]}</option>
             ))}
           </select>
         </div>
         <div>
           <label
-            htmlFor="tematica"
+            htmlFor="class_topics"
             className="block my-2 text-sm font-bold text-gray-900"
           >
             Temática
           </label>
           <textarea
             id="tematica"
+            name="class_topics"
             placeholder="Escriba los temas que le gustaría desarrollar en la tutoría."
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
             rows="3"
+            onChange={(e) => handleChange(e)}
+            value={tutorial.class_topics}
           />
         </div>
         <div className="py-8">
@@ -97,9 +154,16 @@ const TutorialForm = () => {
               <div className="flex border-b-2">
                 <DatePicker
                   id="datePicker"
-                  name="datePicker"
+                  name="class_date"
                   selected={startDate}
-                  onChange={(date) => setStartDate(date)}
+                  onChange={(date, e) => {
+                    setStartDate(date);
+                    setTutorial({
+                      ...tutorial,
+                      class_date: startDate.toISOString(),
+                    });
+                  }}
+                  on
                   className="w-[95px] pb-1"
                 />
                 <svg
@@ -145,10 +209,14 @@ const TutorialForm = () => {
           </label>
           <select
             id="tutor"
+            name="tutor_id"
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
+            onChange={(e) => handleChangeKey(e, false)}
           >
-            {dataTutor.map((item, index) => (
-              <option key={index}>{item[2] + " " + item[3]}</option>
+            {dataTutor.map((item) => (
+              <option key={item[0]} id={item[2]}>
+                {item[0] + "-" + item[2] + " " + item[3]}
+              </option>
             ))}
           </select>
         </div>
@@ -157,7 +225,7 @@ const TutorialForm = () => {
             type="submit"
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
           >
-            Confirmar tutoria
+            Confirmar tutoría
           </button>
         </div>
       </form>
