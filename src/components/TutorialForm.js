@@ -32,36 +32,6 @@ const TutorialForm = () => {
     }
   }, []);
 
-  const handleChange = (event) => {
-    const value = event.target.value;
-    setTutorial({ ...tutorial, [event.target.name]: value });
-  };
-  const handleChangeKey = (event, number) => {
-    const key = event.target.value.split("-").shift();
-    console.log(key);
-    number
-      ? setTutorial({ ...tutorial, [event.target.name]: parseInt(key) })
-      : setTutorial({ ...tutorial, [event.target.name]: key });
-  };
-
-  useEffect(() => {
-    const fetchDataSubject = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/v1/subject/");
-        if (!response.ok) {
-          throw new error("Respuesta no valida");
-        }
-        const result = await response.json();
-        setDataSubject(result.map((item) => Object.values(item)));
-      } catch (error) {
-        setErrorSubject(error.message);
-      }
-    };
-    fetchDataSubject();
-  }, []);
-
-  //"2da petición"
-
   useEffect(() => {
     const fetchDataTutor = async () => {
       try {
@@ -80,21 +50,71 @@ const TutorialForm = () => {
     fetchDataTutor();
   }, []);
 
-  const saveTutorial = async (e) => {
-    e.preventDefault();
-    const response = await fetch(TUTORIAL_API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(tutorial),
-    });
-    if (!response.ok) {
-      throw new Error("Something went wrong");
+  useEffect(() => {
+    const fetchDataSubject = async () => {
+      try {
+        const response = await fetch("http://localhost:8080/api/v1/subject/");
+        if (!response.ok) {
+          throw new error("Respuesta no valida");
+        }
+        const result = await response.json();
+        setDataSubject(result.map((item) => Object.values(item)));
+      } catch (error) {
+        setErrorSubject(error.message);
+      }
+    };
+    fetchDataSubject();
+  }, []);
+
+  const handleChange = (event, number) => {
+    const value = event.target.value;
+    let value2 = "";
+    value.includes("-")
+      ? (value2 = value.split("-").shift().trim())
+      : (value2 = value);
+
+    if (number) {
+      console.log("1:  " + value2);
+      setTutorial({ ...tutorial, [event.target.name]: parseInt(value2) });
     } else {
-      console.log("Request sent");
+      console.log("2  " + value2);
+      setTutorial({ ...tutorial, [event.target.name]: value2 });
     }
-    const _tutor = await response.json();
+
+    if (event.target.name == "tutor_id") {
+      if (value2 != "0000") {
+        setTutorial({ ...tutorial, class_state: "pendiente_asignada" });
+      } else {
+        setTutorial({ ...tutorial, class_state: "pendiente" });
+      }
+    }
+  };
+
+  const getTime = (event) => {
+    let seconds = "00";
+    let value = tutorial.class_date;
+    let value2 = event.target.value + ":" + seconds + "Z";
+    value = value.split("T").shift() + "T" + value2;
+
+    setTutorial({ ...tutorial, class_date: value });
+  };
+
+  const saveTutorial = async (e) => {
+    console.log(tutorial);
+    // e.preventDefault();
+    // const response = await fetch(TUTORIAL_API_BASE_URL, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(tutorial),
+    // });
+    // if (!response.ok) {
+    //   throw new Error("Something went wrong");
+    // } else {
+    //   console.log("Request sent");
+    // }
+    // const _tutor = await response.json();
     //reset(e);
   };
 
@@ -117,8 +137,7 @@ const TutorialForm = () => {
             id="asignatura"
             name="subject_id"
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
-            onChange={(e) => handleChangeKey(e, true)}
-            value={tutorial.subject_id}
+            onChange={(e) => handleChange(e, true)}
           >
             {dataSubject.map((item) => (
               <option key={item[0]}>{item[0] + "-" + item[2]}</option>
@@ -156,11 +175,36 @@ const TutorialForm = () => {
                   id="datePicker"
                   name="class_date"
                   selected={startDate}
-                  onChange={(date, e) => {
-                    setStartDate(date);
+                  onChange={(startDate, e) => {
+                    let alterDate = "";
+                    let day = 0;
+                    let month = 0;
+                    let year = 0;
+
+                    setStartDate(startDate);
+                    alterDate = startDate
+                      .toLocaleString()
+                      .split(",")
+                      .shift()
+                      .trim();
+
+                    day =
+                      alterDate.split("/")[0] / 10 < 1
+                        ? "0" + alterDate.split("/")[0]
+                        : alterDate.split("/")[0];
+                    month =
+                      alterDate.split("/")[1] / 10 < 1
+                        ? "0" + alterDate.split("/")[1]
+                        : alterDate.split("/")[1];
+                    year = alterDate.split("/")[2];
+
+                    console.log(alterDate);
+
+                    let value = tutorial.class_date.split("T").pop();
+                    alterDate = year + "-" + month + "-" + day + "T" + value;
                     setTutorial({
                       ...tutorial,
-                      class_date: startDate.toISOString(),
+                      class_date: alterDate,
                     });
                   }}
                   on
@@ -195,6 +239,7 @@ const TutorialForm = () => {
                   name="timePicker"
                   aria-label="Time"
                   type="time"
+                  onChange={getTime}
                 />
               </div>
             </div>
@@ -211,7 +256,7 @@ const TutorialForm = () => {
             id="tutor"
             name="tutor_id"
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
-            onChange={(e) => handleChangeKey(e, false)}
+            onChange={(e) => handleChange(e, false)}
           >
             {dataTutor.map((item) => (
               <option key={item[0]} id={item[2]}>
@@ -222,7 +267,9 @@ const TutorialForm = () => {
         </div>
         <div className="flex justify-center pt-8">
           <button
-            type="submit"
+            // type="submit"
+            type="button"
+            onClick={saveTutorial}
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
           >
             Confirmar tutoría
