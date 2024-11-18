@@ -7,6 +7,7 @@ import { jwtDecode } from "jwt-decode";
 
 const TUTORIAL_API_BASE_URL = "http://localhost:8080/api/v1/session/";
 const TutorialForm = () => {
+  //mapear la info en los componentes
   const [dataTutor, setDataTutor] = useState([]);
   const [errorTutor, setErrorTutor] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
@@ -79,16 +80,49 @@ const TutorialForm = () => {
     } else {
       console.log("2  " + value2);
       setTutorial({ ...tutorial, [event.target.name]: value2 });
+
     }
 
     if (event.target.name == "tutor_id") {
-      if (value2 != "0000") {
+      if (!event.target.value.includes("0000")) {
         setTutorial({ ...tutorial, class_state: "pendiente_asignada" });
+
       } else {
         setTutorial({ ...tutorial, class_state: "pendiente" });
+
       }
     }
+
   };
+
+  const handleChange2 = (event, number) => {
+    const { name, value } = event.target;
+
+    if (name === "tutor_id") {
+      // Obtener el ID del tutor directamente del valor seleccionado
+      const tutorId = value.split("-")[0]; // Toma el primer valor antes del guión que es el ID
+
+      setTutorial(prev => ({
+        ...prev,
+        [name]: tutorId,
+        class_state: !tutorId.includes("0000") ? "pendiente_asignada" : "pendiente"
+      }));
+    } else if (number) {
+      // Para otros campos numéricos
+      const cleanValue = value.includes("-") ? value.split("-")[0].trim() : value;
+      setTutorial(prev => ({
+        ...prev,
+        [name]: parseInt(cleanValue)
+      }));
+    } else {
+      // Para campos de texto
+      setTutorial(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
+  };
+
 
   const getTime = (event) => {
     let seconds = "00";
@@ -252,15 +286,17 @@ const TutorialForm = () => {
           >
             Seleccione el tutor disponible
           </label>
+
           <select
             id="tutor"
             name="tutor_id"
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
-            onChange={(e) => handleChange(e, false)}
+            onChange={(e) => handleChange2(e, false)}
           >
+            <option value="">Seleccione un tutor</option>
             {dataTutor.map((item) => (
-              <option key={item[0]} id={item[2]}>
-                {item[0] + "-" + item[2] + " " + item[3]}
+              <option key={item[0]} value={`${item[0]}-${item[2]}-${item[3]}`}>
+                {item[2]} - {item[3]}
               </option>
             ))}
           </select>
