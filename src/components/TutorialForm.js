@@ -75,24 +75,20 @@ const TutorialForm = () => {
       : (value2 = value);
 
     if (number) {
-      console.log("1:  " + value2);
+      //console.log("1:  " + value2);
       setTutorial({ ...tutorial, [event.target.name]: parseInt(value2) });
     } else {
-      console.log("2  " + value2);
+      //console.log("2  " + value2);
       setTutorial({ ...tutorial, [event.target.name]: value2 });
-
     }
 
     if (event.target.name == "tutor_id") {
       if (!event.target.value.includes("0000")) {
         setTutorial({ ...tutorial, class_state: "pendiente_asignada" });
-
       } else {
         setTutorial({ ...tutorial, class_state: "pendiente" });
-
       }
     }
-
   };
 
   const handleChange2 = (event, number) => {
@@ -102,27 +98,30 @@ const TutorialForm = () => {
       // Obtener el ID del tutor directamente del valor seleccionado
       const tutorId = value.split("-")[0]; // Toma el primer valor antes del guión que es el ID
 
-      setTutorial(prev => ({
+      setTutorial((prev) => ({
         ...prev,
         [name]: tutorId,
-        class_state: !tutorId.includes("0000") ? "pendiente_asignada" : "pendiente"
+        class_state: !tutorId.includes("0000")
+          ? "pendiente_asignada"
+          : "pendiente",
       }));
     } else if (number) {
       // Para otros campos numéricos
-      const cleanValue = value.includes("-") ? value.split("-")[0].trim() : value;
-      setTutorial(prev => ({
+      const cleanValue = value.includes("-")
+        ? value.split("-")[0].trim()
+        : value;
+      setTutorial((prev) => ({
         ...prev,
-        [name]: parseInt(cleanValue)
+        [name]: parseInt(cleanValue),
       }));
     } else {
       // Para campos de texto
-      setTutorial(prev => ({
+      setTutorial((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
-
 
   const getTime = (event) => {
     let seconds = "00";
@@ -134,21 +133,21 @@ const TutorialForm = () => {
   };
 
   const saveTutorial = async (e) => {
-    console.log(tutorial);
-    // e.preventDefault();
-    // const response = await fetch(TUTORIAL_API_BASE_URL, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(tutorial),
-    // });
-    // if (!response.ok) {
-    //   throw new Error("Something went wrong");
-    // } else {
-    //   console.log("Request sent");
-    // }
-    // const _tutor = await response.json();
+    //console.log(tutorial);
+    e.preventDefault();
+    const response = await fetch(TUTORIAL_API_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tutorial),
+    });
+    if (!response.ok) {
+      throw new Error("Something went wrong");
+    } else {
+      //console.log("Request sent");
+    }
+    const _tutor = await response.json();
     //reset(e);
   };
 
@@ -232,7 +231,7 @@ const TutorialForm = () => {
                         : alterDate.split("/")[1];
                     year = alterDate.split("/")[2];
 
-                    console.log(alterDate);
+                    //console.log(alterDate);
 
                     let value = tutorial.class_date.split("T").pop();
                     alterDate = year + "-" + month + "-" + day + "T" + value;
