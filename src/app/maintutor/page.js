@@ -1,23 +1,24 @@
 import React from "react";
 import NavbarHome from "@/components/NavbarHome";
-import TablePool from "@/components/TablePool";
+import TablePendingTutor from "@/components/TablePendingTutor";
 
-function Pool() {
+function MainTutor() {
   return (
     <div>
       <NavbarHome name={"Juan"} rol={"Student"} />
-      <TablePool
+      <TablePendingTutor
         columns={[
           "Estado",
           "Estudiante",
           "Materia",
           "Tema(s)",
           "Fecha",
+          "Acciones",
         ]}
-        title={"Pool de tutorías"}
+        title={"Gestión de tutorías"}
       />
     </div>
   );
 }
 
-export default Pool;
+export default MainTutor;

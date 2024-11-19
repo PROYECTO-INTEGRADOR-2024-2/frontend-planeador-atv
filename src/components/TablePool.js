@@ -8,18 +8,11 @@ const TablePool = ({ title, columns }) => {
   const [subject, setSubject] = useState([]);
   const [user, setUser] = useState(null);
 
-  const [acceptRequest, setAcceptRequest] = useState({
-    sessionId: "",
-    tutorId: "",
-  });
-
-  // Método para traer el token del usuario logueado
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       const user = jwtDecode(token);
       setUser(user);
-      console.log(user);
     }
   }, []);
 
@@ -27,12 +20,9 @@ const TablePool = ({ title, columns }) => {
     try {
       const acceptRequest = {
         sessionId: id,
-        tutorId: user.user_id,
+        tutorId: user?.user_id,
       };
-      console.log("Aceptando sesión");
-      console.log("Id de la sesión: ", id);
-      console.log("Id del tutor: ", user.user_id);
-      console.log("Datos de la petición: ", acceptRequest);
+      
       const response = await fetch(
         `http://localhost:8080/api/v1/session/sessionsPoolAccept`,
         {
@@ -43,6 +33,11 @@ const TablePool = ({ title, columns }) => {
           body: JSON.stringify(acceptRequest),
         }
       );
+      
+      if (!response.ok) {
+        throw new Error("Error al aceptar la sesión");
+      }
+      
       window.location.reload();
     } catch (error) {
       setError(error.message);
@@ -83,52 +78,65 @@ const TablePool = ({ title, columns }) => {
     fetchDataSubject();
   }, []);
 
+  const allColumns = [...columns, "Acciones"];
+
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md py-2 ">
-      <div className="bg-gray-200 mx-auto border border-slate-400 ">
+    <div className="bg-gray-100 rounded-lg shadow-md py-2">
+      <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
       </div>
+      
+      {error && (
+        <div className="p-4 text-red-500 bg-red-100 border border-red-400 rounded">
+          {error}
+        </div>
+      )}
+      
       <div className="p-8">
         <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
           <thead className="bg-gray-50 border border-gray-400">
             <tr className="border border-slate-500">
-              {columns.map((item, rowIndex) => (
+              {allColumns.map((column, index) => (
                 <th
-                  key={rowIndex}
+                  key={index}
                   className="px-6 py-4 whitespace-nowrap border border-slate-300"
                 >
-                  {item?.toString() || ""}
+                  {column?.toString() || ""}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody className="border border-slate-500">
             {data.map((item) => (
-              <tr key={item[0]}>
-                <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{item[2]}</td>
-
-                <td className="px-6 py-4 whitespace-nowrap">
+              <tr key={item[0]} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap border-b">{item[1]}</td>
+                <td className="px-6 py-4 whitespace-nowrap border-b">{item[2]}</td>
+                <td className="px-6 py-4 whitespace-nowrap border-b">
                   {subject.find((element) => element[0] === item[4])?.[2] ||
                     "Materia no encontrada"}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{item[5]}</td>
-                {/*Hora*/}
-                <td className="px-6 py-4 whitespace-nowrap">{item[6]}</td>
-                <td className="px-6 py-4 whitespace-nowrap flex flex-center">
-                  <button
-                    className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => {
-                      acceptSession(item[0]);
-                    }}
-                  >
-                    Aceptar
-                  </button>
+                <td className="px-6 py-4 whitespace-nowrap border-b">{item[5]}</td>
+                <td className="px-6 py-4 whitespace-nowrap border-b">{item[6]}</td>
+                <td className="px-6 py-4 whitespace-nowrap border-b">
+                  <div className="flex gap-2 justify-center">
+                    <button
+                      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                      onClick={() => acceptSession(item[0])}
+                    >
+                      Aceptar
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        
+        {data.length === 0 && (
+          <div className="text-center py-4 text-gray-500">
+            No hay tutorías pendientes
+          </div>
+        )}
       </div>
     </div>
   );
