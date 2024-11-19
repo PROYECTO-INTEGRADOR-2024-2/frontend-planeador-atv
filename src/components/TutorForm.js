@@ -155,162 +155,106 @@ const TutorialForm = () => {
     <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
       <div className="w-full text-center my-[3vh]">
         <h1 className="mb-4 text-xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl dark:text-black">
-          Información del espacio
+          Solicitud de Registro Tutor
         </h1>
       </div>
       <form className="space-y-4 md:space-y-2" onSubmit={saveTutorial}>
         <div>
           <label
-            htmlFor="asignatura"
-            className="block my-2 text-sm font-bold text-gray-900"
+            htmlFor="asignaturas"
+            className="block my-2 text-base font-bold text-gray-900 text-center"
           >
-            Asignatura
+            Asignaturas
           </label>
-          <select
-            id="asignatura"
-            name="subject_id"
-            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
-            onChange={(e) => handleChange(e, true)}
-          >
+          <div name="asignaturas" className="grid grid-cols-2 gap-4 py-5">
             {dataSubject.map((item) => (
-              <option key={item[0]}>{item[0] + "-" + item[2]}</option>
+              <div className="flex gap-4" key={item[0]}>
+                <input type="checkbox" id={item[0]} name={item[0]} />
+                <label for={item[0]}>{item[0] + "-" + item[2]}</label>
+              </div>
             ))}
-          </select>
-        </div>
-        <div>
-          <label
-            htmlFor="class_topics"
-            className="block my-2 text-sm font-bold text-gray-900"
-          >
-            Temática
-          </label>
-          <textarea
-            id="tematica"
-            name="class_topics"
-            placeholder="Escriba los temas que le gustaría desarrollar en la tutoría."
-            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
-            rows="3"
-            onChange={(e) => handleChange(e)}
-            value={tutorial.class_topics}
-          />
-        </div>
-        <div className="py-8">
-          <div className="flex justify-between bg-white p-2 px-8 pb-4">
-            <div>
-              <label
-                htmlFor="datePicker"
-                className="block text-sm font-bold text-gray-900"
-              >
-                Fecha
-              </label>
-              <div className="flex border-b-2">
-                <DatePicker
-                  id="datePicker"
-                  name="class_date"
-                  selected={startDate}
-                  onChange={(startDate, e) => {
-                    let alterDate = "";
-                    let day = 0;
-                    let month = 0;
-                    let year = 0;
-
-                    setStartDate(startDate);
-                    alterDate = startDate
-                      .toLocaleString()
-                      .split(",")
-                      .shift()
-                      .trim();
-
-                    day =
-                      alterDate.split("/")[0] / 10 < 1
-                        ? "0" + alterDate.split("/")[0]
-                        : alterDate.split("/")[0];
-                    month =
-                      alterDate.split("/")[1] / 10 < 1
-                        ? "0" + alterDate.split("/")[1]
-                        : alterDate.split("/")[1];
-                    year = alterDate.split("/")[2];
-
-                    //console.log(alterDate);
-
-                    let value = tutorial.class_date.split("T").pop();
-                    alterDate = year + "-" + month + "-" + day + "T" + value;
-                    setTutorial({
-                      ...tutorial,
-                      class_date: alterDate,
-                    });
-                  }}
-                  on
-                  className="w-[95px] pb-1"
-                />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="size-6 left-20"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z"
-                  />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="timePicker"
-                className="block text-sm font-bold text-gray-900"
-              >
-                Hora
-              </label>
-              <div className="border-b-2">
-                <input
-                  id="timePicker"
-                  name="timePicker"
-                  aria-label="Time"
-                  type="time"
-                  onChange={getTime}
-                />
-              </div>
-            </div>
           </div>
         </div>
         <div>
           <label
-            htmlFor="tutor"
-            className="block my-2 text-sm font-bold text-gray-900 text-center"
+            htmlFor="class_topics"
+            className="block my-2 text-base font-bold text-gray-900 text-center"
           >
-            Seleccione el tutor disponible
+            Semestre
           </label>
-
-          <select
-            id="tutor"
-            name="tutor_id"
-            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
-            onChange={(e) => handleChange2(e, false)}
-          >
-            <option value="">Seleccione un tutor</option>
-            {dataTutor.map((item) => (
-              <option
-                key={item[0]} /*value={`${item[0]}-${item[2]}-${item[3]}`}*/
-              >
-                <p className="text-cyan-400">{item[0]}-</p>
-                {item[2]} {item[3]}
-              </option>
-            ))}
-          </select>
+          <div className="grid grid-cols-3 ">
+            <select className="col-start-2 h-[5vh] rounded-xl bg-[#6f7e91] text-white font-bold">
+              <option className="text-center font-bold">2</option>
+              <option className="text-center font-bold">3</option>
+              <option className="text-center font-bold">4</option>
+              <option className="text-center font-bold">5</option>
+              <option className="text-center font-bold">6</option>
+              <option className="text-center font-bold">7</option>
+              <option className="text-center font-bold">8</option>
+              <option className="text-center font-bold">9</option>
+              <option className="text-center font-bold">10</option>
+            </select>
+          </div>
         </div>
-        <div className="flex justify-center pt-8">
+        <div className="py-4">
+          <div class="flex items-center justify-center w-full">
+            <label
+              for="dropzone-file"
+              class="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-[##D9D9D9] border-gray-600 hover:border-gray-500 hover:bg-[#f2eded]"
+            >
+              <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                <svg
+                  class="w-[8vw] h-[8vh] mb-4 text-blue-700"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 16"
+                >
+                  <path
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1"
+                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                  />
+                </svg>
+                <p className="mb-2 text-xl text-slate-950">
+                  <span class="font-semibold">
+                    Sube tu certificado de matrícula
+                  </span>
+                  <br />
+                  <span className="text-blue-700 font-bold">
+                    Seleccionalo
+                  </span>{" "}
+                  o arrastralo
+                </p>
+              </div>
+              <input id="dropzone-file" type="file" class="hidden" />
+            </label>
+          </div>
+        </div>
+        <div>
+          <div className="flex gap-4">
+            <input type="checkbox" id="terminos" />
+            <label for="terminos">Acepto términos y condiciones.</label>
+          </div>
+        </div>
+        <div className="flex items-center justify-center space-x-20">
           <button
             // type="submit"
             type="button"
             onClick={saveTutorial}
-            className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
+            className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl 2xl:py-2.5 text-center md:p-1 px-2"
           >
-            Confirmar tutoría
+            Cancelar
+          </button>
+          <button
+            // type="submit"
+            type="button"
+            onClick={saveTutorial}
+            className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl 2xl:py-2.5 text-center md:p-1 px-2"
+          >
+            Registrar
           </button>
         </div>
       </form>
