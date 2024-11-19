@@ -155,44 +155,38 @@ const TutorialForm = () => {
     <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
       <div className="w-full text-center my-[3vh]">
         <h1 className="mb-4 text-xl font-extrabold leading-none tracking-tight text-gray-900 md:text-2xl lg:text-4xl dark:text-black">
-          Información del espacio
+          Solicitud de Registro Tutor
         </h1>
       </div>
       <form className="space-y-4 md:space-y-2" onSubmit={saveTutorial}>
         <div>
           <label
-            htmlFor="asignatura"
-            className="block my-2 text-sm font-bold text-gray-900"
+            htmlFor="asignaturas"
+            className="block my-2 text-sm font-bold text-gray-900 text-center"
           >
-            Asignatura
+            Asignaturas
           </label>
-          <select
-            id="asignatura"
-            name="subject_id"
-            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
-            onChange={(e) => handleChange(e, true)}
-          >
+          <div name="asignaturas" className="grid grid-cols-2 gap-4 py-5">
             {dataSubject.map((item) => (
-              <option key={item[0]}>{item[0] + "-" + item[2]}</option>
+              <div className="flex gap-4" key={item[0]}>
+                <input type="checkbox" id={item[0]} name={item[0]} />
+                <label for={item[0]}>{item[0] + "-" + item[2]}</label>
+              </div>
             ))}
-          </select>
+          </div>
         </div>
         <div>
           <label
             htmlFor="class_topics"
-            className="block my-2 text-sm font-bold text-gray-900"
+            className="block my-2 text-sm font-bold text-gray-900 text-center"
           >
-            Temática
+            Semestre
           </label>
-          <textarea
-            id="tematica"
-            name="class_topics"
-            placeholder="Escriba los temas que le gustaría desarrollar en la tutoría."
-            className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
-            rows="3"
-            onChange={(e) => handleChange(e)}
-            value={tutorial.class_topics}
-          />
+          <div className="grid grid-cols-3 ">
+            <select className="col-start-2">
+              <option className="text-center">1</option>
+            </select>
+          </div>
         </div>
         <div className="py-8">
           <div className="flex justify-between bg-white p-2 px-8 pb-4">
