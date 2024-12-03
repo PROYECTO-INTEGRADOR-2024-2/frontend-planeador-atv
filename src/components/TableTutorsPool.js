@@ -1,14 +1,26 @@
 "use client";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+
+const Alert = ({ message, type }) => {
+  return (
+    <div
+      className={`fixed bottom-4 left-4 p-4 rounded-lg z-50 ${
+        type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+      }`}
+    >
+      {message}
+    </div>
+  );
+};
 
 const TableTutorsPool = ({ title, columns }) => {
   const [pendingApplications, setPendingApplications] = useState([]);
   const [acceptedApplications, setAcceptedApplications] = useState([]);
   const [rejectedApplications, setRejectedApplications] = useState([]);
   const [error, setError] = useState(null);
+  const [alert, setAlert] = useState(null);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
 
@@ -72,6 +84,13 @@ const TableTutorsPool = ({ title, columns }) => {
     fetchApplications();
   }, [user]);
 
+  const showAlert = (message, type) => {
+    setAlert({ message, type });
+    setTimeout(() => {
+      setAlert(null);
+    }, 3000);
+  };
+
   const handleAcceptApplication = async (applicationId) => {
     try {
       const response = await fetch(
@@ -88,9 +107,24 @@ const TableTutorsPool = ({ title, columns }) => {
         throw new Error("Error al aceptar la solicitud");
       }
 
-      window.location.reload();
+      showAlert("Solicitud aceptada exitosamente", "success");
+
+      // Update local state instead of reloading
+      const updatedPending = pendingApplications.filter(
+        (item) => item[0] !== applicationId
+      );
+      const updatedAccepted = [
+        ...acceptedApplications,
+        pendingApplications
+          .find((item) => item[0] === applicationId)
+          .map((val, index) => (index === 2 ? "ACEPTADA" : val)),
+      ];
+
+      setPendingApplications(updatedPending);
+      setAcceptedApplications(updatedAccepted);
+      setActiveTab("accepted");
     } catch (error) {
-      setError(error.message);
+      showAlert("Error al aceptar la solicitud", "error");
     }
   };
 
@@ -110,9 +144,24 @@ const TableTutorsPool = ({ title, columns }) => {
         throw new Error("Error al rechazar la solicitud");
       }
 
-      window.location.reload();
+      showAlert("Solicitud rechazada exitosamente", "success");
+
+      // Update local state instead of reloading
+      const updatedPending = pendingApplications.filter(
+        (item) => item[0] !== applicationId
+      );
+      const updatedRejected = [
+        ...rejectedApplications,
+        pendingApplications
+          .find((item) => item[0] === applicationId)
+          .map((val, index) => (index === 2 ? "RECHAZADA" : val)),
+      ];
+
+      setPendingApplications(updatedPending);
+      setRejectedApplications(updatedRejected);
+      setActiveTab("rejected");
     } catch (error) {
-      setError(error.message);
+      showAlert("Error al rechazar la solicitud", "error");
     }
   };
 
@@ -186,7 +235,9 @@ const TableTutorsPool = ({ title, columns }) => {
   }
 
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md py-2">
+    <div className="bg-gray-100 rounded-lg shadow-md py-2 relative">
+      {alert && <Alert message={alert.message} type={alert.type} />}
+
       <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
       </div>
