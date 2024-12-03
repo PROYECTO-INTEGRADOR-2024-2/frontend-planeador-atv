@@ -13,7 +13,7 @@ function tutorsPool() {
           "ID-Estudiante",
           "Estado solicitud",
           "Fecha solicitud",
-          "Acciones"
+          "Acciones",
         ]}
         title={"Solicitudes de Tutor Pendientes"}
       />

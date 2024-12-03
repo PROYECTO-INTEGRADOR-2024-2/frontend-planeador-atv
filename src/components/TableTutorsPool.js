@@ -186,7 +186,7 @@ const TableTutorsPool = ({ title, columns }) => {
     );
   };
 
-  const renderTable = (applications) => {
+  const renderTable = (applications, acciones) => {
     if (applications.length === 0) {
       return (
         <div className="text-center py-4">No hay solicitudes disponibles</div>
@@ -197,14 +197,18 @@ const TableTutorsPool = ({ title, columns }) => {
       <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
         <thead className="bg-gray-50 border border-gray-400">
           <tr className="border border-slate-500">
-            {columns.map((item, rowIndex) => (
-              <th
-                key={rowIndex}
-                className="px-6 py-4 whitespace-nowrap border border-slate-300"
-              >
-                {item?.toString() || ""}
-              </th>
-            ))}
+            {columns.map((item, rowIndex) =>
+              item.toString() != "Acciones" ? (
+                <th
+                  key={rowIndex}
+                  className="px-6 py-4 whitespace-nowrap border border-slate-300"
+                >
+                  {item?.toString() || ""}
+                </th>
+              ) : (
+                ""
+              )
+            )}
           </tr>
         </thead>
         <tbody className="border border-slate-500">
