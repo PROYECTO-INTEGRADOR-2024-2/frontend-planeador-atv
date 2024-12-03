@@ -2,6 +2,7 @@ import React from "react";
 import Card from "@/components/Card";
 import NavbarHome from "@/components/NavbarHome";
 import Table from "@/components/Table";
+import TablePastTutorials from "@/components/TablePastTutorials";
 import Footer from "../../components/Footer";
 
 function landing() {
@@ -20,10 +21,14 @@ function landing() {
         ]}
         title={"Solicitudes Pendientes"}
       />
+      <TablePastTutorials
+        columns={["ID", "Estado", "Tutor", "Materia", "Tema(s)", "Fecha"]}
+        title={"Tutorías Pasadas"}
+      />
       <Card
-        title="¿Quieres agendar una tutoria?"
+        title="¿Quieres agendar una tutoría?"
         content="Recuerda incluir los temas que quieres ver en la tutoría. Es importante para que el tutor sepa qué temas quieres resolver en ella, y resuelve tus dudas e inquietudes con el."
-        text_button="Agendar una tutoria"
+        text_button="Agendar una tutoría"
         ruta="/tutorialRegister"
       ></Card>
 

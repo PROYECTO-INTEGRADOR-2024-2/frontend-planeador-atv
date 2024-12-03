@@ -3,7 +3,7 @@ import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-const Table = ({ title, columns }) => {
+const TablePastTutorials = ({ title, columns }) => {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
   const [subject, setSubject] = useState([]);
@@ -23,9 +23,10 @@ const Table = ({ title, columns }) => {
 
   useEffect(() => {
     const fetchData = async () => {
+      console.log("Usuario que quiero: " + user);
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/session/sessionsstudent/${user.user_id}`
+          `http://localhost:8080/api/v1/session/pastSessionsStudent/${user.user_id}`
         );
         if (!response.ok) {
           throw new error("Respuesta no valida");
@@ -68,7 +69,6 @@ const Table = ({ title, columns }) => {
           throw new error("Respuesta no valida");
         }
         const result = await response.json();
-        console.log(`${result}`);
         setSubject(result.map((item) => Object.values(item)));
       } catch (error) {
         setError(error.message);
@@ -80,7 +80,7 @@ const Table = ({ title, columns }) => {
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2 ">
-      <div className="bg-gray-200 mx-auto border border-slate-400 ">
+      <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4 text-center">
           {title}
         </h1>
@@ -88,7 +88,7 @@ const Table = ({ title, columns }) => {
       <div className="p-8">
         <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
           <thead className="bg-gray-50 border border-gray-400">
-            <tr className="border border-slate-500">
+            <tr className="border border-slate-500 text-slate-500">
               {columns.map((item, rowIndex) => (
                 <th
                   key={rowIndex}
@@ -101,7 +101,7 @@ const Table = ({ title, columns }) => {
           </thead>
           <tbody className="border border-slate-500">
             {data.map((item) => (
-              <tr key={item.class_id}>
+              <tr key={item.class_id} className="text-slate-500">
                 <td className="px-6 py-4 whitespace-nowrap text-center border border-slate-300">
                   {item[0]}
                 </td>
@@ -122,23 +122,6 @@ const Table = ({ title, columns }) => {
                 <td className="px-6 py-4 whitespace-nowrap text-center border border-slate-300">
                   {item[6]}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap flex flex-center border border-slate-300">
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => {
-                      setId(item.degree_id);
-                      handleModalEditar(item.degree_id);
-                    }}
-                  >
-                    Editar
-                  </button>
-                  <button
-                    className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleModalEliminar(item.degree_id)}
-                  >
-                    Cancelar
-                  </button>
-                </td>
               </tr>
             ))}
           </tbody>
@@ -147,4 +130,4 @@ const Table = ({ title, columns }) => {
     </div>
   );
 };
-export default Table;
+export default TablePastTutorials;

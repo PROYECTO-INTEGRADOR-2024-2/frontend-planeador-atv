@@ -56,7 +56,7 @@ const TableDegrees = () => {
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <div className="bg-gray-200 mx-auto border border-slate-400 flex flex-row justify-between">
-        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">
+        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4 text-center">
           Carreras registradas
         </h1>
         <button

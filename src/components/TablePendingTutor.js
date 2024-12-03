@@ -254,16 +254,24 @@ const TablePool = ({ title, columns }) => {
         </thead>
         <tbody className="border border-slate-500">
           {tutorials.map((item) => (
-            <tr key={item[0]}>
-              <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{item[2]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
+            <tr key={item[0]} className="border border-slate-300">
+              <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
+                {item[1]}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
+                {item[2]}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
                 {subject.find((element) => element[0] === item[4])?.[2] ||
                   "Materia no encontrada"}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">{item[5]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{item[6]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
+              <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
+                {item[5]}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
+                {item[6]}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
                 {renderActionButtons(item)}
               </td>
             </tr>
@@ -284,7 +292,9 @@ const TablePool = ({ title, columns }) => {
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <div className="bg-gray-200 mx-auto border border-slate-400">
-        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
+        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4 text-center">
+          {title}
+        </h1>
       </div>
 
       <div className="flex border-b border-gray-200 mb-4">

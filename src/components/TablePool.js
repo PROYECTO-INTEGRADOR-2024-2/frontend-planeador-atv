@@ -83,7 +83,9 @@ const TablePool = ({ title, columns }) => {
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <div className="bg-gray-200 mx-auto border border-slate-400">
-        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
+        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4 text-center">
+          {title}
+        </h1>
       </div>
 
       {error && (
