@@ -26,57 +26,35 @@ const TableTutorsPool = ({ title, columns }) => {
       console.log("Usuario que quiero: " + user);
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/session/sessionsstudent/${user.user_id}`
+          `http://localhost:8080/api/v1/application`
         );
         if (!response.ok) {
-          throw new error("Respuesta no valida");
+          throw new Error("Respuesta no valida");
         }
         const result = await response.json();
-        setData(result.map((item) => Object.values(item)));
+        setData(
+          result.map((item) => {
+            const processedItem = { ...item };
+            for (let key in processedItem) {
+              if (
+                typeof processedItem[key] === "number" &&
+                processedItem[key] > 1000000000000
+              ) {
+                // Convert to formatted date string
+                processedItem[key] = new Date(
+                  processedItem[key]
+                ).toLocaleDateString();
+              }
+            }
+            return Object.values(processedItem);
+          })
+        );
       } catch (error) {
         setError(error.message);
       }
     };
     if (user) fetchData();
   }, [user]);
-
-  // Método para traer el tutor por id
-  useEffect(() => {
-    const fetchTutor = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8080/api/v1/persons/${data[0][3]}`
-        );
-        console.log(data);
-        if (!response.ok) {
-          throw new error("Respuesta no valida");
-        }
-        const result = await response.json();
-        setTutor(result.map((item) => Object.values(item)));
-        console.log("Tutor: " + result);
-      } catch (error) {
-        setError(error.message);
-      }
-    };
-    fetchTutor();
-  }, [data]);
-
-  useEffect(() => {
-    const fetchDataSubject = async () => {
-      try {
-        const response = await fetch("http://localhost:8080/api/v1/subject/");
-        if (!response.ok) {
-          throw new error("Respuesta no valida");
-        }
-        const result = await response.json();
-        setSubject(result.map((item) => Object.values(item)));
-      } catch (error) {
-        setError(error.message);
-      }
-      return;
-    };
-    fetchDataSubject();
-  }, [error]);
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2 ">
