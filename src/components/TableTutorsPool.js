@@ -83,36 +83,36 @@ const TableTutorsPool = ({ title, columns }) => {
       <div className="bg-gray-200 mx-auto border border-slate-400 ">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
       </div>
-      <div className="p-8">
-        <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
-          <thead className="bg-gray-50 border border-gray-400">
+      <div className="p-8 ">
+        <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400 ">
+          <thead className="bg-gray-50 border border-gray-400  ">
             <tr className="border border-slate-500">
               {columns.map((item, rowIndex) => (
                 <th
                   key={rowIndex}
-                  className="px-6 py-4 whitespace-nowrap border border-slate-300"
+                  className="px-6 py-4 whitespace-nowrap border border-slate-300 "
                 >
                   {item?.toString() || ""}
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="border border-slate-500">
+          <tbody className="border border-slate-500  ">
             {data.map((item) => (
               <tr key={item.class_id}>
-                <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
+                <td className="px-6 py-4 whitespace-nowrap border border-slate-300 text-center">
                   {item[0]}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
+                <td className="px-6 py-4 whitespace-nowrap border border-slate-300 text-center">
                   {item[1]}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
+                <td className="px-6 py-4 whitespace-nowrap border border-slate-300 text-center">
                   {item[3]}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap border border-slate-300">
+                <td className="px-6 py-4 whitespace-nowrap border border-slate-300 text-center">
                   {item[5]}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap flex flex-center border border-slate-300">
+                <td className="px-2 py-4 whitespace-nowrap flex justify-center border border-slate-300">
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
@@ -120,13 +120,13 @@ const TableTutorsPool = ({ title, columns }) => {
                       handleModalEditar(item.degree_id);
                     }}
                   >
-                    Editar
+                    Aceptar
                   </button>
                   <button
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => handleModalEliminar(item.degree_id)}
                   >
-                    Cancelar
+                    Rechazar
                   </button>
                 </td>
               </tr>

@@ -6,15 +6,14 @@ import Footer from "../../components/Footer";
 function tutorsPool() {
   return (
     <>
-      <NavbarHome name={"Juan"} rol={"ADMIN"} />
+      <NavbarHome />
       <TableTutorsPool
         columns={[
-          "ID",
-          "ID Estudiante",
-          "Estudiante",
-          "Fecha",
-          "Fecha",
-          "Acciones",
+          "ID-Solicitud",
+          "ID-Estudiante",
+          "Estado solicitud",
+          "Fecha solicitud",
+          "Acciones"
         ]}
         title={"Solicitudes de Tutor Pendientes"}
       />

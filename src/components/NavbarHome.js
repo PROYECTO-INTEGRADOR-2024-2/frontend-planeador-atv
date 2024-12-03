@@ -22,6 +22,11 @@ const NavbarHome = () => {
 
   const abrirMenu = () => setMenuOpen(!MenuOpen);
 
+  const logout = () => {
+    localStorage.clear();
+    
+    };
+
   return (
     <nav className="bg-slate-500 px-8 h-[80px]">
       <div className="flex justify-between content-center ">
@@ -108,8 +113,9 @@ const NavbarHome = () => {
                 Mis Proyectos
               </a>
               <a
-                href="#"
+                href="/"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                onClick={logout}
               >
                 Cerrar Sesión
               </a>
