@@ -22,7 +22,15 @@ function landing() {
         title={"Solicitudes Pendientes"}
       />
       <TablePastTutorials
-        columns={["ID", "Estado", "Tutor", "Materia", "Tema(s)", "Fecha"]}
+        columns={[
+          "ID",
+          "Estado",
+          "Tutor",
+          "Materia",
+          "Tema(s)",
+          "Fecha",
+          "Acciones",
+        ]}
         title={"Tutorías Pasadas"}
       />
       <Card
