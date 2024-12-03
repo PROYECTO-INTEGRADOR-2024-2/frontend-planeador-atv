@@ -4,7 +4,7 @@ import Image from "next/legacy/image";
 
 const footer = () => {
   return (
-    <footer className="bg-slate-500 ">
+    <footer className="bg-slate-500 overflow-x-hidden">
       <div className="mr-4 mx-1 w-full max-w-screen p-4 py-6 lg:py-">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0 ">
