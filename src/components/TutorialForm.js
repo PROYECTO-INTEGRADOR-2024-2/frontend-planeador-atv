@@ -20,9 +20,15 @@ const TutorialForm = () => {
     tutor_id: "",
     subject_id: 0,
     class_topics: "",
-    class_date: "",
+    class_date: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
     class_rate: 0,
   });
+
+  // Función para formatear la fecha correctamente para el backend
+  function formatDateForBackend(date) {
+    // Formato ISO estándar YYYY-MM-DDTHH:MM:SSZ
+    return date.toISOString();
+  }
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -40,7 +46,7 @@ const TutorialForm = () => {
           "http://localhost:8080/api/v1/persons/tutor"
         );
         if (!response.ok) {
-          throw new error("Respuesta no valida");
+          throw new Error("Respuesta no valida");
         }
         const result = await response.json();
         setDataTutor(result.map((item) => Object.values(item)));
@@ -56,7 +62,7 @@ const TutorialForm = () => {
       try {
         const response = await fetch("http://localhost:8080/api/v1/subject/");
         if (!response.ok) {
-          throw new error("Respuesta no valida");
+          throw new Error("Respuesta no valida");
         }
         const result = await response.json();
         setDataSubject(result.map((item) => Object.values(item)));
@@ -75,10 +81,8 @@ const TutorialForm = () => {
       : (value2 = value);
 
     if (number) {
-      //console.log("1:  " + value2);
       setTutorial({ ...tutorial, [event.target.name]: parseInt(value2) });
     } else {
-      //console.log("2  " + value2);
       setTutorial({ ...tutorial, [event.target.name]: value2 });
     }
 
@@ -124,31 +128,66 @@ const TutorialForm = () => {
   };
 
   const getTime = (event) => {
-    let seconds = "00";
-    let value = tutorial.class_date;
-    let value2 = event.target.value + ":" + seconds + "Z";
-    value = value.split("T").shift() + "T" + value2;
+    // Crear una nueva fecha basada en la fecha seleccionada en el DatePicker
+    const selectedDate = new Date(startDate);
+    
+    // Obtener las horas y minutos del input de hora
+    const [hours, minutes] = event.target.value.split(':');
+    
+    // Establecer las horas y minutos en la fecha
+    selectedDate.setHours(parseInt(hours, 10));
+    selectedDate.setMinutes(parseInt(minutes, 10));
+    selectedDate.setSeconds(0);
+    
+    // Actualizar el estado con la fecha completa en formato ISO
+    setTutorial({
+      ...tutorial,
+      class_date: formatDateForBackend(selectedDate)
+    });
+  };
 
-    setTutorial({ ...tutorial, class_date: value });
+  const handleDateChange = (date) => {
+    setStartDate(date);
+    
+    // Mantener la hora actual cuando se cambia la fecha
+    const currentDate = new Date(tutorial.class_date);
+    const hours = currentDate.getHours();
+    const minutes = currentDate.getMinutes();
+    
+    // Establecer la misma hora en la nueva fecha
+    date.setHours(hours);
+    date.setMinutes(minutes);
+    date.setSeconds(0);
+    
+    setTutorial({
+      ...tutorial,
+      class_date: formatDateForBackend(date)
+    });
   };
 
   const saveTutorial = async (e) => {
-    //console.log(tutorial);
     e.preventDefault();
-    const response = await fetch(TUTORIAL_API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(tutorial),
-    });
-    if (!response.ok) {
-      throw new Error("Something went wrong");
-    } else {
-      //console.log("Request sent");
+    try {
+      const response = await fetch(TUTORIAL_API_BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(tutorial),
+      });
+      
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      }
+      
+      const _tutor = await response.json();
+      alert("Tutoría creada exitosamente");
+      
+      // Resetear el formulario o redirigir
+    } catch (error) {
+      console.error("Error al guardar la tutoría:", error);
+      alert("Error al guardar la tutoría");
     }
-    const _tutor = await response.json();
-    //reset(e);
   };
 
   return (
@@ -172,8 +211,11 @@ const TutorialForm = () => {
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
             onChange={(e) => handleChange(e, true)}
           >
+            <option value="">Seleccione una asignatura</option>
             {dataSubject.map((item) => (
-              <option key={item[0]}>{item[0] + "-" + item[2]}</option>
+              <option key={item[0]} value={`${item[0]}-${item[2]}`}>
+                {item[2]}
+              </option>
             ))}
           </select>
         </div>
@@ -208,40 +250,9 @@ const TutorialForm = () => {
                   id="datePicker"
                   name="class_date"
                   selected={startDate}
-                  onChange={(startDate, e) => {
-                    let alterDate = "";
-                    let day = 0;
-                    let month = 0;
-                    let year = 0;
-
-                    setStartDate(startDate);
-                    alterDate = startDate
-                      .toLocaleString()
-                      .split(",")
-                      .shift()
-                      .trim();
-
-                    day =
-                      alterDate.split("/")[0] / 10 < 1
-                        ? "0" + alterDate.split("/")[0]
-                        : alterDate.split("/")[0];
-                    month =
-                      alterDate.split("/")[1] / 10 < 1
-                        ? "0" + alterDate.split("/")[1]
-                        : alterDate.split("/")[1];
-                    year = alterDate.split("/")[2];
-
-                    //console.log(alterDate);
-
-                    let value = tutorial.class_date.split("T").pop();
-                    alterDate = year + "-" + month + "-" + day + "T" + value;
-                    setTutorial({
-                      ...tutorial,
-                      class_date: alterDate,
-                    });
-                  }}
-                  on
+                  onChange={handleDateChange}
                   className="w-[95px] pb-1"
+                  dateFormat="dd/MM/yyyy"
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -295,9 +306,9 @@ const TutorialForm = () => {
             <option value="">Seleccione un tutor</option>
             {dataTutor.map((item) => (
               <option
-                key={item[0]} /*value={`${item[0]}-${item[2]}-${item[3]}`}*/
+                key={item[0]}
+                value={`${item[0]}-${item[2]} ${item[3]}`}
               >
-                <p className="text-cyan-400">{item[0]}-</p>
                 {item[2]} {item[3]}
               </option>
             ))}
@@ -305,9 +316,7 @@ const TutorialForm = () => {
         </div>
         <div className="flex justify-center pt-8">
           <button
-            // type="submit"
-            type="button"
-            onClick={saveTutorial}
+            type="submit"
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
           >
             Confirmar tutoría
