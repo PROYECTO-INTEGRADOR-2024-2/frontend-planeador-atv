@@ -24,7 +24,7 @@ const TablePool = ({ title, columns }) => {
       };
 
       const response = await fetch(
-        `http://localhost:8080/api/v1/session/sessionsPoolAccept`,
+        `http://localhost:8081/api/v1/session/sessionsPoolAccept`,
         {
           method: "PUT",
           headers: {
@@ -48,7 +48,7 @@ const TablePool = ({ title, columns }) => {
     const fetchData = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/session/pool"
+          "http://localhost:8081/api/v1/session/pool"
         );
         if (!response.ok) {
           throw new Error("Respuesta no válida");
@@ -65,7 +65,7 @@ const TablePool = ({ title, columns }) => {
   useEffect(() => {
     const fetchDataSubject = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/subject/");
+        const response = await fetch("http://localhost:8081/api/v1/subject/");
         if (!response.ok) {
           throw new Error("Respuesta no válida");
         }

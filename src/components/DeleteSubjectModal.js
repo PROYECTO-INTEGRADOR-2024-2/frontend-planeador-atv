@@ -12,7 +12,7 @@ function DeleteSubjectModal({ open, id, onClose }) {
     const fetchSubjectData = async () => {
       try {
         const subjectResponse = await fetch(
-          `http://localhost:8080/api/v1/subject/${id}`
+          `http://localhost:8081/api/v1/subject/${id}`
         );
         if (!subjectResponse.ok) {
           throw new Error("Error al obtener los datos de la asignatura");
@@ -20,7 +20,7 @@ function DeleteSubjectModal({ open, id, onClose }) {
         const subjectData = await subjectResponse.json();
 
         const degreeResponse = await fetch(
-          `http://localhost:8080/api/v1/degree/${subjectData.degree_id}`
+          `http://localhost:8081/api/v1/degree/${subjectData.degree_id}`
         );
         if (!degreeResponse.ok) {
           throw new Error("Error al obtener el nombre de la carrera");
@@ -44,7 +44,7 @@ function DeleteSubjectModal({ open, id, onClose }) {
   const deleteSubject = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/subject/${id}`,
+        `http://localhost:8081/api/v1/subject/${id}`,
         {
           method: "DELETE",
         }

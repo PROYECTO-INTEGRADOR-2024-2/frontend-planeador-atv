@@ -41,8 +41,8 @@ const TableSubjects = () => {
     const fetchData = async () => {
       try {
         const [subjectsResponse, degreesResponse] = await Promise.all([
-          fetch("http://localhost:8080/api/v1/subject/"),
-          fetch("http://localhost:8080/api/v1/degree"),
+          fetch("http://localhost:8081/api/v1/subject/"),
+          fetch("http://localhost:8081/api/v1/degree"),
         ]);
 
         if (!subjectsResponse.ok || !degreesResponse.ok) {

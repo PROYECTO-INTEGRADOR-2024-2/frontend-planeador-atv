@@ -13,7 +13,7 @@ function EditSubjectModal({ open, id, onClose }) {
     const fetchSubjectData = async () => {
       try {
         const subjectResponse = await fetch(
-          `http://localhost:8080/api/v1/subject/${id}`
+          `http://localhost:8081/api/v1/subject/${id}`
         );
         if (!subjectResponse.ok) {
           throw new Error("Error al obtener los datos de la asignatura");
@@ -21,7 +21,7 @@ function EditSubjectModal({ open, id, onClose }) {
         const subjectData = await subjectResponse.json();
 
         const degreeResponse = await fetch(
-          `http://localhost:8080/api/v1/degree/${subjectData.degree_id}`
+          `http://localhost:8081/api/v1/degree/${subjectData.degree_id}`
         );
         if (!degreeResponse.ok) {
           throw new Error("Error al obtener los datos de la carrera");
@@ -56,7 +56,7 @@ function EditSubjectModal({ open, id, onClose }) {
   const editSubject = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/subject/${id}`,
+        `http://localhost:8081/api/v1/subject/${id}`,
         {
           method: "PUT",
           headers: {

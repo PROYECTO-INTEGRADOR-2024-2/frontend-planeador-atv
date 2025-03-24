@@ -5,7 +5,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from "jwt-decode";
 
-const TUTORIAL_API_BASE_URL = "http://localhost:8080/api/v1/session/";
+const TUTORIAL_API_BASE_URL = "http://localhost:8081/api/v1/session/";
 const TutorialForm = () => {
   //mapear la info en los componentes
   const [dataTutor, setDataTutor] = useState([]);
@@ -43,7 +43,7 @@ const TutorialForm = () => {
     const fetchDataTutor = async () => {
       try {
         const response = await fetch(
-          "http://localhost:8080/api/v1/persons/tutor"
+          "http://localhost:8081/api/v1/persons/tutor"
         );
         if (!response.ok) {
           throw new Error("Respuesta no valida");
@@ -60,7 +60,7 @@ const TutorialForm = () => {
   useEffect(() => {
     const fetchDataSubject = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/subject/");
+        const response = await fetch("http://localhost:8081/api/v1/subject/");
         if (!response.ok) {
           throw new Error("Respuesta no valida");
         }
@@ -130,15 +130,15 @@ const TutorialForm = () => {
   const getTime = (event) => {
     // Crear una nueva fecha basada en la fecha seleccionada en el DatePicker
     const selectedDate = new Date(startDate);
-    
+
     // Obtener las horas y minutos del input de hora
     const [hours, minutes] = event.target.value.split(':');
-    
+
     // Establecer las horas y minutos en la fecha
     selectedDate.setHours(parseInt(hours, 10));
     selectedDate.setMinutes(parseInt(minutes, 10));
     selectedDate.setSeconds(0);
-    
+
     // Actualizar el estado con la fecha completa en formato ISO
     setTutorial({
       ...tutorial,
@@ -148,17 +148,17 @@ const TutorialForm = () => {
 
   const handleDateChange = (date) => {
     setStartDate(date);
-    
+
     // Mantener la hora actual cuando se cambia la fecha
     const currentDate = new Date(tutorial.class_date);
     const hours = currentDate.getHours();
     const minutes = currentDate.getMinutes();
-    
+
     // Establecer la misma hora en la nueva fecha
     date.setHours(hours);
     date.setMinutes(minutes);
     date.setSeconds(0);
-    
+
     setTutorial({
       ...tutorial,
       class_date: formatDateForBackend(date)
@@ -175,14 +175,14 @@ const TutorialForm = () => {
         },
         body: JSON.stringify(tutorial),
       });
-      
+
       if (!response.ok) {
         throw new Error("Something went wrong");
       }
-      
+
       const _tutor = await response.json();
       alert("Tutoría creada exitosamente");
-      
+
       // Resetear el formulario o redirigir
     } catch (error) {
       console.error("Error al guardar la tutoría:", error);

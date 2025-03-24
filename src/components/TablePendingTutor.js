@@ -30,7 +30,7 @@ const TablePool = ({ title, columns }) => {
       try {
         console.log("Fetching tutorías para usuario:", user.user_id);
         const response = await fetch(
-          `http://localhost:8080/api/v1/session/sessionstutor/${user.user_id}`
+          `http://localhost:8081/api/v1/session/sessionstutor/${user.user_id}`
         );
 
         if (!response.ok) {
@@ -80,7 +80,7 @@ const TablePool = ({ title, columns }) => {
   useEffect(() => {
     const fetchDataSubject = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/subject/");
+        const response = await fetch("http://localhost:8081/api/v1/subject/");
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
         }
@@ -99,7 +99,7 @@ const TablePool = ({ title, columns }) => {
     if (!user?.user_id) return;
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/session/sessionsPoolAccept`,
+        `http://localhost:8081/api/v1/session/sessionsPoolAccept`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -117,7 +117,7 @@ const TablePool = ({ title, columns }) => {
     if (!user?.user_id) return;
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/session/rejectSession`,
+        `http://localhost:8081/api/v1/session/rejectSession`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -135,7 +135,7 @@ const TablePool = ({ title, columns }) => {
     if (!user?.user_id) return;
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/session/cancelSession`,
+        `http://localhost:8081/api/v1/session/cancelSession`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -153,7 +153,7 @@ const TablePool = ({ title, columns }) => {
     if (!user?.user_id) return;
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/session/registerSession`,
+        `http://localhost:8081/api/v1/session/registerSession`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
@@ -289,31 +289,28 @@ const TablePool = ({ title, columns }) => {
 
       <div className="flex border-b border-gray-200 mb-4">
         <button
-          className={`py-2 px-4 ${
-            activeTab === "pending"
+          className={`py-2 px-4 ${activeTab === "pending"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-          }`}
+            }`}
           onClick={() => setActiveTab("pending")}
         >
           Pendientes ({pendingTutorials.length})
         </button>
         <button
-          className={`py-2 px-4 ${
-            activeTab === "accepted"
+          className={`py-2 px-4 ${activeTab === "accepted"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-          }`}
+            }`}
           onClick={() => setActiveTab("accepted")}
         >
           Aceptadas ({acceptedTutorials.length})
         </button>
         <button
-          className={`py-2 px-4 ${
-            activeTab === "completed"
+          className={`py-2 px-4 ${activeTab === "completed"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-          }`}
+            }`}
           onClick={() => setActiveTab("completed")}
         >
           Realizadas ({completedTutorials.length})

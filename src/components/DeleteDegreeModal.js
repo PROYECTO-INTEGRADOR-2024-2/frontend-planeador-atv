@@ -5,7 +5,7 @@ function DeleteDegreeModal({ open, id, onClose }) {
   const deleteDegree = async (id) => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/degree/${id}`,
+        `http://localhost:8081/api/v1/degree/${id}`,
         {
           method: "DELETE",
           headers: {

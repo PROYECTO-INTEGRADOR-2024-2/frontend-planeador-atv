@@ -40,7 +40,7 @@ const TableDegrees = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/degree");
+        const response = await fetch("http://localhost:8081/api/v1/degree");
         if (!response.ok) {
           throw new Error("Respuesta no válida");
         }

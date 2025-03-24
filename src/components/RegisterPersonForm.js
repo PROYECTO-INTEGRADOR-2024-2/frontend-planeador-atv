@@ -7,7 +7,7 @@ import ModalRegister from "./ModalRegister";
 const RegisterPersonForm = () => {
   let selectedDepartment;
   let selected;
-  const PERSON_API_BASE_URL = "http://localhost:8080/api/v1/auth/register";
+  const PERSON_API_BASE_URL = "http://localhost:8081/api/v1/auth/register";
   const DEPARTMENT_DATA_URL =
     "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json";
   const [confirmPassword, setConfirmPassword] = useState("");

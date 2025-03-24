@@ -13,7 +13,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
   useEffect(() => {
     const fetchDegrees = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/degree");
+        const response = await fetch("http://localhost:8081/api/v1/degree");
         if (!response.ok) {
           throw new Error("Error al obtener las carreras");
         }
@@ -54,8 +54,8 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
   const addOrUpdateSubject = async () => {
     const method = subjectToEdit ? "PUT" : "POST";
     const endpoint = subjectToEdit
-      ? `http://localhost:8080/api/v1/subject/${subject.subject_id}` // Use the subject_id for editing
-      : "http://localhost:8080/api/v1/subject/"; // For adding
+      ? `http://localhost:8081/api/v1/subject/${subject.subject_id}` // Use the subject_id for editing
+      : "http://localhost:8081/api/v1/subject/"; // For adding
 
     try {
       const response = await fetch(endpoint, {

@@ -12,7 +12,7 @@ function EditDegreeModal({ open, id, onClose }) {
     const fetchDegreeData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/degree/${id}`
+          `http://localhost:8081/api/v1/degree/${id}`
         );
         if (!response.ok) {
           throw new Error("Error al obtener los datos de la carrera");
@@ -39,7 +39,7 @@ function EditDegreeModal({ open, id, onClose }) {
   const editDegree = async () => {
     try {
       const response = await fetch(
-        `http://localhost:8080/api/v1/degree/${id}`,
+        `http://localhost:8081/api/v1/degree/${id}`,
         {
           method: "PUT",
           headers: {

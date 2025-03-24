@@ -26,7 +26,7 @@ const Table = ({ title, columns }) => {
       console.log("Usuario que quiero: " + user);
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/session/sessionsstudent/${user.user_id}`
+          `http://localhost:8081/api/v1/session/sessionsstudent/${user.user_id}`
         );
         if (!response.ok) {
           throw new error("Respuesta no valida");
@@ -45,7 +45,7 @@ const Table = ({ title, columns }) => {
     const fetchTutor = async () => {
       try {
         const response = await fetch(
-          `http://localhost:8080/api/v1/persons/${data[0][3]}`
+          `http://localhost:8081/api/v1/persons/${data[0][3]}`
         );
         console.log(data);
         if (!response.ok) {
@@ -64,7 +64,7 @@ const Table = ({ title, columns }) => {
   useEffect(() => {
     const fetchDataSubject = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/v1/subject/");
+        const response = await fetch("http://localhost:8081/api/v1/subject/");
         if (!response.ok) {
           throw new error("Respuesta no valida");
         }
