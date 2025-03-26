@@ -100,9 +100,6 @@ const RegisterPersonForm = () => {
     });
   };
 
-
-
-
   const validateFormInput = (event) => {
     event.preventDefault();
 
@@ -186,7 +183,7 @@ const RegisterPersonForm = () => {
       });
       return;
     }
-    if (!person.userEmail.match(/\D+\d+@udea.edu.co$/gi)) {
+    if (!person.userEmail.match(/\D+\d*@udea.edu.co$/gi)) {
       setFormError({
         ...inputError,
         email: "Por favor ingrese su correo electrónico de la universidad.",
@@ -232,7 +229,7 @@ const RegisterPersonForm = () => {
     setFormError(inputError);
     savePerson(event);
     setConfirmPassword("");
-    setOpenRegister(true)
+    setOpenRegister(true);
   };
   const [openRegister, setOpenRegister] = useState(false);
 
@@ -246,7 +243,6 @@ const RegisterPersonForm = () => {
 
   return (
     <div className="basis-full h-[100vh] md:basis-2/5 overflow-auto">
-
       <div className="px-[5vw] 2xl:mt-[5vh] sm:my-[8vh]  min-[300px]:mt-[10vh]">
         <div className="text-center pb-[3vh] overflow-auto">
           <div className="flex justify-center h-[50px]">
@@ -502,7 +498,6 @@ const RegisterPersonForm = () => {
             name="submitBtn"
             type="submit"
             className="w-full text-white bg-gray-600 hover:bg-gray-800 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 2xl:py-2.5 text-center md:p-1"
-            
           >
             Crear cuenta
           </button>
@@ -516,14 +511,12 @@ const RegisterPersonForm = () => {
             </a>
           </p>
         </form>
-
       </div>
       <ModalRegister
         open={openRegister}
         onClose={() => setOpenRegister(false)}
       />
     </div>
-
   );
 };
 
