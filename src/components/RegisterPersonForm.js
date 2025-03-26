@@ -186,7 +186,7 @@ const RegisterPersonForm = () => {
       });
       return;
     }
-    if (!person.userEmail.match(/\D+@udea.edu.co$/gi)) {
+    if (!person.userEmail.match(/\D+\d+@udea.edu.co$/gi)) {
       setFormError({
         ...inputError,
         email: "Por favor ingrese su correo electrónico de la universidad.",
