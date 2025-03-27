@@ -41,6 +41,16 @@ const RegisterPersonForm = () => {
     user_role: "Student",
   });
 
+  const [openRegister, setOpenRegister] = useState(false);
+
+  const handleModalRegister = () => {
+    setOpenRegister(true);
+  };
+
+  const closeModalRegister = () => {
+    setOpenRegister(false);
+  };
+
   const handleChange = (event) => {
     const value = event.target.value;
     setPerson({ ...person, [event.target.name]: value });
@@ -61,8 +71,10 @@ const RegisterPersonForm = () => {
     });
     if (!response.ok) {
       throw new Error("Something went wrong");
+    } else {
+      const _person = await response.json();
+      handleModalRegister();
     }
-    const _person = await response.json();
     reset(e);
   };
 
@@ -229,16 +241,6 @@ const RegisterPersonForm = () => {
     setFormError(inputError);
     savePerson(event);
     setConfirmPassword("");
-    setOpenRegister(true);
-  };
-  const [openRegister, setOpenRegister] = useState(false);
-
-  const handleModalRegister = () => {
-    setOpenRegister(true);
-  };
-
-  const closeModalRegister = () => {
-    setOpenRegister(false);
   };
 
   return (
