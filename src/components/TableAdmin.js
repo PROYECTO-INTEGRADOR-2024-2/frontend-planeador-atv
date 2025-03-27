@@ -118,78 +118,23 @@ const TablePool = ({ title, columns }) => {
     fetchAndSeparateTutorials();
   }, [user]);
 
-
-  const acceptSession = async (id) => {
-    if (!user?.user_id) return;
-    try {
-      const response = await fetch(
-        `http://localhost:8081/api/v1/session/sessionsPoolAccept`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
-        }
-      );
-      if (!response.ok) throw new Error("Error al aceptar la sesión");
-      window.location.reload();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  // const rejectSession = async (id) => {
-  //   if (!user?.user_id) return;
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8081/api/v1/session/rejectSession`,
-  //       {
-  //         method: "PUT",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
-  //       }
-  //     );
-  //     if (!response.ok) throw new Error("Error al rechazar la tutoría");
-  //     window.location.reload();
-  //   } catch (error) {
-  //     setError(error.message);
-  //   }
-  // };
-
-  // const cancelSession = async (id) => {
-  //   if (!user?.user_id) return;
-  //   try {
-  //     const response = await fetch(
-  //       `http://localhost:8081/api/v1/session/cancelSession`,
-  //       {
-  //         method: "PUT",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
-  //       }
-  //     );
-  //     if (!response.ok) throw new Error("Error al cancelar la tutoría");
-  //     window.location.reload();
-  //   } catch (error) {
-  //     setError(error.message);
-  //   }
-  // };
-
-  const registerSession = async (id) => {
-    if (!user?.user_id) return;
-    try {
-      const response = await fetch(
-        `http://localhost:8081/api/v1/session/registerSession`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
-        }
-      );
-      if (!response.ok) throw new Error("Error al registrar la tutoría");
-      window.location.reload();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+const cancelSession = async (id) => {
+  if (!user?.user_id) return;
+  try {
+    const response = await fetch(
+      `http://localhost:8081/api/v1/session/cancelTuto/${id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
+      }
+    );
+    if (!response.ok) throw new Error("Error al cancelar la tutoría");
+    window.location.reload();
+  } catch (error) {
+    setError(error.message);
+  }
+};
 
   const renderActionButtons = (tutorial) => {
     const status = tutorial[1]?.toLowerCase();
@@ -202,13 +147,13 @@ const TablePool = ({ title, columns }) => {
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
               onClick={() => acceptSession(tutorial[0])}
             >
-              Aceptar
+              Reprogramar
             </button>
             <button
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => rejectSession(tutorial[0])}
+              onClick={() => cancelSession(tutorial[0])}
             >
-              Rechazar
+              Cancelar
             </button>
           </div>
         );
