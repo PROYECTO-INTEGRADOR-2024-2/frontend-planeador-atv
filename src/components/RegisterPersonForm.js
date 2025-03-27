@@ -70,6 +70,7 @@ const RegisterPersonForm = () => {
       body: JSON.stringify(person),
     });
     if (!response.ok) {
+      console.log(response);
       throw new Error("Something went wrong");
     } else {
       const _person = await response.json();
