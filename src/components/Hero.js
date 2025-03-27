@@ -20,7 +20,7 @@ const Hero = () => {
         ¿Eres estudiante de la Universidad de Antioquia?
       </div>
       <div className="absolute top-[55vh] left-1/2 bg-[#3f5d84] text-white rounded-3xl p-8 font-bold text-xl text-center">
-        ¡Solicita ya las tutorías académicasque necesites y revienta el
+        ¡Solicita ya las tutorías académicas que necesites y revienta el
         semestre!
       </div>
     </div>
