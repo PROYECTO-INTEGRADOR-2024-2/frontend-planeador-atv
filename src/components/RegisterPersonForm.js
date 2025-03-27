@@ -461,7 +461,7 @@ const RegisterPersonForm = () => {
               Número de teléfono
             </label>
             <input
-              type="text"
+              type="number"
               id="user_phone"
               name="user_phone"
               inputMode="numeric"
