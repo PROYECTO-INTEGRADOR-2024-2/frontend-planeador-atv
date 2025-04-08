@@ -1,5 +1,6 @@
 import "./globals.css";
 import { Roboto } from "next/font/google";
+import { Providers } from "./Providers";
 
 const myFont = Roboto({
   weight: "400",
@@ -15,7 +16,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={myFont.className}>{children}</body>
+      <body className={myFont.className}>
+        <Providers>
+          {children}
+        </Providers>
+      </body>
     </html>
   );
 }

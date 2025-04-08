@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/legacy/image";
 import React, { useState, useEffect } from "react";
-import {signIn} from "next-auth/react";
+import {signIn, useSession} from "next-auth/react";
 import ModalRegister from "./ModalRegister";
 import logoGoogle from "../../public/images/google.png";
 
@@ -244,6 +244,9 @@ const RegisterPersonForm = () => {
     savePerson(event);
     setConfirmPassword("");
   };
+
+  const {data: session} = useSession();
+  console.log(session);
 
   return (
     <div className="basis-full h-[100vh] md:basis-2/5 overflow-auto">
