@@ -3,6 +3,8 @@ import Image from "next/legacy/image";
 import { React, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import {signIn, useSession} from "next-auth/react";
+import logoGoogle from "../../../public/images/google.png";
 
 const login = () => {
   const router = useRouter();
@@ -48,6 +50,9 @@ const login = () => {
     }
     //reset(e);
   };
+
+  const {data: session} = useSession();
+    console.log(session);
   //---------------------------------------VERIFICAR LOGIN------------------------------
 
   return (
@@ -112,6 +117,16 @@ const login = () => {
               >
                 Iniciar Sesión
               </button>
+              <div className="flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={() => signIn("google")}
+                  className="w-full mt-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center justify-center gap-2"
+                  >
+                  <Image src={logoGoogle} alt="Google" width={20} height={20} />
+                  Inicia sesión con Google
+                </button>
+              </div>
               <p className="text-sm font-light text-gray-500">
                 ¿Aun no tienes una cuenta?{" "}
                 <a
