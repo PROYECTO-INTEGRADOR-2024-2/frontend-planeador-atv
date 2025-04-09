@@ -10,6 +10,11 @@ const handler = NextAuth({
     pages: {
         signIn: "/login",
     },
+    callbacks: {
+        async redirect() {
+          return "http://localhost:3000/validate-email";
+        },
+      },
 })
 
 
