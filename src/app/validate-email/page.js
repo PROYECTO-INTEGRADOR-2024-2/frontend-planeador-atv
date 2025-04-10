@@ -10,6 +10,7 @@ export default function ValidateEmail() {
   const router = useRouter();
   useEffect(() => {
     if (status === "authenticated") {
+      console.log("session", session);
       const email = session.user.email
 
       fetch(`http://localhost:8081/api/v1/persons/email/${email}`, {
@@ -42,8 +43,7 @@ export default function ValidateEmail() {
 
           } else {
             console.log("El correo es nuevo")
-            // Redirigir a completar registro, si quieres:
-            // window.location.href = "/complete-reg"
+            router.push("../complete-reg")
           }
         })
         .catch(err => console.error("Error al consultar backend:", err))
