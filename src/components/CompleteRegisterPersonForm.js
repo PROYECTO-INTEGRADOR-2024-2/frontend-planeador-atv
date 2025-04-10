@@ -344,26 +344,7 @@ const CompleteRegisterPersonForm = () => {
             />
             <p className="text-red-500 text-xs">{formError.lastName}</p>
           </div>
-          <div>
-            <label
-              htmlFor="userEmail"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Correo electrónico
-            </label>
-            <input
-              type="userEmail"
-              name="userEmail"
-              id="userEmail"
-              title="Utiliza tu correo UdeA"
-              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
-              placeholder="name@udea.edu.co"
-              required=""
-              value={person.userEmail}
-              onChange={(e) => handleChange(e)}
-            />
-            <p className="text-red-500 text-xs">{formError.email}</p>
-          </div>
+          
           <div>
             <label
               htmlFor="department"
@@ -420,45 +401,6 @@ const CompleteRegisterPersonForm = () => {
           </div>
           <div>
             <label
-              htmlFor="user_password"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Contraseña
-            </label>
-            <input
-              type="password"
-              name="user_password"
-              id="user_password"
-              placeholder="••••••••"
-              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
-              required=""
-              value={person.user_password}
-              onChange={(e) => handleChange(e)}
-            />
-            <p className="text-red-500 text-xs">{formError.password}</p>
-          </div>
-
-          <div>
-            <label
-              htmlFor="confirm_password"
-              className="block mb-2 text-sm font-medium text-gray-900"
-            >
-              Confirme su contraseña
-            </label>
-            <input
-              type="password"
-              name="confirm_pasword"
-              id="confirm_password"
-              placeholder="••••••••"
-              className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
-              required=""
-              value={confirmPassword}
-              onChange={(e) => handleChangeConfirm(e)}
-            />
-            <p className="text-red-500 text-xs">{formError.confirmPassword}</p>
-          </div>
-          <div>
-            <label
               htmlFor="user_phone"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
@@ -508,25 +450,6 @@ const CompleteRegisterPersonForm = () => {
           >
             Crear cuenta
           </button>
-          <div className="flex items-center justify-center">
-            <button
-              type="button"
-              onClick={() => signIn("google")}
-              className="w-full mt-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center justify-center gap-2"
-            >
-    <Image src={logoGoogle} alt="Google" width={20} height={20} />
-    Registrarse con Google
-  </button>
-</div>
-          <p className="text-sm font-light text-gray-500">
-            ¿Ya tienes una cuenta?{" "}
-            <a
-              href="../login"
-              className="font-medium text-blue-600 hover:underline"
-            >
-              Inicia Sesión aquí.
-            </a>
-          </p>
         </form>
       </div>
       <ModalRegister

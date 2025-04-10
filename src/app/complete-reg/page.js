@@ -2,7 +2,7 @@
 import React from "react";
 import CompleteRegisterPersonForm from "@/components/CompleteRegisterPersonForm";
 import Image from "next/legacy/image";
-import Footer from "../../components/Footer";
+
 
 function Page() {
     return (
