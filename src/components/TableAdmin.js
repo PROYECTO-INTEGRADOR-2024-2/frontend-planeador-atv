@@ -1,19 +1,65 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
-import { format } from 'date-fns'
-import es from 'date-fns/locale/es';
+import { format } from "date-fns";
+import es from "date-fns/locale/es";
+import EditTutorModal from "./EditTutorModal";
 
 const TablePool = ({ title, columns }) => {
   const [pendingTutorials, setPendingTutorials] = useState([]);
   const [acceptedTutorials, setAcceptedTutorials] = useState([]);
   const [completedTutorials, setCompletedTutorials] = useState([]);
   const [canceledTutorials, setCanceledTutorials] = useState([]);
+  const [openEditar, setOpenEditar] = useState(false);
   const [error, setError] = useState(null);
   const [subject, setSubject] = useState([]);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
   const [person, setPerson] = useState([]);
+  const [id, setId] = useState(null);
+  const [data, setData] = useState([]);
+
+  const handleModalEditar = (id) => {
+    setId(id);
+    setOpenEditar(true);
+  };
+
+  const closeModalEditar = () => {
+    setOpenEditar(false);
+    setId(null);
+  };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [subjectsResponse, degreesResponse] = await Promise.all([
+          fetch("http://localhost:8081/api/v1/subject/"),
+          fetch("http://localhost:8081/api/v1/degree"),
+        ]);
+
+        if (!subjectsResponse.ok || !degreesResponse.ok) {
+          throw new Error("Error en una de las respuestas");
+        }
+
+        const subjects = await subjectsResponse.json();
+        const degrees = await degreesResponse.json();
+
+        const subjectsWithNames = subjects.map((subject) => {
+          const degree = degrees.find((d) => d.degree_id === subject.degree_id);
+          return {
+            ...subject,
+            degree_name: degree ? degree.degree_name : "Carrera desconocida",
+          };
+        });
+
+        setData(subjectsWithNames);
+      } catch (error) {
+        setError(error.message);
+        console.log("Error al obtener datos: ", error.message);
+      }
+    };
+    fetchData();
+  }, []);
 
   //información del token
   useEffect(() => {
@@ -41,25 +87,25 @@ const TablePool = ({ title, columns }) => {
       }
     };
     fetchDataSubject();
-  }, []);  
+  }, []);
 
   //Data de las persons
   useEffect(() => {
     const fetchDataUser = async () => {
-      try{
+      try {
         const resp = await fetch("http://localhost:8081/api/v1/persons");
-        if(!resp.ok){
+        if (!resp.ok) {
           throw new Error(`Error HTTP: ${resp.status}`);
         }
         const rpta = await resp.json();
         setPerson(rpta.map((item) => Object.values(item)));
-      } catch(error) {
+      } catch (error) {
         console.error("Error al trear personas", error);
         setError(error.message);
       }
     };
     fetchDataUser();
-  })
+  });
 
   //Data de allsesions
   useEffect(() => {
@@ -71,9 +117,7 @@ const TablePool = ({ title, columns }) => {
 
       try {
         console.log("Fetching tutorías para usuario:", user.user_id);
-        const response = await fetch(
-          `http://localhost:8081/api/v1/session/`
-        );
+        const response = await fetch(`http://localhost:8081/api/v1/session/`);
 
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
@@ -97,7 +141,7 @@ const TablePool = ({ title, columns }) => {
             pending.push(tutorialData);
           } else if (status === "aceptada") {
             accepted.push(tutorialData);
-          } else if (status === "cancelada"){
+          } else if (status === "cancelada") {
             canceled.push(tutorialData);
           } else if (
             [
@@ -123,23 +167,23 @@ const TablePool = ({ title, columns }) => {
     fetchAndSeparateTutorials();
   }, [user]);
 
-const cancelSession = async (id) => {
-  if (!user?.user_id) return;
-  try {
-    const response = await fetch(
-      `http://localhost:8081/api/v1/session/cancelTuto/${id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
-      }
-    );
-    if (!response.ok) throw new Error("Error al cancelar la tutoría");
-    window.location.reload();
-  } catch (error) {
-    setError(error.message);
-  }
-};
+  const cancelSession = async (id) => {
+    if (!user?.user_id) return;
+    try {
+      const response = await fetch(
+        `http://localhost:8081/api/v1/session/cancelTuto/${id}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
+        }
+      );
+      if (!response.ok) throw new Error("Error al cancelar la tutoría");
+      window.location.reload();
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
   const renderActionButtons = (tutorial) => {
     const status = tutorial[1]?.toLowerCase();
@@ -149,10 +193,14 @@ const cancelSession = async (id) => {
         return (
           <div className="flex gap-2 justify-center">
             <button
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => acceptSession(tutorial[0])}
+              className="bg-gray-300 hover:bg-gray-500 text-black hover:text-white font-bold py-2 px-4 rounded"
+              onClick={() => {
+                setId(tutorial[0]);
+                handleModalEditar(tutorial[0]);
+              }}
+              //onClick={() => acceptSession(tutorial[0])}
             >
-              Reprogramar
+              Cambiar Tutor
             </button>
             <button
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
@@ -160,6 +208,11 @@ const cancelSession = async (id) => {
             >
               Cancelar
             </button>
+            <EditTutorModal
+              open={openEditar}
+              id={id}
+              onClose={closeModalEditar}
+            />
           </div>
         );
 
@@ -214,47 +267,49 @@ const cancelSession = async (id) => {
 
     return (
       <div className="overflow-x-auto">
-      <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
-        <thead className="bg-gray-50 border border-gray-400">
-          <tr className="border border-slate-500">
-            {columns.map((item, rowIndex) => (
-              <th
-                key={rowIndex}
-                className="px-6 py-4 whitespace-nowrap border border-slate-300"
-              >
-                {item?.toString() || ""}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody className="border border-slate-500">
-          {tutorials.map((item) => (
-            <tr key={item[0]}>
-              
-              <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {person.find((element) => element[0] === item[2])?.[2] ||
-                  "Estudiante no encontrado"}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {person.find((element) => element[0] === item[3])?.[2] ||
-                  "Tutor no encontrado"}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {subject.find((element) => element[0] === item[4])?.[2] ||
-                  "Materia no encontrada"}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap">{item[5]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {format(new Date(item[6]), 'dd MMMM yyyy HH:mm', {locale: es})}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{item[7]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {renderActionButtons(item)}
-              </td>
+        <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
+          <thead className="bg-gray-50 border border-gray-400">
+            <tr className="border border-slate-500">
+              {columns.map((item, rowIndex) => (
+                <th
+                  key={rowIndex}
+                  className="px-6 py-4 whitespace-nowrap border border-slate-300"
+                >
+                  {item?.toString() || ""}
+                </th>
+              ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody className="border border-slate-500">
+            {tutorials.map((item) => (
+              <tr key={item[0]}>
+                <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {person.find((element) => element[0] === item[2])?.[2] ||
+                    "Estudiante no encontrado"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {person.find((element) => element[0] === item[3])?.[2] ||
+                    "Tutor no encontrado"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {subject.find((element) => element[0] === item[4])?.[2] ||
+                    "Materia no encontrada"}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{item[5]}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {format(new Date(item[6]), "dd MMMM yyyy HH:mm", {
+                    locale: es,
+                  })}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">{item[7]}</td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  {renderActionButtons(item)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
   };
@@ -268,44 +323,48 @@ const cancelSession = async (id) => {
   }
 
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md py-2">
+    <div className="bg-gray-100 rounded-lg shadow-md py-2 flex-1">
       <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
       </div>
 
       <div className="flex border-b border-gray-200 mb-4">
         <button
-          className={`py-2 px-4 ${activeTab === "pending"
+          className={`py-2 px-4 ${
+            activeTab === "pending"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-            }`}
+          }`}
           onClick={() => setActiveTab("pending")}
         >
           Pendientes ({pendingTutorials.length})
         </button>
         <button
-          className={`py-2 px-4 ${activeTab === "accepted"
+          className={`py-2 px-4 ${
+            activeTab === "accepted"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-            }`}
+          }`}
           onClick={() => setActiveTab("accepted")}
         >
           Aceptadas ({acceptedTutorials.length})
         </button>
         <button
-          className={`py-2 px-4 ${activeTab === "completed"
+          className={`py-2 px-4 ${
+            activeTab === "completed"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-            }`}
+          }`}
           onClick={() => setActiveTab("completed")}
         >
           Realizadas ({completedTutorials.length})
         </button>
         <button
-          className={`py-2 px-4 ${activeTab === "canceled"
+          className={`py-2 px-4 ${
+            activeTab === "canceled"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-            }`}
+          }`}
           onClick={() => setActiveTab("canceled")}
         >
           Canceladas ({canceledTutorials.length})
