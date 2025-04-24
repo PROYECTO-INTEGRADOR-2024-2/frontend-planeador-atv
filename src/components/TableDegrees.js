@@ -89,32 +89,32 @@ const TableDegrees = () => {
           </thead>
           <tbody className="border border-slate-500">
             {data.map((item) => (
-              <tr key={item.degree_id}>
+              <tr key={item.degreeId}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.degree_id}
+                  {item.degreeId}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.degree_name}
+                  {item.degreeName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.degree_modality}
+                  {item.degreeModality}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.degree_department}
+                  {item.degreeDepartment}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
-                      setId(item.degree_id);
-                      handleModalEditar(item.degree_id);
+                      setId(item.degreeId);
+                      handleModalEditar(item.degreeId);
                     }}
                   >
                     Editar
                   </button>
                   <button
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleModalEliminar(item.degree_id)}
+                    onClick={() => handleModalEliminar(item.degreeId)}
                   >
                     Eliminar
                   </button>
