@@ -30,6 +30,7 @@ const NavbarHome = () => {
   return (
     <nav className="bg-slate-500 px-8 h-[80px]">
       <div className="flex justify-between content-center ">
+        
         <div className="text-white ">
           <Image
             src={logoATV}

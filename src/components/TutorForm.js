@@ -4,11 +4,20 @@ import React, { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from "jwt-decode";
 
+
 const TutorialForm = () => {
-  //mapear la info en los componentes
+  // Estados nuevos (subida de archivo)
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState(null);
+  //Estados viejos
   const [dataSubject, setDataSubject] = useState([]);
   const [user, setUser] = useState(null);
+  const [errorSubject, setErrorSubject] = useState(null);
 
+  let numberOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+  //usuario del token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
@@ -18,6 +27,7 @@ const TutorialForm = () => {
     }
   }, []);
 
+  //Obtener las asignaturas y luego mapear
   useEffect(() => {
     const fetchDataSubject = async () => {
       try {
@@ -34,16 +44,71 @@ const TutorialForm = () => {
     fetchDataSubject();
   }, []);
 
-  function fileIsSelected(evt) {
-    if (evt.target.files.length > 0) {
-      evt.target.classList.toggle("hidden");
-    } else {
-      evt.target.classList.toggle("hidden");
+
+  //Seleccionar los archivos
+  const fileIsSelected = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      setUploadResult(null);
+
+      if (event.target.files.length > 0) {
+        event.target.classList.toggle("hidden");
+      }
     }
-  }
+  };
+
+  const uploadFile = async () => {
+    if (!selectedFile) {
+      alert("Seleccionar archivo primero");
+      return;
+    }
+
+    if (!user || !user.user_id) {
+      alert("Identificarse primero");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('userId', user.user_id);
+
+      const response = await fetch('http://localhost:8081/api/v1/fileManager/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error(`El error fue ${response.status}`);
+      }
+
+      const result = await response.json();
+      setUploadResult({
+        succes: true,
+        message: 'Documento subido de manera HD'
+      });
+
+      console.log("Archivo: ", result)
+
+    } catch (error) {
+      setUploadResult({
+        succes: false,
+        message: `el error es: ${error.message}`
+      });
+      console.error('Error: ', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  //mapear la info en los componentes
 
   const saveTutorial = async (e) => {
-    console.log("tutorial");
+    e.preventDefault();
+    console.log("Solicitud para enviar al backend");
   };
 
   return (
@@ -79,58 +144,76 @@ const TutorialForm = () => {
           </label>
           <div className="grid grid-cols-3 ">
             <select className="col-start-2 h-[5vh] rounded-xl bg-[#6f7e91] text-white font-bold">
-              <option className="text-center font-bold">2</option>
-              <option className="text-center font-bold">3</option>
-              <option className="text-center font-bold">4</option>
-              <option className="text-center font-bold">5</option>
-              <option className="text-center font-bold">6</option>
-              <option className="text-center font-bold">7</option>
-              <option className="text-center font-bold">8</option>
-              <option className="text-center font-bold">9</option>
-              <option className="text-center font-bold">10</option>
+              {numberOptions.map((option) => {
+                return <option className="text-center font-bold">{option}</option>
+              })}
+
             </select>
           </div>
         </div>
         <div className="py-4">
-          <div class="flex items-center justify-center w-full">
-            <label
-              for="dropzone-file"
-              class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-[##D9D9D9] border-gray-600 hover:border-gray-500 hover:bg-[#f2eded]"
-            >
-              <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                <svg
-                  class="w-[8vw] h-[8vh] mb-4 text-blue-700"
-                  aria-hidden="true"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 20 16"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="1"
-                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                  />
-                </svg>
-                <p className="mb-2 text-xl text-slate-950">
-                  <span class="font-semibold">
-                    Sube tu certificado de matrícula
-                  </span>
-                  <br />
-                  <span className="text-blue-700 font-bold">
-                    Seleccionalo
-                  </span>{" "}
-                  o arrastralo
+          <div className="flex flex-col items-center justify-center w-full gap-4">
+
+            {/* Cargar los archivos */}
+            <div className="flex items-center justify-center w-full">
+              <label
+                for="dropzone-file"
+                class="flex flex-col items-center justify-center w-full h-64 border-2 border-dashed rounded-lg cursor-pointer bg-[##D9D9D9] border-gray-600 hover:border-gray-500 hover:bg-[#f2eded]"
+              >
+                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                  <svg
+                    class="w-[8vw] h-[8vh] mb-4 text-blue-700"
+                    aria-hidden="true"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 20 16"
+                  >
+                    <path
+                      stroke="currentColor"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1"
+                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                    />
+                  </svg>
+                  <p className="mb-2 text-xl text-slate-950">
+                    <span class="font-semibold">
+                      Sube tu certificado de matrícula
+                    </span>
+                    <br />
+                    <span className="text-blue-700 font-bold">
+                      Seleccionalo
+                    </span>{" "}
+                    o arrastralo
+                  </p>
+                </div>
+                <input
+                  id="dropzone-file"
+                  type="file"
+                  className="hidden"
+                  onChange={fileIsSelected}
+                />
+              </label>
+            </div>
+            {selectedFile && (
+              <div className="flex flex-col items-center mt-4">
+                <p className="text-green-600">
+                  Archivo seleccionado: {selectedFile?.name}
                 </p>
+                <button
+                  type="button"
+                  onClick={uploadFile}
+                  disabled={isUploading}
+                  className="mt-2 px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 disabled:bg-gray-400">
+                  {isUploading ? 'Subiendo..' : 'Subir certificado'}
+                </button>
               </div>
-              <input
-                id="dropzone-file"
-                type="file"
-                className="hidden"
-                onChange={fileIsSelected}
-              />
-            </label>
+            )}
+            {uploadResult && (
+              <div className={`mt-2 p-3 rounded-md ${uploadResult.success ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
+                {uploadResult.message}
+              </div>
+            )}
           </div>
         </div>
         <div>

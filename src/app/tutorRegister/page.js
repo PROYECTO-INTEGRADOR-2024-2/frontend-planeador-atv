@@ -20,7 +20,7 @@ const page = () => {
             layout={"fill"}
             // width={200}
             // height={200}
-            className="absolute object-cover -z-10"
+            className="absolute object-cover -z-10 opacity-40"
           />
         </div>
       </div>
