@@ -3,9 +3,9 @@ import Modal from "react-modal";
 
 function AddSubjectModal({ open, onClose, subjectToEdit }) {
   const [subject, setSubject] = useState({
-    subject_id: "",
-    subject_name: "",
-    degree_id: "",
+    subjectId: "",
+    subjectName: "",
+    degreeId: "",
   });
 
   const [degrees, setDegrees] = useState([]);

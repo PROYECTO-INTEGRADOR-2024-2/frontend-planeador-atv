@@ -3,9 +3,9 @@ import Modal from "react-modal";
 import { useState, useEffect } from "react";
 function EditDegreeModal({ open, id, onClose }) {
   const [degree, setDegree] = useState({
-    degree_name: "",
-    degree_modality: "",
-    degree_department: "",
+    degreeName: "",
+    degreeModality: "",
+    degreeDepartment: "",
   });
 
   useEffect(() => {

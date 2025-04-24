@@ -5,14 +5,14 @@ import { useState, useEffect } from "react";
 function EditTutorModal({ open, id, onClose }) {
   const [tutors, setTutors] = useState([]);
   const [tutorial, setTutorial] = useState({
-    class_id: id,
-    class_state: "",
-    student_id: "",
-    tutor_id: "",
-    subject_id: 0,
-    class_topics: "",
-    class_date: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
-    class_rate: 0,
+    classId: id,
+    classState: "",
+    studentId: "",
+    tutorId: "",
+    subjectId: 0,
+    classTopics: "",
+    classDate: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
+    classRate: 0,
   });
 
   function formatDateForBackend(date) {

@@ -4,9 +4,9 @@ import { useState, useEffect } from "react";
 
 function EditSubjectModal({ open, id, onClose }) {
   const [subject, setSubject] = useState({
-    subject_name: "",
-    degree_id: "",
-    degree_name: "",
+    subjectName: "",
+    degreeId: "",
+    degreeName: "",
   });
 
   useEffect(() => {

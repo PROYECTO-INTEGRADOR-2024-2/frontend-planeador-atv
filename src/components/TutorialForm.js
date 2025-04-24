@@ -15,13 +15,13 @@ const TutorialForm = () => {
   const [errorSubject, setErrorSubject] = useState(null);
   const [user, setUser] = useState(null);
   const [tutorial, setTutorial] = useState({
-    class_state: "",
-    student_id: "",
-    tutor_id: "",
-    subject_id: 0,
-    class_topics: "",
-    class_date: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
-    class_rate: 0,
+    classState: "",
+    studentId: "",
+    tutorId: "",
+    subjectId: 0,
+    classTopics: "",
+    classDate: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
+    classRate: 0,
   });
 
   // Función para formatear la fecha correctamente para el backend
@@ -35,7 +35,7 @@ const TutorialForm = () => {
     if (token) {
       const user = jwtDecode(token);
       setUser(user);
-      setTutorial({ ...tutorial, student_id: user.user_id });
+      setTutorial({ ...tutorial, studentId: user.user_id });
     }
   }, []);
 
@@ -86,11 +86,11 @@ const TutorialForm = () => {
       setTutorial({ ...tutorial, [event.target.name]: value2 });
     }
 
-    if (event.target.name == "tutor_id") {
+    if (event.target.name == "tutorId") {
       if (!event.target.value.includes("0000")) {
-        setTutorial({ ...tutorial, class_state: "pendiente_asignada" });
+        setTutorial({ ...tutorial, classState: "pendiente_asignada" });
       } else {
-        setTutorial({ ...tutorial, class_state: "pendiente" });
+        setTutorial({ ...tutorial, classState: "pendiente" });
       }
     }
   };
@@ -98,14 +98,14 @@ const TutorialForm = () => {
   const handleChange2 = (event, number) => {
     const { name, value } = event.target;
 
-    if (name === "tutor_id") {
+    if (name === "tutorId") {
       // Obtener el ID del tutor directamente del valor seleccionado
       const tutorId = value.split("-")[0]; // Toma el primer valor antes del guión que es el ID
 
       setTutorial((prev) => ({
         ...prev,
         [name]: tutorId,
-        class_state: !tutorId.includes("0000")
+        classState: !tutorId.includes("0000")
           ? "pendiente_asignada"
           : "pendiente",
       }));
@@ -142,7 +142,7 @@ const TutorialForm = () => {
     // Actualizar el estado con la fecha completa en formato ISO
     setTutorial({
       ...tutorial,
-      class_date: formatDateForBackend(selectedDate)
+      classDate: formatDateForBackend(selectedDate)
     });
   };
 
@@ -150,7 +150,7 @@ const TutorialForm = () => {
     setStartDate(date);
 
     // Mantener la hora actual cuando se cambia la fecha
-    const currentDate = new Date(tutorial.class_date);
+    const currentDate = new Date(tutorial.classDate);
     const hours = currentDate.getHours();
     const minutes = currentDate.getMinutes();
 
@@ -161,7 +161,7 @@ const TutorialForm = () => {
 
     setTutorial({
       ...tutorial,
-      class_date: formatDateForBackend(date)
+      classDate: formatDateForBackend(date)
     });
   };
 
@@ -207,7 +207,7 @@ const TutorialForm = () => {
           </label>
           <select
             id="asignatura"
-            name="subject_id"
+            name="subjectId"
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
             onChange={(e) => handleChange(e, true)}
           >
@@ -221,14 +221,14 @@ const TutorialForm = () => {
         </div>
         <div>
           <label
-            htmlFor="class_topics"
+            htmlFor="classTopics"
             className="block my-2 text-sm font-bold text-gray-900"
           >
             Temática
           </label>
           <textarea
             id="tematica"
-            name="class_topics"
+            name="classTopics"
             placeholder="Escriba los temas que le gustaría desarrollar en la tutoría."
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
             rows="3"
@@ -299,7 +299,7 @@ const TutorialForm = () => {
 
           <select
             id="tutor"
-            name="tutor_id"
+            name="tutorId"
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
             onChange={(e) => handleChange2(e, false)}
           >

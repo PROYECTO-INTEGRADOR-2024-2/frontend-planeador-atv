@@ -3,9 +3,9 @@ import Modal from "react-modal";
 
 function DeleteSubjectModal({ open, id, onClose }) {
   const [subject, setSubject] = useState({
-    subject_id: "",
-    subject_name: "",
-    degree_name: "",
+    subjectId: "",
+    subjectName: "",
+    degreeName: "",
   });
 
   useEffect(() => {

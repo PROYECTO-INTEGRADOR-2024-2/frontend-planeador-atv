@@ -20,7 +20,7 @@ const TablePool = ({ title, columns }) => {
     try {
       const acceptRequest = {
         sessionId: id,
-        tutorId: user?.user_id,
+        tutorId: user?.userId,
       };
 
       const response = await fetch(

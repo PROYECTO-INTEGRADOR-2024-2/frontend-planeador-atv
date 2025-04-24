@@ -19,27 +19,27 @@ const CompleteRegisterPersonForm = () => {
   const [openRegister, setOpenRegister] = useState(false);
 
   const [formError, setFormError] = useState({
-    user_id: "",
-    user_id_type: "",
-    user_firstname: "",
-    user_lastname: "",
-    user_phone: "",
-    user_department: "",
-    user_city: "",
+    userId: "",
+    userIdType: "",
+    userFirstname: "",
+    userLastname: "",
+    userPhone: "",
+    userDepartment: "",
+    userCity: "",
   });
 
   const [person, setPerson] = useState({
-    user_id: "",
-    user_id_type: "",
-    user_firstname: "",
-    user_lastname: "",
-    user_phone: "",
-    user_department: "",
-    user_city: "",
-    user_state: "1",
-    user_role: "STUDENT",
+    userId: "",
+    userIdType: "",
+    userFirstname: "",
+    userLastname: "",
+    userPhone: "",
+    userDepartment: "",
+    userCity: "",
+    userState: "1",
+    userRole: "STUDENT",
     userEmail: "",
-    user_password: "oauth_temp_123", 
+    userPassword: "oauth_temp_123", 
   });
 
   useEffect(() => {
