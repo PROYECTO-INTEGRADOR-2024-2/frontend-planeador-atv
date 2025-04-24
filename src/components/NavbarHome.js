@@ -24,8 +24,7 @@ const NavbarHome = () => {
 
   const logout = () => {
     localStorage.clear();
-    
-    };
+  };
 
   return (
     <nav className="bg-slate-500 px-8 h-[80px]">

@@ -6,11 +6,10 @@ import Footer from "../../components/Footer";
 
 function landing() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <NavbarHome name={"Juan"} rol={"Student"} />
       <TableAdmin
         columns={[
-      
           "Estado",
           "Estudiante",
           "Tutor",
@@ -23,7 +22,7 @@ function landing() {
         title={"Tutorias"}
       />
       <Footer></Footer>
-    </>
+    </div>
   );
 }
 

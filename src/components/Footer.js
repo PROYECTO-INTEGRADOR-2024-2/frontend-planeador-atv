@@ -4,8 +4,8 @@ import Image from "next/legacy/image";
 
 const footer = () => {
   return (
-    <footer className="bg-slate-500 overflow-x-hidden">
-      <div className="mr-4 mx-1 w-full max-w-screen p-4 py-6 lg:py-">
+    <footer className="bg-slate-500 overflow-x-hidden bottom-0">
+      <div className="mr-4 mx-1 w-full p-4 py-6 lg:py-">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0 ">
             <a className="flex items-center">
@@ -23,7 +23,7 @@ const footer = () => {
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="flex flex-col mt-4 ">
                 <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400 ">
-                  © 2024{" "}
+                  © 2025{" "}
                   <a
                     href="https://www.fundacionantivirusparaladesercion.org/"
                     className="hover:underline"
