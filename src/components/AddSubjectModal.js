@@ -30,9 +30,9 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
 
       if (subjectToEdit) {
         setSubject({
-          subject_id: subjectToEdit.subject_id,
-          subject_name: subjectToEdit.subject_name,
-          degree_id: subjectToEdit.degree_id,
+          subjectId: subjectToEdit.subjectId,
+          subjectName: subjectToEdit.subjecName,
+          degreeId: subjectToEdit.degreeId,
         });
       } else {
         setSubject({
@@ -55,7 +55,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
   const addOrUpdateSubject = async () => {
     const method = subjectToEdit ? "PUT" : "POST";
     const endpoint = subjectToEdit
-      ? `http://localhost:8081/api/v1/subject/${subject.subject_id}` // Use the subject_id for editing
+      ? `http://localhost:8081/api/v1/subject/${subject.subjectId}` // Use the subject_id for editing
       : "http://localhost:8081/api/v1/subject/"; // For adding
 
     try {
@@ -113,7 +113,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
                 <option value="">Seleccione una carrera</option>
                 {degrees.map((degree) => (
                   <option key={degree.degreeId} value={degree.degreeId}>
-                    {degree.degree_name}
+                    {degree.degreeName}
                   </option>
                 ))}
               </select>

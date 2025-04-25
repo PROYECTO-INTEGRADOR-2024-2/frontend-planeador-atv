@@ -21,7 +21,7 @@ function EditSubjectModal({ open, id, onClose }) {
         const subjectData = await subjectResponse.json();
 
         const degreeResponse = await fetch(
-          `http://localhost:8081/api/v1/degree/${subjectData.degree_id}`
+          `http://localhost:8081/api/v1/degree/${subjectData.degreeId}`
         );
         if (!degreeResponse.ok) {
           throw new Error("Error al obtener los datos de la carrera");
@@ -29,9 +29,9 @@ function EditSubjectModal({ open, id, onClose }) {
         const degreeData = await degreeResponse.json();
 
         setSubject({
-          subject_name: subjectData.subject_name,
-          degree_id: subjectData.degree_id,
-          degree_name: degreeData.degree_name,
+          subjectName: subjectData.subjectName,
+          degreeId: subjectData.degreeId,
+          degreeName: degreeData.degreeName,
         });
       } catch (error) {
         console.error(error.message);
@@ -45,7 +45,7 @@ function EditSubjectModal({ open, id, onClose }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const newValue = name === "degree_id" ? Number(value) : value;
+    const newValue = name === "degreeId" ? Number(value) : value;
     setSubject((prevData) => ({
       ...prevData,
       [name]: newValue,
@@ -63,8 +63,8 @@ function EditSubjectModal({ open, id, onClose }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            subject_name: subject.subject_name,
-            degree_id: subject.degree_id,
+            subjectName: subject.subjectName,
+            degreeId: subject.degreeId,
           }),
         }
       );
@@ -98,8 +98,8 @@ function EditSubjectModal({ open, id, onClose }) {
               Nombre:
               <input
                 type="text"
-                name="subject_name"
-                value={subject.subject_name}
+                name="subjectName"
+                value={subject.subjectName}
                 onChange={handleChange}
                 className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
               />
@@ -108,8 +108,8 @@ function EditSubjectModal({ open, id, onClose }) {
               Id de la carrera:
               <input
                 type="text"
-                name="degree_id"
-                value={subject.degree_id}
+                name="degreeId"
+                value={subject.degreeId}
                 onChange={handleChange}
                 className="bg-gray appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
                 disabled
@@ -119,8 +119,8 @@ function EditSubjectModal({ open, id, onClose }) {
               Nombre de la carrera:
               <input
                 type="text"
-                name="degree_name"
-                value={subject.degree_name}
+                name="degreeName"
+                value={subject.degreeName}
                 className="bg-gray appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
                 disabled
               />

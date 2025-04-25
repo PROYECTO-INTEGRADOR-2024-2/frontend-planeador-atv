@@ -64,7 +64,7 @@ const TutorialForm = () => {
       return;
     }
 
-    if (!user || !user.user_id) {
+    if (!user || !user.userId) {
       alert("Identificarse primero");
       return;
     }
@@ -74,7 +74,7 @@ const TutorialForm = () => {
     try {
       const formData = new FormData();
       formData.append('file', selectedFile);
-      formData.append('userId', user.user_id);
+      formData.append('userId', user.userId);
 
       const response = await fetch('http://localhost:8081/api/v1/fileManager/upload', {
         method: 'POST',
@@ -137,7 +137,7 @@ const TutorialForm = () => {
         </div>
         <div>
           <label
-            htmlFor="class_topics"
+            htmlFor="classTopics"
             className="block my-2 text-base font-bold text-gray-900 text-center"
           >
             Semestre

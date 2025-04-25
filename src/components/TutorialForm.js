@@ -35,7 +35,7 @@ const TutorialForm = () => {
     if (token) {
       const user = jwtDecode(token);
       setUser(user);
-      setTutorial({ ...tutorial, studentId: user.user_id });
+      setTutorial({ ...tutorial, studentId: user.userId });
     }
   }, []);
 
@@ -233,7 +233,7 @@ const TutorialForm = () => {
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
             rows="3"
             onChange={(e) => handleChange(e)}
-            value={tutorial.class_topics}
+            value={tutorial.classTopics}
           />
         </div>
         <div className="py-8">
@@ -248,7 +248,7 @@ const TutorialForm = () => {
               <div className="flex border-b-2">
                 <DatePicker
                   id="datePicker"
-                  name="class_date"
+                  name="classDate"
                   selected={startDate}
                   onChange={handleDateChange}
                   className="w-[95px] pb-1"
