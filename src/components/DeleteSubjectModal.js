@@ -3,9 +3,9 @@ import Modal from "react-modal";
 
 function DeleteSubjectModal({ open, id, onClose }) {
   const [subject, setSubject] = useState({
-    subject_id: "",
-    subject_name: "",
-    degree_name: "",
+    subjectId: "",
+    subjectName: "",
+    degreeName: "",
   });
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function DeleteSubjectModal({ open, id, onClose }) {
         const subjectData = await subjectResponse.json();
 
         const degreeResponse = await fetch(
-          `http://localhost:8081/api/v1/degree/${subjectData.degree_id}`
+          `http://localhost:8081/api/v1/degree/${subjectData.degreeId}`
         );
         if (!degreeResponse.ok) {
           throw new Error("Error al obtener el nombre de la carrera");
@@ -29,7 +29,7 @@ function DeleteSubjectModal({ open, id, onClose }) {
 
         setSubject({
           ...subjectData,
-          degree_name: degreeData.degree_name,
+          degreeName: degreeData.degreeName,
         });
       } catch (error) {
         console.error(error.message);
@@ -75,8 +75,8 @@ function DeleteSubjectModal({ open, id, onClose }) {
           </h1>
           <p className="text-black mb-4">
             ¿Estás seguro de que deseas eliminar la asignatura{" "}
-            <strong>{subject.subject_name}</strong> de la carrera{" "}
-            <strong>{subject.degree_name}</strong>?
+            <strong>{subject.subjectName}</strong> de la carrera{" "}
+            <strong>{subject.degreeName}</strong>?
           </p>
           <div className="flex flex-row justify-center pt-8">
             <button

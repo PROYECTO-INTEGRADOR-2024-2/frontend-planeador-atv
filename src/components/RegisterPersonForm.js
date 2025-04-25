@@ -13,33 +13,33 @@ const RegisterPersonForm = () => {
     "https://raw.githubusercontent.com/marcovega/colombia-json/master/colombia.min.json";
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState({
-    user_id: "",
-    user_id_type: "",
-    user_firstname: "",
-    user_lastname: "",
+    userId: "",
+    userIdType: "",
+    userFirstname: "",
+    userLastname: "",
     userEmail: "",
-    user_password: "",
-    user_confirmPassword: "",
-    user_phone: "",
-    user_department: "",
-    user_city: "",
-    user_state: "",
-    user_role: "STUDENT",
+    userPassword: "",
+    userConfirmPassword: "",
+    userPhone: "",
+    userDepartment: "",
+    userCity: "",
+    userState: "",
+    userRole: "STUDENT",
     success: "",
   });
 
   const [person, setPerson] = useState({
-    user_id: "",
-    user_id_type: "",
-    user_firstname: "",
-    user_lastname: "",
+    userId: "",
+    userIdType: "",
+    userFirstname: "",
+    userLastname: "",
     userEmail: "",
-    user_password: "",
-    user_phone: "",
-    user_department: "",
-    user_city: "",
-    user_state: "1",
-    user_role: "Student",
+    userPassword: "",
+    userPhone: "",
+    userDepartment: "",
+    userCity: "",
+    userState: "1",
+    userRole: "Student",
   });
 
   const [openRegister, setOpenRegister] = useState(false);
@@ -100,17 +100,17 @@ const RegisterPersonForm = () => {
   const reset = (e) => {
     e.preventDefault();
     setPerson({
-      user_id: "",
-      user_id_type: "",
-      user_firstname: "",
-      user_lastname: "",
+      userId: "",
+      userIdType: "",
+      userFirstname: "",
+      userLastname: "",
       userEmail: "",
-      user_password: "",
-      user_phone: "",
-      user_department: "",
-      user_city: "",
-      user_state: "1",
-      user_role: "STUDENT",
+      userPassword: "",
+      userPhone: "",
+      userDepartment: "",
+      userCity: "",
+      userState: "1",
+      userRole: "STUDENT",
     });
   };
 
@@ -119,34 +119,34 @@ const RegisterPersonForm = () => {
 
     // Inicializamos un objeto con los errores de entrada
     let inputError = {
-      user_id: "",
-      user_id_type: "",
-      user_firstname: "",
-      user_lastname: "",
+      userId: "",
+      userIdType: "",
+      userFirstname: "",
+      userLastname: "",
       userEmail: "",
-      user_password: "",
-      user_phone: "",
-      user_department: "",
-      user_city: "",
-      user_state: "1",
-      user_role: "STUDENT",
+      userPassword: "",
+      userPhone: "",
+      userDepartment: "",
+      userCity: "",
+      userState: "1",
+      userRole: "STUDENT",
     };
 
     // Verificamos si el email o la contraseña están vacíos
     if (
-      !person.user_firstname &&
+      !person.userFirstname &&
       !person.userEmail &&
-      !person.user_id &&
-      !person.user_lastname &&
-      !person.user_password &&
-      !person.phone &&
-      !person.user_id_type &&
-      !person.user_department &&
-      !person.user_city
+      !person.userId &&
+      !person.userLastname &&
+      !person.userPassword &&
+      !person.Phone &&
+      !person.UserIdType &&
+      !person.userDepartment &&
+      !person.userCity
     ) {
       setFormError({
         ...inputError,
-        user_id_type: "Por favor seleccione el tipo de identificación",
+        userIdType: "Por favor seleccione el tipo de identificación",
         id: "Por favor ingrese su identificación",
         name: "Por favor ingrese su nombre",
         lastName: "Por favor ingrese su apellido",
@@ -160,30 +160,30 @@ const RegisterPersonForm = () => {
     }
 
     if (
-      !person.user_id_type ||
-      (person.user_id_type != "C.C" && person.user_id_type != "T.I")
+      !person.userIdType ||
+      (person.userIdType != "C.C" && person.userIdType != "T.I")
     ) {
       setFormError({
         ...inputError,
-        user_id_type: "Por favor elija el tipo de su identificación",
+        userIdType: "Por favor elija el tipo de su identificación",
       });
       return;
     }
-    if (!person.user_id) {
+    if (!person.userId) {
       setFormError({
         ...inputError,
         id: "Por favor ingrese su identificación",
       });
       return;
     }
-    if (!person.user_firstname) {
+    if (!person.userFirstname) {
       setFormError({
         ...inputError,
         name: "Por favor ingrese su nombre",
       });
       return;
     }
-    if (!person.user_lastname) {
+    if (!person.userLastname) {
       setFormError({
         ...inputError,
         lastName: "Por favor ingrese su apellido",
@@ -204,35 +204,35 @@ const RegisterPersonForm = () => {
       });
       return;
     }
-    if (!person.user_department) {
+    if (!person.userDepartment) {
       setFormError({
         ...inputError,
         department: "Por favor seleccione el departamento",
       });
       return;
     }
-    if (!person.user_city) {
+    if (!person.userCity) {
       setFormError({
         ...inputError,
         city: "Por favor seleccione la ciudad",
       });
       return;
     }
-    if (!person.user_password) {
+    if (!person.userPassword) {
       setFormError({
         ...inputError,
         password: "La contraseña no debería de estar vacía",
       });
       return;
     }
-    if (confirmPassword !== person.user_password) {
+    if (confirmPassword !== person.userPassword) {
       setFormError({
         ...inputError,
         confirmPassword: "Las contraseñas no coinciden",
       });
       return;
     }
-    if (!person.user_phone) {
+    if (!person.userPhone) {
       setFormError({
         ...inputError,
         phone: "Por favor ingrese su número de teléfono",
@@ -265,81 +265,81 @@ const RegisterPersonForm = () => {
         <form className="space-y-4 md:space-y-2" onSubmit={validateFormInput}>
           <div>
             <label
-              htmlFor="user_id_type"
+              htmlFor="userIdType"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Seleccione su tipo de documento
             </label>
             <select
-              id="user_id_type"
-              name="user_id_type"
+              id="userIdType"
+              name="userIdType"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
               onChange={(e) => handleChange(e)}
-              value={person.user_id_type}
+              value={person.userIdType}
             >
               <option>Seleccione su tipo de ID</option>
               <option>C.C</option>
               <option>T.I</option>
             </select>
-            <p className="text-red-500 text-xs">{formError.user_id_type}</p>
+            <p className="text-red-500 text-xs">{formError.userIdType}</p>
           </div>
           <div>
             <label
-              htmlFor="user_id"
+              htmlFor="userId"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Digite su número de documento
             </label>
             <input
               type="text"
-              id="user_id"
-              name="user_id"
+              id="userId"
+              name="userId"
               inputMode="numeric"
               pattern="[0-9]{9,15}"
               placeholder="Número de documento"
               title="Utiliza solo números"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
-              value={person.user_id}
+              value={person.userId}
               onChange={(e) => handleChange(e)}
             />
             <p className="text-red-500 text-xs">{formError.id}</p>
           </div>
           <div>
             <label
-              htmlFor="user_firstname"
+              htmlFor="userFirstname"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Nombre (Sin apellidos)
             </label>
             <input
               type="text"
-              id="user_firstname"
-              name="user_firstname"
+              id="userFirstname"
+              name="userFirstname"
               pattern="\D+"
               placeholder="Nombres"
               title="Utiliza solo letras"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
-              value={person.user_firstname}
+              value={person.userFirstname}
               onChange={(e) => handleChange(e)}
             />
             <p className="text-red-500 text-xs">{formError.name}</p>
           </div>
           <div>
             <label
-              htmlFor="user_lastname"
+              htmlFor="userLastname"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Apellidos
             </label>
             <input
               type="text"
-              id="user_lastname"
-              name="user_lastname"
+              id="userLastname"
+              name="userLastname"
               pattern="\D+"
               placeholder="Apellidos"
               title="Utiliza solo letras"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
-              value={person.user_lastname}
+              value={person.userLastname}
               onChange={(e) => handleChange(e)}
             />
             <p className="text-red-500 text-xs">{formError.lastName}</p>
@@ -373,10 +373,10 @@ const RegisterPersonForm = () => {
             </label>
             <select
               id="department"
-              name="user_department"
+              name="userDepartment"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
               onChange={(e) => handleChange(e)}
-              value={person.user_department}
+              value={person.userDepartment}
             >
               {data?.map((item, index) => (
                 <option
@@ -400,10 +400,10 @@ const RegisterPersonForm = () => {
             </label>
             <select
               id="city"
-              name="user_city"
+              name="userCity"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
               onChange={(e) => handleChange(e)}
-              value={person.user_city}
+              value={person.userCity}
             >
               {
                 (selected =
@@ -420,19 +420,19 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              htmlFor="user_password"
+              htmlFor="userPassword"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Contraseña
             </label>
             <input
               type="password"
-              name="user_password"
-              id="user_password"
+              name="userPassword"
+              id="userPassword"
               placeholder="••••••••"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
               required=""
-              value={person.user_password}
+              value={person.userPassword}
               onChange={(e) => handleChange(e)}
             />
             <p className="text-red-500 text-xs">{formError.password}</p>
@@ -440,15 +440,15 @@ const RegisterPersonForm = () => {
 
           <div>
             <label
-              htmlFor="confirm_password"
+              htmlFor="confirmPassword"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Confirme su contraseña
             </label>
             <input
               type="password"
-              name="confirm_pasword"
-              id="confirm_password"
+              name="confirmPasword"
+              id="confirmPassword"
               placeholder="••••••••"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full 2xl:p-2.5 md:p-1"
               required=""
@@ -459,21 +459,21 @@ const RegisterPersonForm = () => {
           </div>
           <div>
             <label
-              htmlFor="user_phone"
+              htmlFor="userPhone"
               className="block mb-2 text-sm font-medium text-gray-900"
             >
               Número de teléfono
             </label>
             <input
               type="number"
-              id="user_phone"
-              name="user_phone"
+              id="userPhone"
+              name="userPhone"
               inputMode="numeric"
               pattern="[0-9]{10}"
               placeholder="Número de teléfono"
               title="Utiliza solo números y numeros de teléfono correctos xxx-xxx-xxxx"
               className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-1"
-              value={person.user_phone}
+              value={person.userPhone}
               onChange={(e) => handleChange(e)}
             />
             <p className="text-red-500 text-xs">{formError.phone}</p>

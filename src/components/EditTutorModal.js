@@ -5,14 +5,14 @@ import { useState, useEffect } from "react";
 function EditTutorModal({ open, id, onClose }) {
   const [tutors, setTutors] = useState([]);
   const [tutorial, setTutorial] = useState({
-    class_id: id,
-    class_state: "",
-    student_id: "",
-    tutor_id: "",
-    subject_id: 0,
-    class_topics: "",
-    class_date: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
-    class_rate: 0,
+    classId: id,
+    classState: "",
+    studentId: "",
+    tutorId: "",
+    subjectId: 0,
+    classTopics: "",
+    classDate: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
+    classRate: 0,
   });
 
   function formatDateForBackend(date) {
@@ -67,7 +67,7 @@ function EditTutorModal({ open, id, onClose }) {
   const handleChange = (event, number) => {
     const { name, value } = event.target;
 
-    if (name === "tutor_id") {
+    if (name === "tutorId") {
       // Obtener el ID del tutor directamente del valor seleccionado
       const tutorId = value.split("-")[0]; // Toma el primer valor antes del guión que es el ID
       setTutorial((prev) => ({
@@ -91,14 +91,14 @@ function EditTutorModal({ open, id, onClose }) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            class_id: tutorial.class_id,
-            class_state: tutorial.class_state,
-            student_id: tutorial.student_id,
-            tutor_id: tutorial.tutor_id,
-            subject_id: tutorial.subject_id,
-            class_topics: tutorial.class_topics,
-            class_date: tutorial.class_date,
-            class_rate: tutorial.class_rate,
+            classId: tutorial.classId,
+            classState: tutorial.classState,
+            studentId: tutorial.studentId,
+            tutorId: tutorial.tutorId,
+            subjectId: tutorial.subjectId,
+            classTopics: tutorial.classTopics,
+            classDate: tutorial.classDate,
+            classRate: tutorial.classRate,
           }),
         }
       );
@@ -131,17 +131,17 @@ function EditTutorModal({ open, id, onClose }) {
             <label className="block text-black font-bold md:text-right mb-1 md:mb-0 pr-4">
               Nombre:
               <select
-                name="tutor_id"
+                name="tutorId"
                 onChange={(e) => handleChange(e, false)}
                 className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
               >
                 <option value="">Seleccione un tutor</option>
                 {tutors.map((tutor) => (
                   <option
-                    key={tutor.user_id}
-                    value={`${tutor.user_id}-${tutor.user_firstname} ${tutor.user_lastname}`}
+                    key={tutor.userId}
+                    value={`${tutor.userId}-${tutor.userFirstname} ${tutor.userLastname}`}
                   >
-                    {tutor.user_firstname} {tutor.user_lastname}
+                    {tutor.userFirstname} {tutor.userLastname}
                   </option>
                 ))}
               </select>

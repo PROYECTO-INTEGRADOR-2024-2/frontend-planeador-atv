@@ -3,9 +3,9 @@ import Modal from "react-modal";
 
 function AddSubjectModal({ open, onClose, subjectToEdit }) {
   const [subject, setSubject] = useState({
-    subject_id: "",
-    subject_name: "",
-    degree_id: "",
+    subjectId: "",
+    subjectName: "",
+    degreeId: "",
   });
 
   const [degrees, setDegrees] = useState([]);
@@ -14,6 +14,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
     const fetchDegrees = async () => {
       try {
         const response = await fetch("http://localhost:8081/api/v1/degree");
+        console.log(response)
         if (!response.ok) {
           throw new Error("Error al obtener las carreras");
         }
@@ -29,15 +30,15 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
 
       if (subjectToEdit) {
         setSubject({
-          subject_id: subjectToEdit.subject_id,
-          subject_name: subjectToEdit.subject_name,
-          degree_id: subjectToEdit.degree_id,
+          subjectId: subjectToEdit.subjectId,
+          subjectName: subjectToEdit.subjecName,
+          degreeId: subjectToEdit.degreeId,
         });
       } else {
         setSubject({
-          subject_id: "",
-          subject_name: "",
-          degree_id: "",
+          subjectId: "",
+          subjectName: "",
+          degreeId: "",
         });
       }
     }
@@ -95,24 +96,24 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
               Nombre:
               <input
                 type="text"
-                name="subject_name"
-                value={subject.subject_name}
+                name="subjectName"
+                value={subject.subjectName}
                 onChange={handleChange}
                 className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
               />
             </label>
             <label className="mt-5 block text-black font-bold md:text-right mb-1 md:mb-0 pr-4">
-              Facultad:
+              Carrera:
               <select
-                name="degree_id"
-                value={subject.degree_id}
+                name="degreeId"
+                value={subject.degreeId}
                 onChange={handleChange}
                 className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
               >
                 <option value="">Seleccione una carrera</option>
                 {degrees.map((degree) => (
-                  <option key={degree.degree_id} value={degree.degree_id}>
-                    {degree.degree_name}
+                  <option key={degree.degreeId} value={degree.degreeId}>
+                    {degree.degreeName}
                   </option>
                 ))}
               </select>

@@ -45,10 +45,10 @@ const TablePool = ({ title, columns }) => {
         const degrees = await degreesResponse.json();
 
         const subjectsWithNames = subjects.map((subject) => {
-          const degree = degrees.find((d) => d.degree_id === subject.degree_id);
+          const degree = degrees.find((d) => d.degreeId === subject.degreeId);
           return {
             ...subject,
-            degree_name: degree ? degree.degree_name : "Carrera desconocida",
+            degreeName: degree ? degree.degreeName : "Carrera desconocida",
           };
         });
 
@@ -110,13 +110,13 @@ const TablePool = ({ title, columns }) => {
   //Data de allsesions
   useEffect(() => {
     const fetchAndSeparateTutorials = async () => {
-      if (!user?.user_id) {
+      if (!user?.userId) {
         console.log("Esperando ID de usuario...");
         return;
       }
 
       try {
-        console.log("Fetching tutorías para usuario:", user.user_id);
+        console.log("Fetching tutorías para usuario:", user.userId);
         const response = await fetch(`http://localhost:8081/api/v1/session/`);
 
         if (!response.ok) {
@@ -168,14 +168,14 @@ const TablePool = ({ title, columns }) => {
   }, [user]);
 
   const cancelSession = async (id) => {
-    if (!user?.user_id) return;
+    if (!user?.userId) return;
     try {
       const response = await fetch(
         `http://localhost:8081/api/v1/session/cancelTuto/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
+          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
         }
       );
       if (!response.ok) throw new Error("Error al cancelar la tutoría");
