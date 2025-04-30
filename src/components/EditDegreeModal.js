@@ -3,9 +3,9 @@ import Modal from "react-modal";
 import { useState, useEffect } from "react";
 function EditDegreeModal({ open, id, onClose }) {
   const [degree, setDegree] = useState({
-    degree_name: "",
-    degree_modality: "",
-    degree_department: "",
+    degreeName: "",
+    degreeModality: "",
+    degreeDepartment: "",
   });
 
   useEffect(() => {
@@ -53,7 +53,6 @@ function EditDegreeModal({ open, id, onClose }) {
         throw new Error("Respuesta no válida");
       }
 
-      const result = await response.json();
       onClose();
       window.location.reload();
     } catch (error) {
@@ -77,8 +76,8 @@ function EditDegreeModal({ open, id, onClose }) {
               Nombre:
               <input
                 type="text"
-                name="degree_name"
-                value={degree.degree_name}
+                name="degreeName"
+                value={degree.degreeName}
                 onChange={handleChange}
                 className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
               />
@@ -87,8 +86,8 @@ function EditDegreeModal({ open, id, onClose }) {
               Modalidad:
               <input
                 type="text"
-                name="degree_modality"
-                value={degree.degree_modality}
+                name="degreeModality"
+                value={degree.degreeModality}
                 onChange={handleChange}
                 className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
               />
@@ -97,8 +96,8 @@ function EditDegreeModal({ open, id, onClose }) {
               Facultad:
               <input
                 type="text"
-                name="degree_department"
-                value={degree.degree_department}
+                name="degreeDepartment"
+                value={degree.degreeDepartment}
                 onChange={handleChange}
                 className="bg-white appearance-none border-2 border-gray-200 rounded py-2 px-4 text-gray-600 leading-tight focus:outline-none focus:bg-white focus:border-black"
               />

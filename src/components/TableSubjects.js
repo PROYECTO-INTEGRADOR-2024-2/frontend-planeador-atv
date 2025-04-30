@@ -53,10 +53,10 @@ const TableSubjects = () => {
         const degrees = await degreesResponse.json();
 
         const subjectsWithNames = subjects.map((subject) => {
-          const degree = degrees.find((d) => d.degree_id === subject.degree_id);
+          const degree = degrees.find((d) => d.degreeId === subject.degreeId);
           return {
             ...subject,
-            degree_name: degree ? degree.degree_name : "Carrera desconocida",
+            degreeName: degree ? degree.degreeName : "Carrera desconocida",
           };
         });
 
@@ -102,29 +102,29 @@ const TableSubjects = () => {
           </thead>
           <tbody className="border border-slate-500">
             {data.map((item) => (
-              <tr key={item.subject_id}>
+              <tr key={item.subjectId}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.subject_id}
+                  {item.subjectId}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.subject_name}
+                  {item.subjectName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  {item.degree_name}
+                  {item.degreeName}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
-                      setId(item.subject_id);
-                      handleModalEditar(item.subject_id);
+                      setId(item.subjectId);
+                      handleModalEditar(item.subjectId);
                     }}
                   >
                     Editar
                   </button>
                   <button
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleModalEliminar(item.subject_id)}
+                    onClick={() => handleModalEliminar(item.subjectId)}
                   >
                     Eliminar
                   </button>

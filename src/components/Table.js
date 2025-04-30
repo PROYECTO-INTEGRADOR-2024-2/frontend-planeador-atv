@@ -26,7 +26,7 @@ const Table = ({ title, columns }) => {
       console.log("Usuario que quiero: " + user);
       try {
         const response = await fetch(
-          `http://localhost:8081/api/v1/session/sessionsstudent/${user.user_id}`
+          `http://localhost:8081/api/v1/session/sessionsstudent/${user.userId}`
         );
         if (!response.ok) {
           throw new error("Respuesta no valida");
@@ -99,7 +99,7 @@ const Table = ({ title, columns }) => {
           </thead>
           <tbody className="border border-slate-500">
             {data.map((item) => (
-              <tr key={item.class_id}>
+              <tr key={item.classId}>
                 <td className="px-6 py-4 whitespace-nowrap">{item[0]}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
                 <td className="px-6 py-4 whitespace-nowrap">{item[3]}</td>
@@ -114,15 +114,15 @@ const Table = ({ title, columns }) => {
                   <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
-                      setId(item.degree_id);
-                      handleModalEditar(item.degree_id);
+                      setId(item.degreeId);
+                      handleModalEditar(item.degreeId);
                     }}
                   >
                     Editar
                   </button>
                   <button
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                    onClick={() => handleModalEliminar(item.degree_id)}
+                    onClick={() => handleModalEliminar(item.degreeId)}
                   >
                     Cancelar
                   </button>

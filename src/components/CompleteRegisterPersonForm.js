@@ -19,27 +19,27 @@ const CompleteRegisterPersonForm = () => {
   const [openRegister, setOpenRegister] = useState(false);
 
   const [formError, setFormError] = useState({
-    user_id: "",
-    user_id_type: "",
-    user_firstname: "",
-    user_lastname: "",
-    user_phone: "",
-    user_department: "",
-    user_city: "",
+    userId: "",
+    userIdType: "",
+    userFirstname: "",
+    userLastname: "",
+    userPhone: "",
+    userDepartment: "",
+    userCity: "",
   });
 
   const [person, setPerson] = useState({
-    user_id: "",
-    user_id_type: "",
-    user_firstname: "",
-    user_lastname: "",
-    user_phone: "",
-    user_department: "",
-    user_city: "",
-    user_state: "1",
-    user_role: "STUDENT",
+    userId: "",
+    userIdType: "",
+    userFirstname: "",
+    userLastname: "",
+    userPhone: "",
+    userDepartment: "",
+    userCity: "",
+    userState: "1",
+    userRole: "STUDENT",
     userEmail: "",
-    user_password: "oauth_temp_123", 
+    userPassword: "oauth_temp_123", 
   });
 
   useEffect(() => {
@@ -52,13 +52,13 @@ const CompleteRegisterPersonForm = () => {
   }, [session, status]);
 
   useEffect(() => {
-    if (person.user_department) {
+    if (person.userDepartment) {
       const selected = departmentsData.find(
-        (dep) => dep.departamento === person.user_department
+        (dep) => dep.departamento === person.userDepartment
       );
       setCities(selected?.ciudades || []);
     }
-  }, [person.user_department, departmentsData]);
+  }, [person.userDepartment, departmentsData]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,14 +121,14 @@ const CompleteRegisterPersonForm = () => {
   const validateFormInput = (e) => {
     e.preventDefault();
     const errors = {};
-    if (!person.user_id_type) errors.user_id_type = "Seleccione un tipo de ID";
-    if (!person.user_id) errors.user_id = "Ingrese su número de documento";
-    if (!person.user_firstname) errors.user_firstname = "Ingrese su nombre";
-    if (!person.user_lastname) errors.user_lastname = "Ingrese sus apellidos";
-    if (!person.user_phone) errors.user_phone = "Ingrese su teléfono";
-    if (!person.user_department)
-      errors.user_department = "Seleccione un departamento";
-    if (!person.user_city) errors.user_city = "Seleccione una ciudad";
+    if (!person.userIdType) errors.userIdType = "Seleccione un tipo de ID";
+    if (!person.userId) errors.userId = "Ingrese su número de documento";
+    if (!person.userFirstname) errors.userFirstname = "Ingrese su nombre";
+    if (!person.userLastname) errors.userLastname = "Ingrese sus apellidos";
+    if (!person.userPhone) errors.userPhone = "Ingrese su teléfono";
+    if (!person.userDepartment)
+      errors.userDepartment = "Seleccione un departamento";
+    if (!person.userCity) errors.userCity = "Seleccione una ciudad";
 
     if (Object.keys(errors).length > 0) {
       setFormError(errors);
@@ -159,51 +159,51 @@ const CompleteRegisterPersonForm = () => {
         </div>
         <form className="space-y-4 md:space-y-2" onSubmit={validateFormInput}>
           <select
-            name="user_id_type"
+            name="userIdType"
             onChange={handleChange}
-            value={person.user_id_type}
+            value={person.userIdType}
             className="w-full border p-2 rounded"
           >
             <option value="">Tipo de documento</option>
             <option value="C.C">C.C</option>
             <option value="T.I">T.I</option>
           </select>
-          <p className="text-red-500 text-xs">{formError.user_id_type}</p>
+          <p className="text-red-500 text-xs">{formError.userIdType}</p>
 
           <input
             type="text"
-            name="user_id"
+            name="userId"
             placeholder="Número de documento"
-            value={person.user_id}
+            value={person.userId}
             onChange={handleChange}
             className="w-full border p-2 rounded"
           />
-          <p className="text-red-500 text-xs">{formError.user_id}</p>
+          <p className="text-red-500 text-xs">{formError.userId}</p>
 
           <input
             type="text"
-            name="user_firstname"
+            name="userFirstname"
             placeholder="Nombres"
-            value={person.user_firstname}
+            value={person.userFirstname}
             onChange={handleChange}
             className="w-full border p-2 rounded"
           />
-          <p className="text-red-500 text-xs">{formError.user_firstname}</p>
+          <p className="text-red-500 text-xs">{formError.userFirstname}</p>
 
           <input
             type="text"
-            name="user_lastname"
+            name="userLastname"
             placeholder="Apellidos"
-            value={person.user_lastname}
+            value={person.userLastname}
             onChange={handleChange}
             className="w-full border p-2 rounded"
           />
-          <p className="text-red-500 text-xs">{formError.user_lastname}</p>
+          <p className="text-red-500 text-xs">{formError.userLastname}</p>
 
           <select
-            name="user_department"
+            name="userDepartment"
             onChange={handleChange}
-            value={person.user_department}
+            value={person.userDepartment}
             className="w-full border p-2 rounded"
           >
             <option value="">Seleccione su departamento</option>
@@ -213,12 +213,12 @@ const CompleteRegisterPersonForm = () => {
               </option>
             ))}
           </select>
-          <p className="text-red-500 text-xs">{formError.user_department}</p>
+          <p className="text-red-500 text-xs">{formError.userDepartment}</p>
 
           <select
-            name="user_city"
+            name="userCity"
             onChange={handleChange}
-            value={person.user_city}
+            value={person.userCity}
             className="w-full border p-2 rounded"
           >
             <option value="">Seleccione su ciudad</option>
@@ -228,17 +228,17 @@ const CompleteRegisterPersonForm = () => {
               </option>
             ))}
           </select>
-          <p className="text-red-500 text-xs">{formError.user_city}</p>
+          <p className="text-red-500 text-xs">{formError.userCity}</p>
 
           <input
             type="tel"
-            name="user_phone"
+            name="userPhone"
             placeholder="Teléfono"
-            value={person.user_phone}
+            value={person.userPhone}
             onChange={handleChange}
             className="w-full border p-2 rounded"
           />
-          <p className="text-red-500 text-xs">{formError.user_phone}</p>
+          <p className="text-red-500 text-xs">{formError.userPhone}</p>
 
           <button
             type="submit"

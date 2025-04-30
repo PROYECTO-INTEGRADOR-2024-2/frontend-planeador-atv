@@ -22,15 +22,15 @@ const TablePool = ({ title, columns }) => {
 
   useEffect(() => {
     const fetchAndSeparateTutorials = async () => {
-      if (!user?.user_id) {
+      if (!user?.userId) {
         console.log("Esperando ID de usuario...");
         return;
       }
 
       try {
-        console.log("Fetching tutorías para usuario:", user.user_id);
+        console.log("Fetching tutorías para usuario:", user.userId);
         const response = await fetch(
-          `http://localhost:8081/api/v1/session/sessionstutor/${user.user_id}`
+          `http://localhost:8081/api/v1/session/sessionstutor/${user.userId}`
         );
 
         if (!response.ok) {
@@ -96,14 +96,14 @@ const TablePool = ({ title, columns }) => {
   }, []);
 
   const acceptSession = async (id) => {
-    if (!user?.user_id) return;
+    if (!user?.userId) return;
     try {
       const response = await fetch(
         `http://localhost:8081/api/v1/session/sessionsPoolAccept`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
+          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
         }
       );
       if (!response.ok) throw new Error("Error al aceptar la sesión");
@@ -114,14 +114,14 @@ const TablePool = ({ title, columns }) => {
   };
 
   const rejectSession = async (id) => {
-    if (!user?.user_id) return;
+    if (!user?.userId) return;
     try {
       const response = await fetch(
         `http://localhost:8081/api/v1/session/rejectSession`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
+          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
         }
       );
       if (!response.ok) throw new Error("Error al rechazar la tutoría");
@@ -132,14 +132,14 @@ const TablePool = ({ title, columns }) => {
   };
 
   const cancelSession = async (id) => {
-    if (!user?.user_id) return;
+    if (!user?.userId) return;
     try {
       const response = await fetch(
         `http://localhost:8081/api/v1/session/cancelSession`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
+          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
         }
       );
       if (!response.ok) throw new Error("Error al cancelar la tutoría");
@@ -150,14 +150,14 @@ const TablePool = ({ title, columns }) => {
   };
 
   const registerSession = async (id) => {
-    if (!user?.user_id) return;
+    if (!user?.userId) return;
     try {
       const response = await fetch(
         `http://localhost:8081/api/v1/session/registerSession`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
+          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
         }
       );
       if (!response.ok) throw new Error("Error al registrar la tutoría");

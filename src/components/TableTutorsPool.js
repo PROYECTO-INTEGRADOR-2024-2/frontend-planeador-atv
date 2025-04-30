@@ -108,7 +108,6 @@ const TableTutorsPool = ({ title, columns }) => {
 
       showAlert("Solicitud aceptada exitosamente", "success");
 
-      // Update local state instead of reloading
       const updatedPending = pendingApplications.filter(
         (item) => item[0] !== applicationId
       );

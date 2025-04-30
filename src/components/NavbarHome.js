@@ -44,7 +44,7 @@ const NavbarHome = () => {
             viewBox="0 0 24 24"
             fill="#ffffff"
             className={`${
-              user.user_role == "Admin" ? "hidden" : "block"
+              user.userRole == "Admin" ? "hidden" : "block"
             } size-8`}
           >
             <path
@@ -55,7 +55,7 @@ const NavbarHome = () => {
           </svg>
           <span
             className={`${
-              user.user_role == "Admin" ? "block" : "hidden"
+              user.userRole == "Admin" ? "block" : "hidden"
             } mr-2 px-2 text-white`}
           >
             <svg
@@ -80,8 +80,8 @@ const NavbarHome = () => {
           </span>
           <span className="mr-2 px-2 text-white">Hola, {user.sub}</span>
           <span className="mr-2 px-2 text-white">
-            {user.user_role
-              ? user.user_role == "Student"
+            {user.userRole
+              ? user.userRole == "Student"
                 ? "Estudiante"
                 : ""
               : ""}
