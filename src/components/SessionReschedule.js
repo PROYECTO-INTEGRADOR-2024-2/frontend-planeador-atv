@@ -1,8 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
-import { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+
+const formatDateForBackend = (date) => {
+  const pad = (n) => n.toString().padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
+    date.getDate()
+  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
+};
 
 function SessionReschedule({ open, id, onClose }) {
   const [tutors, setTutors] = useState([]);
@@ -14,129 +20,85 @@ function SessionReschedule({ open, id, onClose }) {
     tutorId: "",
     subjectId: 0,
     classTopics: "",
-    classDate: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
+    classDate: formatDateForBackend(new Date()),
     classRate: 0,
   });
 
-  function formatDateForBackend(date) {
-    // Formato ISO estándar YYYY-MM-DDTHH:MM:SSZ
-    return date.toISOString();
-  }
-
+  // Cargar tutores
   useEffect(() => {
     const fetchTutorData = async () => {
       try {
-        const tutorResponse = await fetch(
-          `http://localhost:8081/api/v1/persons/tutor`
+        const response = await fetch(
+          "http://localhost:8081/api/v1/persons/tutor"
         );
-        if (!tutorResponse.ok) {
-          throw new Error("Error al obtener los datos de los tutores");
-        }
-        const tutorsData = await tutorResponse.json();
-
-        setTutors(tutorsData);
+        if (!response.ok) throw new Error("Error al obtener los tutores");
+        const data = await response.json();
+        setTutors(data);
       } catch (error) {
         console.error(error.message);
       }
     };
 
-    if (id) {
-      fetchTutorData();
-    }
+    if (id) fetchTutorData();
   }, [id]);
 
+  // Cargar datos de la tutoría
   useEffect(() => {
     const fetchTutorialData = async () => {
       try {
-        const tutorialResponse = await fetch(
+        const response = await fetch(
           `http://localhost:8081/api/v1/session/${id}`
         );
-        if (!tutorialResponse.ok) {
-          throw new Error("Error al obtener los datos de la tutoria");
-        }
-        const tutorialData = await tutorialResponse.json();
+        if (!response.ok) throw new Error("Error al obtener la tutoría");
+        const data = await response.json();
 
-        setTutorial(tutorialData);
+        const fecha = new Date(data.classDate);
+        setStartDate(fecha);
+        setTutorial({ ...data, classDate: formatDateForBackend(fecha) });
       } catch (error) {
         console.error(error.message);
       }
     };
 
-    if (id) {
-      fetchTutorialData();
-    }
+    if (id) fetchTutorialData();
   }, [id]);
 
   const handleDateChange = (date) => {
-    setStartDate(date);
+    const updatedDate = new Date(date);
+    const current = new Date(startDate);
+    updatedDate.setHours(current.getHours(), current.getMinutes(), 0);
 
-    // Mantener la hora actual cuando se cambia la fecha
-    const currentDate = new Date(tutorial.classDate);
-    const hours = currentDate.getHours();
-    const minutes = currentDate.getMinutes();
-
-    // Establecer la misma hora en la nueva fecha
-    date.setHours(hours);
-    date.setMinutes(minutes);
-    date.setSeconds(0);
-
-    setTutorial({
-      ...tutorial,
-      classDate: formatDateForBackend(date),
-    });
+    setStartDate(updatedDate);
+    setTutorial({ ...tutorial, classDate: formatDateForBackend(updatedDate) });
   };
 
   const getTime = (event) => {
-    // Crear una nueva fecha basada en la fecha seleccionada en el DatePicker
-    const selectedDate = new Date(startDate);
+    const [hours, minutes] = event.target.value.split(":").map(Number);
+    const updatedDate = new Date(startDate);
+    updatedDate.setHours(hours, minutes, 0);
 
-    // Obtener las horas y minutos del input de hora
-    const [hours, minutes] = event.target.value.split(":");
-
-    // Establecer las horas y minutos en la fecha
-    selectedDate.setHours(parseInt(hours, 10));
-    selectedDate.setMinutes(parseInt(minutes, 10));
-    selectedDate.setSeconds(0);
-
-    // Actualizar el estado con la fecha completa en formato ISO
-    setTutorial({
-      ...tutorial,
-      classDate: formatDateForBackend(selectedDate),
-    });
+    setStartDate(updatedDate);
+    setTutorial({ ...tutorial, classDate: formatDateForBackend(updatedDate) });
   };
 
-  const editTutorial = async () => {
+  const editTutorial = async (event) => {
+    event.preventDefault(); // CORRECTO: evita recarga del formulario
+
     try {
-      event.preventDefault();
-      console.log("ENTRAMOS PICHURRIA");
       const response = await fetch(
         `http://localhost:8081/api/v1/session/${id}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            classId: tutorial.classId,
-            classState: tutorial.classState,
-            studentId: tutorial.studentId,
-            tutorId: tutorial.tutorId,
-            subjectId: tutorial.subjectId,
-            classTopics: tutorial.classTopics,
-            classDate: tutorial.classDate,
-            classRate: tutorial.classRate,
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(tutorial),
         }
       );
-      console.log("Response PUTTTTTT:", response);
-      if (!response.ok) {
-        throw new Error("Respuesta no válida");
-      }
 
-      const result = await response.json();
-      console.log("Tutoría editada:", result);
+      if (!response.ok) throw new Error("Error al actualizar la tutoría");
+
+      await response.json();
       onClose();
-      setTimeout(window.location.reload(), 3000);
+      setTimeout(() => window.location.reload(), 500); // DEFER: correcta recarga
     } catch (error) {
       console.error("Error al editar la tutoría:", error.message);
     }
@@ -150,7 +112,7 @@ function SessionReschedule({ open, id, onClose }) {
     >
       <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
         <div className="w-full text-center my-[3vh]">
-          <h1 className="mb-4 text-xl font-extrabold leading-none tracking-tight text-red-500 md:text-2xl lg:text-4xl dark:text-black">
+          <h1 className="mb-4 text-xl font-extrabold text-red-500 md:text-2xl lg:text-4xl dark:text-black">
             Reprogramar Tutoría
           </h1>
 
@@ -167,28 +129,14 @@ function SessionReschedule({ open, id, onClose }) {
                   <div className="flex border-b-2">
                     <DatePicker
                       id="datePicker"
-                      name="classDate"
                       selected={startDate}
                       onChange={handleDateChange}
                       className="w-[95px] pb-1"
                       dateFormat="dd/MM/yyyy"
                     />
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="size-6 left-20"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z"
-                      />
-                    </svg>
                   </div>
                 </div>
+
                 <div>
                   <label
                     htmlFor="timePicker"
@@ -199,26 +147,29 @@ function SessionReschedule({ open, id, onClose }) {
                   <div className="border-b-2">
                     <input
                       id="timePicker"
-                      name="timePicker"
-                      aria-label="Time"
                       type="time"
+                      value={`${String(startDate.getHours()).padStart(
+                        2,
+                        "0"
+                      )}:${String(startDate.getMinutes()).padStart(2, "0")}`}
                       onChange={getTime}
                     />
                   </div>
                 </div>
               </div>
             </div>
-            <div className="flex flex-row justify-center pt-8">
+
+            <div className="flex justify-center pt-8">
               <button
-                //onClick={editTutorial}
                 type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
                 Guardar
               </button>
               <button
+                type="button"
                 onClick={onClose}
-                className=" text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-md text-xl px-1 2xl:py-2.5 text-center md:p-1 ml-4"
+                className="ml-4 bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
               >
                 Cancelar
               </button>
