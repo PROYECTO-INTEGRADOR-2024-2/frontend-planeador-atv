@@ -91,7 +91,7 @@ const TutorialForm = () => {
       return;
     }
 
-    if (!user || !user.userId) {
+    if (!user || !user.user_id) {
       alert("Identificarse primero");
       return;
     }

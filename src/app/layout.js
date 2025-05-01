@@ -1,3 +1,5 @@
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 import { Roboto } from "next/font/google";
 import { Providers } from "./Providers";
@@ -19,6 +21,7 @@ export default function RootLayout({ children }) {
       <body className={myFont.className}>
         <Providers>
           {children}
+          <ToastContainer position="bottom-left" autoClose={5000} />
         </Providers>
       </body>
     </html>
