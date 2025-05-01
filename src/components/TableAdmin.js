@@ -4,6 +4,8 @@ import { jwtDecode } from "jwt-decode";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
 import EditTutorModal from "./EditTutorModal";
+import SessionReschedule from "./SessionReschedule";
+import Image from "next/image";
 
 const TablePool = ({ title, columns }) => {
   const [pendingTutorials, setPendingTutorials] = useState([]);
@@ -11,6 +13,7 @@ const TablePool = ({ title, columns }) => {
   const [completedTutorials, setCompletedTutorials] = useState([]);
   const [canceledTutorials, setCanceledTutorials] = useState([]);
   const [openEditar, setOpenEditar] = useState(false);
+  const [openReschedule, setOpenReschedule] = useState(false);
   const [error, setError] = useState(null);
   const [subject, setSubject] = useState([]);
   const [user, setUser] = useState(null);
@@ -23,9 +26,18 @@ const TablePool = ({ title, columns }) => {
     setId(id);
     setOpenEditar(true);
   };
+  const handleModalReschedule = (id) => {
+    setId(id);
+    setOpenReschedule(true);
+    console.log("si funciona");
+  };
 
   const closeModalEditar = () => {
     setOpenEditar(false);
+    setId(null);
+  };
+  const closeModalReschedule = () => {
+    setOpenReschedule(false);
     setId(null);
   };
 
@@ -110,13 +122,13 @@ const TablePool = ({ title, columns }) => {
   //Data de allsesions
   useEffect(() => {
     const fetchAndSeparateTutorials = async () => {
-      if (!user?.userId) {
+      if (!user?.user_id) {
         console.log("Esperando ID de usuario...");
         return;
       }
 
       try {
-        console.log("Fetching tutorías para usuario:", user.userId);
+        console.log("Fetching tutorías para usuario:", user.user_id);
         const response = await fetch(`http://localhost:8081/api/v1/session/`);
 
         if (!response.ok) {
@@ -168,14 +180,14 @@ const TablePool = ({ title, columns }) => {
   }, [user]);
 
   const cancelSession = async (id) => {
-    if (!user?.userId) return;
+    if (!user?.user_id) return;
     try {
       const response = await fetch(
         `http://localhost:8081/api/v1/session/cancelTuto/${id}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
+          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
         }
       );
       if (!response.ok) throw new Error("Error al cancelar la tutoría");
@@ -198,7 +210,6 @@ const TablePool = ({ title, columns }) => {
                 setId(tutorial[0]);
                 handleModalEditar(tutorial[0]);
               }}
-              //onClick={() => acceptSession(tutorial[0])}
             >
               Cambiar Tutor
             </button>
@@ -297,10 +308,29 @@ const TablePool = ({ title, columns }) => {
                     "Materia no encontrada"}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{item[5]}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap flex items-center gap-5 ">
                   {format(new Date(item[6]), "dd MMMM yyyy HH:mm", {
                     locale: es,
                   })}
+                  <div
+                    className="hover:cursor-pointer w-[20px] h-[20px]"
+                    onClick={() => {
+                      //setId(tutorial[0]);
+                      handleModalReschedule(item[0]);
+                    }}
+                  >
+                    <Image
+                      src="/images/edit.png"
+                      alt="edit Icon"
+                      width={20}
+                      height={20}
+                    />
+                  </div>
+                  <SessionReschedule
+                    open={openReschedule}
+                    id={id}
+                    onClose={closeModalReschedule}
+                  />
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">{item[7]}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
