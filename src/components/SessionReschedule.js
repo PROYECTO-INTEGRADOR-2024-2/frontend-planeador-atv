@@ -107,6 +107,8 @@ function SessionReschedule({ open, id, onClose }) {
 
   const editTutorial = async () => {
     try {
+      event.preventDefault();
+      console.log("ENTRAMOS PICHURRIA");
       const response = await fetch(
         `http://localhost:8081/api/v1/session/${id}`,
         {
@@ -114,10 +116,19 @@ function SessionReschedule({ open, id, onClose }) {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(tutorial),
+          body: JSON.stringify({
+            classId: tutorial.classId,
+            classState: tutorial.classState,
+            studentId: tutorial.studentId,
+            tutorId: tutorial.tutorId,
+            subjectId: tutorial.subjectId,
+            classTopics: tutorial.classTopics,
+            classDate: tutorial.classDate,
+            classRate: tutorial.classRate,
+          }),
         }
       );
-
+      console.log("Response PUTTTTTT:", response);
       if (!response.ok) {
         throw new Error("Respuesta no válida");
       }
@@ -125,7 +136,7 @@ function SessionReschedule({ open, id, onClose }) {
       const result = await response.json();
       console.log("Tutoría editada:", result);
       onClose();
-      window.location.reload();
+      setTimeout(window.location.reload(), 3000);
     } catch (error) {
       console.error("Error al editar la tutoría:", error.message);
     }
@@ -143,7 +154,7 @@ function SessionReschedule({ open, id, onClose }) {
             Reprogramar Tutoría
           </h1>
 
-          <form className="space-y-4 md:space-y-2" onSubmit={""}>
+          <form className="space-y-4 md:space-y-2" onSubmit={editTutorial}>
             <div className="py-8">
               <div className="flex justify-between bg-white p-2 px-8 pb-4">
                 <div>
@@ -199,7 +210,8 @@ function SessionReschedule({ open, id, onClose }) {
             </div>
             <div className="flex flex-row justify-center pt-8">
               <button
-                onClick={editTutorial}
+                //onClick={editTutorial}
+                type="submit"
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
               >
                 Guardar
