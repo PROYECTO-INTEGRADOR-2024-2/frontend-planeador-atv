@@ -39,9 +39,8 @@ const Login = () => {
       const token = res.token;
       const user = jwtDecode(token);
 
-      // Guardar token y user como cookie
-      Cookies.set("token", token, { expires: 1 });
-      Cookies.set("user", JSON.stringify(user), { expires: 1 });
+      Cookies.set("token", token);
+      Cookies.set("user", JSON.stringify(user));
 
       router.push("/landing");
       toast.success("Inicio de sesión correcto.");
