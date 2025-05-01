@@ -105,7 +105,7 @@ const TablePool = ({ title, columns }) => {
       }
     };
     fetchDataUser();
-  });
+  }, []);
 
   //Data de allsesions
   useEffect(() => {
