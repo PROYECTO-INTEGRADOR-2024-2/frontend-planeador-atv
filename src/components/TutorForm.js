@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import Cookies from "js-cookie";
 
 const TutorialForm = () => {
   // Estados nuevos (subida de archivo)
@@ -48,7 +49,7 @@ const TutorialForm = () => {
 
   //usuario del token
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = Cookies.get('token');
     if (token) {
       const user = jwtDecode(token);
       setUser(user);
