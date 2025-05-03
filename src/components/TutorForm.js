@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 const TutorialForm = () => {
   // Estados nuevos (subida de archivo)
@@ -85,57 +86,6 @@ const TutorialForm = () => {
     }
   };
 
-  const uploadFile = async () => {
-    if (!selectedFile) {
-      alert("Seleccionar archivo primero");
-      return;
-    }
-
-    if (!user || !user.user_id) {
-      alert("Identificarse primero");
-      return;
-    }
-
-    setIsUploading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-      formData.append("userId", user.user_id);
-
-
-      const response = await fetch(
-        "http://localhost:8081/api/v1/fileManager/upload",
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`El error fue ${response.status}`);
-      }
-
-      const result = await response.json();
-      setUploadResult({
-        succes: true,
-        message: "Documento subido de manera HD",
-      });
-
-      console.log("Archivo: ", result);
-    } catch (error) {
-      setUploadResult({
-        succes: false,
-        message: `el error es: ${error.message}`,
-      });
-      console.error("Error: ", error);
-    } finally {
-      setIsUploading(false);
-    }
-  };
-
-  //mapear la info en los componentes
-
   const saveTutorial = async (e) => {
     e.preventDefault();
     console.log("Solicitud para enviar al backend");
@@ -156,13 +106,59 @@ const TutorialForm = () => {
         console.log(response.status);
         throw new Error("Something went wrong");
       }
-
+      if (!selectedFile) {
+        toast.warning("Recuerda subir tu certificado de matrícula");
+        return;
+      }
+  
+      if (!user || !user.user_id) {
+        alert("Identificarse primero");
+        return;
+      }
+  
+      setIsUploading(true);
+  
+      try {
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+        formData.append("userId", user.user_id);
+  
+  
+        const response = await fetch(
+          "http://localhost:8081/api/v1/fileManager/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+  
+        if (!response.ok) {
+          throw new Error(`El error fue ${response.status}`);
+        }
+  
+        const result = await response.json();
+        setUploadResult({
+          succes: true,
+          message: "Documento subido de manera HD",
+        });
+  
+        console.log("Archivo: ", result);
+      } catch (error) {
+        setUploadResult({
+          succes: false,
+          message: `el error es: ${error.message}`,
+        });
+        console.error("Error: ", error);
+      } finally {
+        setIsUploading(false);
+      }
       //const _tutor = await response.json();
-      alert("Solicitud creada exitosamente");
+      toast.success("Solicitud creada exitosamente. Te esperamos en el equipo");
     } catch (error) {
       console.error("Error al enviar los datos:", error);
-      alert("Error al enviar los datos");
+      toast.error("Error al enviar los datos de la solicitud.");
     }
+    
   };
 
   return (
@@ -260,14 +256,6 @@ const TutorialForm = () => {
                 <p className="text-green-600">
                   Archivo seleccionado: {selectedFile?.name}
                 </p>
-                <button
-                  type="button"
-                  onClick={uploadFile}
-                  disabled={isUploading}
-                  className="mt-2 px-4 py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 disabled:bg-gray-400"
-                >
-                  {isUploading ? "Subiendo.." : "Subir certificado"}
-                </button>
               </div>
             )}
             {uploadResult && (
@@ -285,23 +273,19 @@ const TutorialForm = () => {
         </div>
         <div>
           <div className="flex gap-4">
-            <input type="checkbox" id="terminos" />
+            <input type="checkbox" id="terminos" required/>
             <label for="terminos">Acepto términos y condiciones.</label>
           </div>
         </div>
         <div className="flex items-center justify-center space-x-20">
           <button
-            // type="submit"
             type="button"
-            //onClick={saveTutorial}
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl 2xl:py-2.5 text-center md:p-1 px-2"
           >
             Cancelar
           </button>
           <button
-            // type="submit"
             type="submit"
-            //onClick={saveTutorial}
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl 2xl:py-2.5 text-center md:p-1 px-2"
           >
             Registrar
