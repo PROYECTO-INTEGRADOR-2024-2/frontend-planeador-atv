@@ -23,7 +23,6 @@ const Table = ({ title, columns }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      console.log("Usuario que quiero: " + user);
       try {
         const response = await fetch(
           `http://localhost:8081/api/v1/session/sessionsstudent/${user.userId}`
@@ -47,13 +46,11 @@ const Table = ({ title, columns }) => {
         const response = await fetch(
           `http://localhost:8081/api/v1/persons/${data[0][3]}`
         );
-        console.log(data);
         if (!response.ok) {
           throw new error("Respuesta no valida");
         }
         const result = await response.json();
         setTutor(result.map((item) => Object.values(item)));
-        console.log("Tutor: " + result);
       } catch (error) {
         setError(error.message);
       }
