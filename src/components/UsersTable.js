@@ -16,12 +16,36 @@ const Alert = ({ message, type }) => {
   );
 };
 
+const Modal = ({ user, onClose }) => {
+  return (
+    <div className="fixed inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-lg w-4/5 max-w-4xl relative">
+        <button
+          onClick={onClose}
+          className="absolute top-2 right-2 text-2xl font-bold text-gray-600"
+        >
+          &times;
+        </button>
+        <h2 className="text-2xl font-bold mb-4">Perfil del Usuario</h2>
+        <p><strong>ID:</strong> {user.id}</p>
+        <p><strong>Nombre:</strong> {user.name}</p>
+        <p><strong>Correo:</strong> {user.email}</p>
+        <p><strong>Rol:</strong> {user.role}</p>
+        <p><strong>Ciudad:</strong> {user.city}</p>
+        <p><strong>Estado:</strong> {user.status === "1" ? "Habilitado" : "Deshabilitado"}</p>
+      </div>
+    </div>
+  );
+};
+
 const UsersTable = ({ title }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [activeTab, setActiveTab] = useState("enabled"); // Estado para la pestaña activa: "enabled" o "disabled"
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null); // Estado para el usuario seleccionado
 
   const fetchUsers = async () => {
     try {
@@ -133,10 +157,14 @@ const UsersTable = ({ title }) => {
     }
   };
 
-  const handleDelete = (id) => {
-    console.log(`Eliminar usuario ${id}`);
-    setAlert({ message: `Usuario ${id} eliminado`, type: "success" });
-    setTimeout(() => setAlert(null), 3000);
+  const handleOpenProfile = (user) => {
+    setSelectedUser(user);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedUser(null);
   };
 
   if (error) {
@@ -146,6 +174,10 @@ const UsersTable = ({ title }) => {
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2 relative max-w-7xl mx-auto">
       {alert && <Alert message={alert.message} type={alert.type} />}
+      
+      {isModalOpen && selectedUser && (
+        <Modal user={selectedUser} onClose={handleCloseModal} />
+      )}
 
       <div className="bg-gray-200 border border-slate-400 px-4">
         <h1 className="text-3xl font-bold py-5 text-gray-600">{title}</h1>
@@ -200,30 +232,30 @@ const UsersTable = ({ title }) => {
                       <div className="flex flex-col space-y-1">
                         <button
                           onClick={() => handleDisable(user.id)}
-                          className="bg-blue-400 hover:bg-blue-500 text-white px-3 py-1 rounded"
+                          className="bg-yellow-200 hover:bg-yellow-300 text-black px-3 py-1 rounded"
                         >
                           Deshabilitar
                         </button>
                         <button
-                          onClick={() => handleDelete(user.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                          onClick={() => handleOpenProfile(user)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
                         >
-                          Eliminar
+                          Ver perfil
                         </button>
                       </div>
                     ) : (
                       <div className="flex flex-col space-y-1">
                         <button
                           onClick={() => handleEnable(user.id)}
-                          className="bg-green-400 hover:bg-green-500 text-white px-3 py-1 rounded"
+                          className="bg-yellow-200 hover:bg-yellow-300 text-black px-3 py-1 rounded"
                         >
                           Habilitar
                         </button>
                         <button
-                          onClick={() => handleDelete(user.id)}
-                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                          onClick={() => handleOpenProfile(user)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
                         >
-                          Eliminar
+                          Ver perfil
                         </button>
                       </div>
                     )}
