@@ -1,23 +1,39 @@
-import React from "react";
+"use client"
+
 import Card from "@/components/Card";
 import NavbarHome from "@/components/NavbarHome";
-import Table from "@/components/Table";
+import PersonalTutosTable from "@/components/PersonalTutosTable";
 import Footer from "../../components/Footer";
+import Cookies from "js-cookie";
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 function landing() {
+    const router = useRouter()
+    useEffect(() => {
+      const token = Cookies.get("token");
+      const userCookie = Cookies.get("user");
+  
+      if (token && userCookie) {
+        try {
+          const parsedUser = JSON.parse(userCookie);
+          setUser(parsedUser);
+        } catch (error) {
+          console.error("Error parsing user cookie:", error);
+          router.push("/landing");
+        }
+      } else {
+        router.push("/landing");
+      }
+    }, []);
+
+  
+
+
   return (
     <>
-      <NavbarHome name={"Juan"} rol={"Student"} />
-      <Table
-        columns={[
-          "ID",
-          "Estado",
-          "Tutor",
-          "Materia",
-          "Tema(s)",
-          "Fecha",
-          "Acciones",
-        ]}
+      <NavbarHome/>
+      <PersonalTutosTable
         title={"Solicitudes Pendientes"}
       />
       <Card
