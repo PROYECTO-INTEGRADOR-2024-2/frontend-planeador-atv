@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const Alert = ({ message, type }) => {
   return (
@@ -17,89 +19,129 @@ const Alert = ({ message, type }) => {
 const UsersTable = ({ title }) => {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [filterId, setFilterId] = useState("");
-  const [filterName, setFilterName] = useState("");
-  const [activeFilter, setActiveFilter] = useState(null);
+  const [activeTab, setActiveTab] = useState("enabled"); // Estado para la pestaña activa: "enabled" o "disabled"
   const [error, setError] = useState(null);
   const [alert, setAlert] = useState(null);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch("http://localhost:8081/api/v1/persons");
-        if (!response.ok) {
-          throw new Error("Error al obtener los usuarios");
-        }
-        const result = await response.json();
-        const processed = result.map((user) => ({
-          id: user.userId,
-          name: `${user.userFirstname} ${user.userLastname}`,
-          email: user.userEmail,
-          role: user.userRole,
-          city: user.userCity,
-        }));
-        setUsers(processed);
-        setFilteredUsers(processed);
-      } catch (error) {
-        setError(error.message);
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch("http://localhost:8081/api/v1/persons");
+      if (!response.ok) {
+        throw new Error("Error al obtener los usuarios");
       }
-    };
+      const result = await response.json();
+      const processed = result.map((user) => ({
+        id: user.userId,
+        name: `${user.userFirstname} ${user.userLastname}`,
+        email: user.userEmail,
+        role: user.userRole,
+        city: user.userCity,
+        status: user.userState
+      }));
+      setUsers(processed);
+      setFilteredUsers(processed);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
 
-    fetchUsers();
+  useEffect(() => {
+    fetchUsers(); // Recargar usuarios cada vez que se monta el componente
   }, []);
 
   useEffect(() => {
-    // Aplicar filtro según cuál esté activo
-    if (activeFilter === "id" && filterId) {
-      setFilteredUsers(
-        users.filter((user) =>
-          user.id.toLowerCase().includes(filterId.toLowerCase())
-        )
-      );
-    } else if (activeFilter === "name" && filterName) {
-      setFilteredUsers(
-        users.filter((user) =>
-          user.name.toLowerCase().includes(filterName.toLowerCase())
-        )
-      );
-    } else {
-      setFilteredUsers(users);
-    }
-  }, [filterId, filterName, users, activeFilter]);
+    // Recargar los usuarios al cambiar la pestaña activa
+    fetchUsers();
+  }, [activeTab]);
 
-  const handleIdFilterChange = (e) => {
-    const value = e.target.value;
-    setFilterId(value);
-    setActiveFilter(value ? "id" : null);
-    if (value) {
-      setFilterName(""); // Limpiar el otro filtro
+  useEffect(() => {
+    // Filtrar usuarios según el estado y la pestaña activa
+    if (activeTab === "enabled") {
+      setFilteredUsers(users.filter((user) => user.status === "1"));
+    } else if (activeTab === "disabled") {
+      setFilteredUsers(users.filter((user) => user.status === "0"));
+    }
+  }, [activeTab, users]);
+
+  const handleDisable = async (id) => {
+    try {
+      const token = Cookies.get("token");
+
+      if (!token) {
+        toast.error("Token no encontrado");
+        return;
+      }
+
+      const response = await fetch(`http://localhost:8081/api/v1/persons/disableUser/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "No se pudo deshabilitar el usuario");
+      }
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, status: 0 } : user
+        )
+      );
+
+      toast.success(`Usuario ${id} deshabilitado correctamente`);
+    } catch (error) {
+      console.error("Error en handleDisable:", error);
+      toast.error(error.message || "Error al deshabilitar usuario");
     }
   };
 
-  const handleNameFilterChange = (e) => {
-    const value = e.target.value;
-    setFilterName(value);
-    setActiveFilter(value ? "name" : null);
-    if (value) {
-      setFilterId(""); // Limpiar el otro filtro
+  const handleEnable = async (id) => {
+    try {
+      const token = Cookies.get("token");
+
+      if (!token) {
+        toast.error("Token no encontrado");
+        return;
+      }
+
+      const response = await fetch(`http://localhost:8081/api/v1/persons/enableUser/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "No se pudo habilitar el usuario");
+      }
+
+      setUsers((prevUsers) =>
+        prevUsers.map((user) =>
+          user.id === id ? { ...user, status: 1 } : user
+        )
+      );
+
+      toast.success(`Usuario ${id} habilitado correctamente`);
+    } catch (error) {
+      console.error("Error en handleEnable:", error);
+      toast.error(error.message || "Error al habilitar usuario");
     }
-  };
-
-  if (error) {
-    return <div className="p-8 text-red-500">Error: {error}</div>;
-  }
-
-  const handleDisable = (id) => {
-    console.log(`Deshabilitar usuario ${id}`);
-    setAlert({ message: `Usuario ${id} deshabilitado`, type: "success" });
-    setTimeout(() => setAlert(null), 3000); // La alerta desaparecerá después de 3 segundos
   };
 
   const handleDelete = (id) => {
     console.log(`Eliminar usuario ${id}`);
     setAlert({ message: `Usuario ${id} eliminado`, type: "success" });
-    setTimeout(() => setAlert(null), 3000); // La alerta desaparecerá después de 3 segundos
+    setTimeout(() => setAlert(null), 3000);
   };
+
+  if (error) {
+    return <div className="p-8 text-red-500">Error: {error}</div>;
+  }
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2 relative max-w-7xl mx-auto">
@@ -109,45 +151,27 @@ const UsersTable = ({ title }) => {
         <h1 className="text-3xl font-bold py-5 text-gray-600">{title}</h1>
       </div>
 
-      <div className="p-4 flex flex-wrap gap-4">
-        <div>
-          <input
-            type="text"
-            placeholder="Filtrar por ID"
-            value={filterId}
-            onChange={handleIdFilterChange}
-            className={`w-64 p-2 border rounded ${
-              activeFilter === "name" ? "bg-gray-100 text-gray-400" : "border-gray-300"
-            }`}
-            disabled={activeFilter === "name"}
-          />
-        </div>
-        <div>
-          <input
-            type="text"
-            placeholder="Filtrar por Nombre"
-            value={filterName}
-            onChange={handleNameFilterChange}
-            className={`w-64 p-2 border rounded ${
-              activeFilter === "id" ? "bg-gray-100 text-gray-400" : "border-gray-300"
-            }`}
-            disabled={activeFilter === "id"}
-          />
-        </div>
-        {activeFilter && (
-          <button
-            onClick={() => {
-              setFilterId("");
-              setFilterName("");
-              setActiveFilter(null);
-            }}
-            className="bg-gray-300 hover:bg-gray-400 text-gray-800 px-3 py-2 rounded"
-          >
-            Limpiar filtros
-          </button>
-        )}
+      {/* Pestañas */}
+      <div className="flex border-b">
+        <button
+          onClick={() => setActiveTab("enabled")}
+          className={`py-2 px-4 font-semibold ${
+            activeTab === "enabled" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-600"
+          }`}
+        >
+          Usuarios Habilitados
+        </button>
+        <button
+          onClick={() => setActiveTab("disabled")}
+          className={`py-2 px-4 font-semibold ${
+            activeTab === "disabled" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-600"
+          }`}
+        >
+          Usuarios Deshabilitados
+        </button>
       </div>
 
+      {/* Tabla de usuarios */}
       <div className="p-4 overflow-x-auto">
         {filteredUsers.length === 0 ? (
           <div className="text-center py-4">No hay usuarios disponibles</div>
@@ -172,7 +196,7 @@ const UsersTable = ({ title }) => {
                   <td className="px-6 py-4 border border-slate-300">{user.role}</td>
                   <td className="px-6 py-4 border border-slate-300">{user.city}</td>
                   <td className="px-6 py-4 border border-slate-300">
-                    {["student", "tutor"].includes(user.role.toLowerCase()) ? (
+                    {activeTab === "enabled" ? (
                       <div className="flex flex-col space-y-1">
                         <button
                           onClick={() => handleDisable(user.id)}
@@ -188,7 +212,20 @@ const UsersTable = ({ title }) => {
                         </button>
                       </div>
                     ) : (
-                      <div className="text-gray-400">—</div>
+                      <div className="flex flex-col space-y-1">
+                        <button
+                          onClick={() => handleEnable(user.id)}
+                          className="bg-green-400 hover:bg-green-500 text-white px-3 py-1 rounded"
+                        >
+                          Habilitar
+                        </button>
+                        <button
+                          onClick={() => handleDelete(user.id)}
+                          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>
