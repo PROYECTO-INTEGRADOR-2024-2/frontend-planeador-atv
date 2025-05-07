@@ -46,6 +46,8 @@ const UsersTable = ({ title }) => {
   const [alert, setAlert] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUser, setSelectedUser] = useState(null); // Estado para el usuario seleccionado
+  const [idFilter, setIdFilter] = useState(""); // Filtro de ID
+  const [nameFilter, setNameFilter] = useState(""); // Filtro de nombre
 
   const fetchUsers = async () => {
     try {
@@ -86,6 +88,16 @@ const UsersTable = ({ title }) => {
       setFilteredUsers(users.filter((user) => user.status === "0"));
     }
   }, [activeTab, users]);
+
+  useEffect(() => {
+    // Filtrar por ID y nombre
+    let filtered = users.filter((user) => {
+      const matchesId = idFilter ? user.id.toString().includes(idFilter) : true;
+      const matchesName = nameFilter ? user.name.toLowerCase().includes(nameFilter.toLowerCase()) : true;
+      return matchesId && matchesName;
+    });
+    setFilteredUsers(filtered);
+  }, [idFilter, nameFilter, users]);
 
   const handleDisable = async (id) => {
     try {
@@ -167,6 +179,12 @@ const UsersTable = ({ title }) => {
     setSelectedUser(null);
   };
 
+  // Limpiar filtros al cambiar de pestaña
+  useEffect(() => {
+    setIdFilter("");
+    setNameFilter("");
+  }, [activeTab]);
+
   if (error) {
     return <div className="p-8 text-red-500">Error: {error}</div>;
   }
@@ -201,6 +219,26 @@ const UsersTable = ({ title }) => {
         >
           Usuarios Deshabilitados
         </button>
+      </div>
+
+      {/* Filtros */}
+      <div className="flex space-x-4 p-4">
+        <input
+          type="text"
+          placeholder="Filtrar por ID"
+          value={idFilter}
+          onChange={(e) => setIdFilter(e.target.value)}
+          className="p-2 border rounded"
+          disabled={nameFilter.length > 0} // Deshabilitar si hay filtro por nombre
+        />
+        <input
+          type="text"
+          placeholder="Filtrar por Nombre"
+          value={nameFilter}
+          onChange={(e) => setNameFilter(e.target.value)}
+          className="p-2 border rounded"
+          disabled={idFilter.length > 0} // Deshabilitar si hay filtro por ID
+        />
       </div>
 
       {/* Tabla de usuarios */}
