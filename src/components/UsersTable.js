@@ -80,24 +80,20 @@ const UsersTable = ({ title }) => {
     fetchUsers();
   }, [activeTab]);
 
-  useEffect(() => {
-    // Filtrar usuarios según el estado y la pestaña activa
-    if (activeTab === "enabled") {
-      setFilteredUsers(users.filter((user) => user.status === "1"));
-    } else if (activeTab === "disabled") {
-      setFilteredUsers(users.filter((user) => user.status === "0"));
-    }
-  }, [activeTab, users]);
 
   useEffect(() => {
-    // Filtrar por ID y nombre
-    let filtered = users.filter((user) => {
-      const matchesId = idFilter ? user.id.toString().includes(idFilter) : true;
-      const matchesName = nameFilter ? user.name.toLowerCase().includes(nameFilter.toLowerCase()) : true;
-      return matchesId && matchesName;
+    const filtered = users.filter((user) => {
+      const matchStatus =
+        activeTab === "enabled" ? user.status === "1" : user.status === "0";
+      const matchId = idFilter ? user.id.toString().includes(idFilter) : true;
+      const matchName = nameFilter
+        ? user.name.toLowerCase().includes(nameFilter.toLowerCase())
+        : true;
+      return matchStatus && matchId && matchName;
     });
+  
     setFilteredUsers(filtered);
-  }, [idFilter, nameFilter, users]);
+  }, [idFilter, nameFilter, users, activeTab]);
 
   const handleDisable = async (id) => {
     try {
