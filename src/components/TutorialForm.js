@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 const TUTORIAL_API_BASE_URL = "http://localhost:8081/api/v1/session/";
 const TutorialForm = () => {
@@ -31,11 +32,11 @@ const TutorialForm = () => {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = Cookies.get("token");
     if (token) {
       const user = jwtDecode(token);
       setUser(user);
-      setTutorial({ ...tutorial, studentId: user.userId });
+      setTutorial({ ...tutorial, studentId: user.user_id });
     }
   }, []);
 
