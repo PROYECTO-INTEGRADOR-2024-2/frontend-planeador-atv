@@ -1,36 +1,59 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
-const TablePool = ({ title, columns }) => {
-  const [pendingTutorials, setPendingTutorials] = useState([]);
-  const [acceptedTutorials, setAcceptedTutorials] = useState([]);
-  const [completedTutorials, setCompletedTutorials] = useState([]);
+const TablePendingTutor = ({ title, columns }) => {
+  const [tutorials, setTutorials] = useState({
+    pending: [],
+    accepted: [],
+    rejected: [],
+    canceled: [],
+    completed: [],
+  });
   const [error, setError] = useState(null);
   const [subject, setSubject] = useState([]);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
 
+  const router = useRouter();
+
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = jwtDecode(token);
-      setUser(user);
-      console.log("Usuario cargado:", user);
+    const token = Cookies.get("token");
+    const userCookie = Cookies.get("user");
+
+    if (token && userCookie) {
+      try {
+        const parsedUser = JSON.parse(userCookie);
+        setUser(parsedUser);
+      } catch (error) {
+        console.error("Error parsing user cookie:", error);
+        router.push("/landing");
+      }
+    } else {
+      router.push("/landing");
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     const fetchAndSeparateTutorials = async () => {
-      if (!user?.userId) {
+      if (!user?.user_id) {
         console.log("Esperando ID de usuario...");
         return;
       }
 
       try {
-        console.log("Fetching tutorías para usuario:", user.userId);
+        const token = Cookies.get("token");
+
         const response = await fetch(
-          `http://localhost:8081/api/v1/session/sessionstutor/${user.userId}`
+          `http://localhost:8081/api/v1/session/sessionstutor/tutosTutor`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (!response.ok) {
@@ -40,34 +63,32 @@ const TablePool = ({ title, columns }) => {
         const result = await response.json();
         console.log("Tutorías obtenidas:", result);
 
-        const pending = [];
-        const accepted = [];
-        const completed = [];
+        const categorizedTutorials = {
+          pending: [],
+          accepted: [],
+          rejected: [],
+          canceled: [],
+          completed: [],
+        };
 
         result.forEach((tutorial) => {
           const tutorialData = Object.values(tutorial);
-          console.log("Datos de tutoría:", tutorialData);
+          const status = tutorialData[3]?.toLowerCase();
 
-          // Actualizar la lógica de clasificación según el estado
-          const status = tutorialData[1]?.toLowerCase();
           if (status === "pendiente_asignada") {
-            pending.push(tutorialData);
+            categorizedTutorials.pending.push(tutorialData);
           } else if (status === "aceptada") {
-            accepted.push(tutorialData);
-          } else if (
-            [
-              "valorada_noregistrada",
-              "registrada_novalorada",
-              "registrada_valorada",
-            ].includes(status)
-          ) {
-            completed.push(tutorialData);
+            categorizedTutorials.accepted.push(tutorialData);
+          } else if (status === "rechazada") {
+            categorizedTutorials.rejected.push(tutorialData);
+          } else if (status === "cancelada") {
+            categorizedTutorials.canceled.push(tutorialData);
+          } else if (["valorada_noregistrada", "registrada_novalorada", "registrada_valorada"].includes(status)) {
+            categorizedTutorials.completed.push(tutorialData);
           }
         });
 
-        setPendingTutorials(pending);
-        setAcceptedTutorials(accepted);
-        setCompletedTutorials(completed);
+        setTutorials(categorizedTutorials);
       } catch (error) {
         console.error("Error al cargar tutorías:", error);
         setError(error.message);
@@ -80,7 +101,16 @@ const TablePool = ({ title, columns }) => {
   useEffect(() => {
     const fetchDataSubject = async () => {
       try {
-        const response = await fetch("http://localhost:8081/api/v1/subject/");
+        const token = Cookies.get("token");
+
+        const response = await fetch("http://localhost:8081/api/v1/subject/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         if (!response.ok) {
           throw new Error(`Error HTTP: ${response.status}`);
         }
@@ -95,72 +125,23 @@ const TablePool = ({ title, columns }) => {
     fetchDataSubject();
   }, []);
 
-  const acceptSession = async (id) => {
+  const handleSessionAction = async (id, action) => {
     if (!user?.userId) return;
     try {
-      const response = await fetch(
-        `http://localhost:8081/api/v1/session/sessionsPoolAccept`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
-        }
-      );
-      if (!response.ok) throw new Error("Error al aceptar la sesión");
-      window.location.reload();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+      const token = Cookies.get("token");
 
-  const rejectSession = async (id) => {
-    if (!user?.userId) return;
-    try {
       const response = await fetch(
-        `http://localhost:8081/api/v1/session/rejectSession`,
+        `http://localhost:8081/api/v1/session/${action}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
           body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
         }
       );
-      if (!response.ok) throw new Error("Error al rechazar la tutoría");
-      window.location.reload();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  const cancelSession = async (id) => {
-    if (!user?.userId) return;
-    try {
-      const response = await fetch(
-        `http://localhost:8081/api/v1/session/cancelSession`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
-        }
-      );
-      if (!response.ok) throw new Error("Error al cancelar la tutoría");
-      window.location.reload();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
-
-  const registerSession = async (id) => {
-    if (!user?.userId) return;
-    try {
-      const response = await fetch(
-        `http://localhost:8081/api/v1/session/registerSession`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
-        }
-      );
-      if (!response.ok) throw new Error("Error al registrar la tutoría");
+      if (!response.ok) throw new Error(`Error al ${action} la sesión`);
       window.location.reload();
     } catch (error) {
       setError(error.message);
@@ -168,7 +149,7 @@ const TablePool = ({ title, columns }) => {
   };
 
   const renderActionButtons = (tutorial) => {
-    const status = tutorial[1]?.toLowerCase();
+    const status = tutorial[3]?.toLowerCase();
 
     switch (activeTab) {
       case "pending":
@@ -176,13 +157,13 @@ const TablePool = ({ title, columns }) => {
           <div className="flex gap-2 justify-center">
             <button
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => acceptSession(tutorial[0])}
+              onClick={() => handleSessionAction(tutorial[0], "sessionsPoolAccept")}
             >
               Aceptar
             </button>
             <button
               className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => rejectSession(tutorial[0])}
+              onClick={() => handleSessionAction(tutorial[0], "rejectSession")}
             >
               Rechazar
             </button>
@@ -193,7 +174,7 @@ const TablePool = ({ title, columns }) => {
         return (
           <button
             className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => cancelSession(tutorial[0])}
+            onClick={() => handleSessionAction(tutorial[0], "cancelSession")}
           >
             Cancelar
           </button>
@@ -205,7 +186,7 @@ const TablePool = ({ title, columns }) => {
             return (
               <button
                 className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => registerSession(tutorial[0])}
+                onClick={() => handleSessionAction(tutorial[0], "registerSession")}
               >
                 Registrar
               </button>
@@ -295,7 +276,7 @@ const TablePool = ({ title, columns }) => {
             }`}
           onClick={() => setActiveTab("pending")}
         >
-          Pendientes ({pendingTutorials.length})
+          Pendientes ({tutorials.pending.length})
         </button>
         <button
           className={`py-2 px-4 ${activeTab === "accepted"
@@ -304,7 +285,25 @@ const TablePool = ({ title, columns }) => {
             }`}
           onClick={() => setActiveTab("accepted")}
         >
-          Aceptadas ({acceptedTutorials.length})
+          Aceptadas ({tutorials.accepted.length})
+        </button>
+        <button
+          className={`py-2 px-4 ${activeTab === "rejected"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600"
+            }`}
+          onClick={() => setActiveTab("rejected")}
+        >
+          Rechazadas ({tutorials.rejected.length})
+        </button>
+        <button
+          className={`py-2 px-4 ${activeTab === "canceled"
+              ? "border-b-2 border-blue-500 text-blue-600"
+              : "text-gray-600"
+            }`}
+          onClick={() => setActiveTab("canceled")}
+        >
+          Canceladas ({tutorials.canceled.length})
         </button>
         <button
           className={`py-2 px-4 ${activeTab === "completed"
@@ -313,17 +312,13 @@ const TablePool = ({ title, columns }) => {
             }`}
           onClick={() => setActiveTab("completed")}
         >
-          Realizadas ({completedTutorials.length})
+          Completadas ({tutorials.completed.length})
         </button>
       </div>
 
-      <div className="p-8">
-        {activeTab === "pending" && renderTable(pendingTutorials)}
-        {activeTab === "accepted" && renderTable(acceptedTutorials)}
-        {activeTab === "completed" && renderTable(completedTutorials)}
-      </div>
+      <div className="overflow-x-auto">{renderTable(tutorials[activeTab])}</div>
     </div>
   );
 };
 
-export default TablePool;
+export default TablePendingTutor;
