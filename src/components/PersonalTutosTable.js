@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
@@ -22,6 +23,8 @@ const PersonalTutosTable = ({ title }) => {
   const [sessions, setSessions] = useState([]);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("pending");
+  const [loading, setLoading] = useState(true); // Nueva variable de carga
+  const [error, setError] = useState(null); // Nueva variable para manejar el error
 
   const router = useRouter();
 
@@ -44,6 +47,9 @@ const PersonalTutosTable = ({ title }) => {
 
   useEffect(() => {
     const fetchSessions = async () => {
+      setLoading(true); // Set loading state to true
+      setError(null); // Reset error
+
       const token = Cookies.get("token");
       if (!user || !token) return;
 
@@ -62,7 +68,10 @@ const PersonalTutosTable = ({ title }) => {
         setSessions(data);
         toast.success("Sesiones cargadas correctamente");
       } catch (err) {
+        setError(err.message || "Ocurrió un error al cargar las sesiones");
         toast.error(err.message || "Ocurrió un error al cargar las sesiones");
+      } finally {
+        setLoading(false); // Set loading state to false once the request finishes
       }
     };
 
@@ -77,6 +86,14 @@ const PersonalTutosTable = ({ title }) => {
   });
 
   const renderTable = () => {
+    if (loading) {
+      return <div className="text-center py-4">Cargando sesiones...</div>;
+    }
+
+    if (error) {
+      return <div className="text-center py-4 text-red-600">{error}</div>;
+    }
+
     if (filteredSessions.length === 0) {
       return <div className="text-center py-4">No hay sesiones disponibles</div>;
     }
