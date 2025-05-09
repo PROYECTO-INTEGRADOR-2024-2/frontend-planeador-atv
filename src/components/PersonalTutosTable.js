@@ -8,23 +8,22 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const API_URL = "http://localhost:8081/api/v1/session/personalTutos";
 
-const TABS = {
-  PENDING: "PENDIENTE_ASIGNADA",
-  ACCEPTED: "ASISTIDA",
-  REJECTED: "CANCELADA",
-};
-
 const formatDate = (timestamp) => {
   const date = new Date(timestamp);
-  return date.toISOString().split("T")[0];
+  return date.toLocaleDateString("es-ES", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 };
 
 const PersonalTutosTable = ({ title }) => {
   const [sessions, setSessions] = useState([]);
   const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("pending");
-  const [loading, setLoading] = useState(true); // Nueva variable de carga
-  const [error, setError] = useState(null); // Nueva variable para manejar el error
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const router = useRouter();
 
@@ -47,8 +46,8 @@ const PersonalTutosTable = ({ title }) => {
 
   useEffect(() => {
     const fetchSessions = async () => {
-      setLoading(true); // Set loading state to true
-      setError(null); // Reset error
+      setLoading(true);
+      setError(null);
 
       const token = Cookies.get("token");
       if (!user || !token) return;
@@ -65,25 +64,19 @@ const PersonalTutosTable = ({ title }) => {
         }
 
         const data = await res.json();
-        setSessions(data);
+        const sortedData = data.sort((a, b) => new Date(a.classDate) - new Date(b.classDate));
+        setSessions(sortedData);
         toast.success("Sesiones cargadas correctamente");
       } catch (err) {
         setError(err.message || "Ocurrió un error al cargar las sesiones");
         toast.error(err.message || "Ocurrió un error al cargar las sesiones");
       } finally {
-        setLoading(false); // Set loading state to false once the request finishes
+        setLoading(false);
       }
     };
 
     fetchSessions();
   }, [user]);
-
-  const filteredSessions = sessions.filter((s) => {
-    const state = s.classState.toUpperCase();
-    if (activeTab === "pending") return state === TABS.PENDING;
-    if (activeTab === "accepted") return state === TABS.ACCEPTED;
-    return state === TABS.REJECTED;
-  });
 
   const renderTable = () => {
     if (loading) {
@@ -94,39 +87,69 @@ const PersonalTutosTable = ({ title }) => {
       return <div className="text-center py-4 text-red-600">{error}</div>;
     }
 
-    if (filteredSessions.length === 0) {
+    if (sessions.length === 0) {
       return <div className="text-center py-4">No hay sesiones disponibles</div>;
     }
 
     return (
       <table className="min-w-full divide-y divide-gray-200 border border-slate-400">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-4 border border-slate-300">Fecha</th>
-            <th className="px-6 py-4 border border-slate-300">Materia</th>
-            <th className="px-6 py-4 border border-slate-300">Estado</th>
-            <th className="px-6 py-4 border border-slate-300">Tutor</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredSessions.map((session, idx) => (
-            <tr key={idx}>
+      <thead className="bg-gray-50">
+        <tr>
+          <th className="px-6 py-4 border border-slate-300">Fecha y hora</th>
+          <th className="px-6 py-4 border border-slate-300">Materia</th>
+          <th className="px-6 py-4 border border-slate-300">Temas</th>
+          <th className="px-6 py-4 border border-slate-300">Estado</th>
+          <th className="px-6 py-4 border border-slate-300">Tutor</th>
+          <th className="px-6 py-4 border border-slate-300">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {sessions
+          .sort((a, b) => a.classDate - b.classDate)
+          .map((session) => (
+            <tr key={session.classDate}>
               <td className="px-6 py-4 border border-slate-300 text-center">
-                {formatDate(session.classDate)}
+                {new Date(session.classDate).toLocaleString()}
               </td>
               <td className="px-6 py-4 border border-slate-300 text-center">
                 {session.subjectName}
               </td>
               <td className="px-6 py-4 border border-slate-300 text-center">
-                {session.classState.toUpperCase()}
+                {session.classTopics}
+              </td>
+              <td className="px-6 py-4 border border-slate-300 text-center">
+                {session.canceledBy !== "NONE"
+                  ? "Cancelada"
+                  : session.registered
+                  ? "Realizada"
+                  : "Pendiente"
+                }
               </td>
               <td className="px-6 py-4 border border-slate-300 text-center">
                 {`${session.tutorName} ${session.tutorLastname}`}
               </td>
+              <td className="px-6 py-4 border border-slate-300 text-center space-y-2">
+                <div className="flex flex-col items-center space-y-2">
+                  <button
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                    onClick={() => handleCancel(session)}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
+                    onClick={() => handlePerfilTutor(session)}
+                  >
+                    Ver perfil de tutor
+                  </button>
+                </div>
+              </td>
+
+              
             </tr>
           ))}
-        </tbody>
-      </table>
+      </tbody>
+    </table>
     );
   };
 
@@ -136,39 +159,6 @@ const PersonalTutosTable = ({ title }) => {
 
       <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
-      </div>
-
-      <div className="flex border-b border-gray-200 mb-4">
-        <button
-          className={`py-2 px-4 ${
-            activeTab === "pending"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("pending")}
-        >
-          Pendientes
-        </button>
-        <button
-          className={`py-2 px-4 ${
-            activeTab === "accepted"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("accepted")}
-        >
-          Asistidas
-        </button>
-        <button
-          className={`py-2 px-4 ${
-            activeTab === "rejected"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("rejected")}
-        >
-          Canceladas
-        </button>
       </div>
 
       <div className="p-8">{renderTable()}</div>

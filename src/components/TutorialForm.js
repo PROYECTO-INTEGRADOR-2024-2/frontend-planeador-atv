@@ -16,7 +16,8 @@ const TutorialForm = () => {
   const [errorSubject, setErrorSubject] = useState(null);
   const [user, setUser] = useState(null);
   const [tutorial, setTutorial] = useState({
-    classState: "",
+    registered: false,
+    canceledBy: "NONE",
     studentId: "",
     tutorId: "",
     subjectId: 0,
@@ -86,32 +87,20 @@ const TutorialForm = () => {
     } else {
       setTutorial({ ...tutorial, [event.target.name]: value2 });
     }
-
-    if (event.target.name == "tutorId") {
-      if (!event.target.value.includes("0000")) {
-        setTutorial({ ...tutorial, classState: "pendiente_asignada" });
-      } else {
-        setTutorial({ ...tutorial, classState: "pendiente" });
-      }
-    }
   };
 
   const handleChange2 = (event, number) => {
     const { name, value } = event.target;
 
     if (name === "tutorId") {
-      // Obtener el ID del tutor directamente del valor seleccionado
-      const tutorId = value.split("-")[0]; // Toma el primer valor antes del guión que es el ID
+
+      const tutorId = value.split("-")[0];
 
       setTutorial((prev) => ({
         ...prev,
         [name]: tutorId,
-        classState: !tutorId.includes("0000")
-          ? "pendiente_asignada"
-          : "pendiente",
       }));
     } else if (number) {
-      // Para otros campos numéricos
       const cleanValue = value.includes("-")
         ? value.split("-")[0].trim()
         : value;
@@ -120,7 +109,6 @@ const TutorialForm = () => {
         [name]: parseInt(cleanValue),
       }));
     } else {
-      // Para campos de texto
       setTutorial((prev) => ({
         ...prev,
         [name]: value,
