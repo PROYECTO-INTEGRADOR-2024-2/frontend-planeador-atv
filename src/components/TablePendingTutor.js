@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
 import Cookies from 'js-cookie';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 export default function TablePendingTutor() {
   const [sessions, setSessions] = useState([]);
@@ -10,7 +10,7 @@ export default function TablePendingTutor() {
   const [selectedSession, setSelectedSession] = useState(null);
   const [rating, setRating] = useState(1);
 
-  const fetchedOnce = useRef(false); // Evita fetch duplicado en React Strict Mode
+  const fetchedOnce = useRef(false);
 
   const URLS = {
     REGISTER: "http://localhost:8080/api/v1/session/registerClass/",
@@ -62,7 +62,7 @@ export default function TablePendingTutor() {
 
       if (!res.ok) throw new Error("Error al cancelar la sesión");
 
-      toast.success("Sesión cancelada correctamente");
+      toast.warning("Sesión cancelada correctamente");
       setSessions((prev) =>
         prev.map((s) => (s.classId === sessionId ? { ...s, canceledBy: "TUTOR" } : s))
       );
@@ -179,7 +179,6 @@ export default function TablePendingTutor() {
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
-      <ToastContainer />
       <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">Tutorías asignadas</h1>
       </div>
