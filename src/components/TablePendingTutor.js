@@ -122,9 +122,6 @@ export default function TablePendingTutor() {
       if (!res.ok) throw new Error("Error al rechazar la sesión");
 
       toast.warning("Sesión rechazada correctamente");
-      setSessions((prev) =>
-        prev.map((s) => (s.classId === sessionId ? { ...s, accepted: true } : s))
-      );
     } catch (err) {
       toast.error(err.message || "Error al rechazar la sesión");
     }

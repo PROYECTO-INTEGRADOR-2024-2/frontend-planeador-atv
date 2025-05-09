@@ -257,7 +257,7 @@ const PersonalTutosTable = ({ title }) => {
                       Cancelar
                     </button>
                   )}
-                  {session.registered && session.classRate == 0 &&(
+                  {session.registered && session.classRate === 0 &&(
                     <button
                       className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
                       onClick={() => openRateModal(session)}
