@@ -7,23 +7,16 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 const API_URL = "http://localhost:8081/api/v1/session/personalTutos";
-
-const formatDate = (timestamp) => {
-  const date = new Date(timestamp);
-  return date.toLocaleDateString("es-ES", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
+const URL_CANCEL = "http://localhost:8081/api/v1/session/cancelTuto/";
+const URL_TUTOR = "http://localhost:8081/api/v1/persons/";
 
 const PersonalTutosTable = ({ title }) => {
   const [sessions, setSessions] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [tutorData, setTutorData] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const router = useRouter();
 
@@ -78,6 +71,81 @@ const PersonalTutosTable = ({ title }) => {
     fetchSessions();
   }, [user]);
 
+  const handleCancel = async (sessionId) => {
+    const token = Cookies.get("token");
+
+    if (!token) {
+      toast.error("Token no encontrado, por favor inicia sesión");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${URL_CANCEL}${sessionId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al cancelar la sesión");
+      }
+
+      toast.success("Sesión cancelada correctamente");
+      setSessions((prev) =>
+        prev.map((s) =>
+          s.classId === sessionId ? { ...s, canceledBy: "TUTOR" } : s
+        )
+      );
+    } catch (err) {
+      setError(err.message || "Ocurrió un error al cancelar la sesión");
+      toast.error(err.message || "Ocurrió un error al cancelar la sesión");
+    }
+  };
+
+  const handlePerfilTutor = async (tutorId) => {
+    const token = Cookies.get("token");
+
+    if (!token) {
+      toast.error("Token no encontrado");
+      return;
+    }
+
+    try {
+      const res = await fetch(`${URL_TUTOR}${tutorId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("No se pudo obtener la información del tutor");
+      }
+
+      const data = await res.json();
+
+      const filteredTutor = {
+        Nombre: data.userFirstname,
+        Apellido: data.userLastname,
+        Correo: data.userEmail,
+        Teléfono: data.userPhone,
+        Departamento: data.userDepartment,
+        Ciudad: data.userCity,
+      };
+
+      setTutorData(filteredTutor);
+      setShowModal(true);
+    } catch (err) {
+      toast.error(err.message || "Error al cargar perfil del tutor");
+    }
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setTutorData(null);
+  };
+
   const renderTable = () => {
     if (loading) {
       return <div className="text-center py-4">Cargando sesiones...</div>;
@@ -93,21 +161,19 @@ const PersonalTutosTable = ({ title }) => {
 
     return (
       <table className="min-w-full divide-y divide-gray-200 border border-slate-400">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-6 py-4 border border-slate-300">Fecha y hora</th>
-          <th className="px-6 py-4 border border-slate-300">Materia</th>
-          <th className="px-6 py-4 border border-slate-300">Temas</th>
-          <th className="px-6 py-4 border border-slate-300">Estado</th>
-          <th className="px-6 py-4 border border-slate-300">Tutor</th>
-          <th className="px-6 py-4 border border-slate-300">Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {sessions
-          .sort((a, b) => a.classDate - b.classDate)
-          .map((session) => (
-            <tr key={session.classDate}>
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-4 border border-slate-300">Fecha y hora</th>
+            <th className="px-6 py-4 border border-slate-300">Materia</th>
+            <th className="px-6 py-4 border border-slate-300">Temas</th>
+            <th className="px-6 py-4 border border-slate-300">Estado</th>
+            <th className="px-6 py-4 border border-slate-300">Tutor</th>
+            <th className="px-6 py-4 border border-slate-300">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sessions.map((session) => (
+            <tr key={session.classId}>
               <td className="px-6 py-4 border border-slate-300 text-center">
                 {new Date(session.classDate).toLocaleString()}
               </td>
@@ -122,46 +188,75 @@ const PersonalTutosTable = ({ title }) => {
                   ? "Cancelada"
                   : session.registered
                   ? "Realizada"
-                  : "Pendiente"
-                }
+                  : "Pendiente"}
               </td>
               <td className="px-6 py-4 border border-slate-300 text-center">
                 {`${session.tutorName} ${session.tutorLastname}`}
               </td>
               <td className="px-6 py-4 border border-slate-300 text-center space-y-2">
                 <div className="flex flex-col items-center space-y-2">
-                  <button
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-                    onClick={() => handleCancel(session)}
-                  >
-                    Cancelar
-                  </button>
+                  {session.canceledBy === "NONE" && !session.registered && (
+                    <button
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                      onClick={() => handleCancel(session.classId)}
+                    >
+                      Cancelar
+                    </button>
+                  )}
+
+                  {session.registered && (
+                    <button
+                      className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
+                      onClick={() => console.log("Implementa valoración")}
+                    >
+                      Valorar tutoría
+                    </button>
+                  )}
                   <button
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
-                    onClick={() => handlePerfilTutor(session)}
+                    onClick={() => handlePerfilTutor(session.tutorId)}
                   >
                     Ver perfil de tutor
                   </button>
                 </div>
               </td>
-
-              
             </tr>
           ))}
-      </tbody>
-    </table>
+        </tbody>
+      </table>
     );
   };
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-
       <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
       </div>
-
       <div className="p-8">{renderTable()}</div>
+
+      {showModal && tutorData && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-xl font-bold mb-4">Perfil del Tutor</h2>
+            <ul className="space-y-2">
+              {Object.entries(tutorData).map(([key, value]) => (
+                <li key={key}>
+                  <strong>{key}:</strong> {value}
+                </li>
+              ))}
+            </ul>
+            <div className="mt-4 text-right">
+              <button
+                onClick={closeModal}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
