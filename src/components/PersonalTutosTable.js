@@ -7,7 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 const API_URL = "http://localhost:8081/api/v1/session/personalTutos";
-const URL_CANCEL = "http://localhost:8081/api/v1/session/cancelTuto/";
+const URL_CANCEL = "http://localhost:8081/api/v1/session/cancelTutoStudent/";
 const URL_TUTOR = "http://localhost:8081/api/v1/persons/";
 const URL_RATE = "http://localhost:8081/api/v1/session/rateClass";
 
@@ -99,7 +99,7 @@ const PersonalTutosTable = ({ title }) => {
       toast.success("Sesión cancelada correctamente");
       setSessions((prev) =>
         prev.map((s) =>
-          s.classId === sessionId ? { ...s, canceledBy: "TUTOR" } : s
+          s.classId === sessionId ? { ...s, canceledBy: "STUDENT" } : s
         )
       );
     } catch (err) {
