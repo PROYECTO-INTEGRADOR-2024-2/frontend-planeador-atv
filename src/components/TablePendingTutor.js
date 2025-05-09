@@ -9,6 +9,9 @@ export default function TablePendingTutor() {
   const [studentData, setStudentData] = useState(null);
   const [selectedSession, setSelectedSession] = useState(null);
   const [rating, setRating] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [sortedSessions, setSortedSessions] = useState([]);
+  const ITEMS_PER_PAGE = 10;
 
   const fetchedOnce = useRef(false);
 
@@ -49,6 +52,36 @@ export default function TablePendingTutor() {
     fetchSessions();
   }, []);
 
+  // Ordenar sesiones cada vez que cambien
+  useEffect(() => {
+    if (sessions.length > 0) {
+      // Función para obtener prioridad del estado
+      const getStatePriority = (session) => {
+        if (!session.accepted && session.canceledBy === "NONE") return 1; // Pendientes
+        if (session.accepted && !session.registered && session.canceledBy === "NONE") return 2; // Aceptadas
+        if (session.registered) return 3; // Terminadas
+        if (session.canceledBy !== "NONE") return 4; // Canceladas
+        return 5; // Otros
+      };
+
+      // Ordenar por estado y luego por fecha
+      const sorted = [...sessions].sort((a, b) => {
+        const priorityA = getStatePriority(a);
+        const priorityB = getStatePriority(b);
+
+        if (priorityA !== priorityB) {
+          return priorityA - priorityB;
+        }
+        
+        // Si tienen la misma prioridad, ordenar por fecha
+        return new Date(a.classDate) - new Date(b.classDate);
+      });
+
+      setSortedSessions(sorted);
+      setCurrentPage(1); // Resetear a la primera página cuando cambian los datos
+    }
+  }, [sessions]);
+
   const handleAccept = async (sessionId) => {
     const token = Cookies.get("token");
     if (!token) return toast.error("Token no encontrado");
@@ -71,8 +104,7 @@ export default function TablePendingTutor() {
     } catch (err) {
       toast.error(err.message || "Error al aceptar la sesión");
     }
-
-  }
+  };
 
   const handleReject = async (sessionId) => {
     const token = Cookies.get("token");
@@ -96,8 +128,7 @@ export default function TablePendingTutor() {
     } catch (err) {
       toast.error(err.message || "Error al rechazar la sesión");
     }
-
-  }
+  };
 
   const handleCancel = async (sessionId) => {
     const token = Cookies.get("token");
@@ -124,6 +155,12 @@ export default function TablePendingTutor() {
   };
 
   const handlePerfilStudent = async (studentId) => {
+    // Verificar si el studentId es "0"
+    if (studentId === "0" || studentId === 0) {
+      setStudentData({ mensaje: "Ningún estudiante ha solicitado esta tutoría aún" });
+      return;
+    }
+
     const token = Cookies.get("token");
     if (!token) return toast.error("Token no encontrado");
 
@@ -174,68 +211,134 @@ export default function TablePendingTutor() {
     }
   };
 
-  const renderTable = () => {
-    if (loading) return <div className="text-center py-4">Cargando sesiones...</div>;
-    if (sessions.length === 0) return <div className="text-center py-4">No hay sesiones disponibles</div>;
+  // Obtener el estado como texto para mostrarlo en la tabla
+  const getStateText = (session) => {
+    if (session.canceledBy !== "NONE") return "Cancelada";
+    if (!session.registered && session.accepted) return "Aceptada";
+    if (session.registered && session.classRate !== 0) return "Cerrada";
+    if (session.registered) return "Realizada";
+    return "Pendiente de aceptar";
+  };
+
+  // Calcular paginación
+  const totalPages = Math.ceil(sortedSessions.length / ITEMS_PER_PAGE);
+  const paginatedSessions = sortedSessions.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+
+  const goToPage = (page) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
+
+  const renderStateLabel = (stateText) => {
+    let bgColor = "";
+    switch (stateText) {
+      case "Pendiente de aceptar":
+        bgColor = "bg-yellow-200";
+        break;
+      case "Aceptada":
+        bgColor = "bg-blue-200";
+        break;
+      case "Realizada":
+      case "Cerrada":
+        bgColor = "bg-green-200";
+        break;
+      case "Cancelada":
+        bgColor = "bg-red-200";
+        break;
+      default:
+        bgColor = "bg-gray-200";
+    }
+    return <span className={`inline-block px-2 py-1 rounded ${bgColor}`}>{stateText}</span>;
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
 
     return (
-      <table className="min-w-full divide-y divide-gray-200 border border-slate-400">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-4 border">Fecha y hora</th>
-            <th className="px-6 py-4 border">Materia</th>
-            <th className="px-6 py-4 border">Temas</th>
-            <th className="px-6 py-4 border">Estado</th>
-            <th className="px-6 py-4 border">Tutor</th>
-            <th className="px-6 py-4 border">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sessions.map((session) => (
-            <tr key={session.classId}>
-              <td className="px-6 py-4 border text-center">{new Date(session.classDate).toLocaleString()}</td>
-              <td className="px-6 py-4 border text-center">{session.subjectName}</td>
-              <td className="px-6 py-4 border text-center">{session.classTopics}</td>
-              <td className="px-6 py-4 border text-center">
-                {session.canceledBy !== "NONE"
-                  ? "Cancelada"
-                  : !session.registered && session.accepted
-                  ? "Aceptada"
-                  : session.registered && session.classRate !== 0
-                  ? "Cerrada"
-                  : session.registered
-                  ? "Realizada"
-                  : "Pendiente de aceptar"}
-              </td>
-              <td className="px-6 py-4 border text-center">
-                {`${session.studentName} ${session.studentLastname}`}
-              </td>
-              <td className="px-6 py-4 border text-center">
-                <div className="flex flex-col items-center space-y-2">
-                  {session.canceledBy === "NONE" && !session.registered && session.accepted &&(
-                    <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-                      onClick={() => handleCancel(session.classId)}>Cancelar</button>
-                  )}
-                  {session.registered && session.classRate === 0 && (
-                    <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
-                      onClick={() => setSelectedSession(session)}>Valorar tutoría</button>
-                  )}
-                  {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
-                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded"
-                      onClick={() => handleAccept(session.classId)}>Aceptar</button>
-                  )}
-                  {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
-                    <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-                      onClick={() => handleReject(session.classId)}>Rechazar</button>
-                  )}
-                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
-                    onClick={() => handlePerfilStudent(session.studentId)}>Ver perfil del estudiante</button>
-                </div>
-              </td>
+      <div className="flex justify-center mt-4 space-x-2">
+        <button 
+          onClick={() => goToPage(currentPage - 1)} 
+          disabled={currentPage === 1}
+          className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-blue-500 text-white hover:bg-blue-600'}`}>
+          Anterior
+        </button>
+        <span className="px-3 py-1">
+          Página {currentPage} de {totalPages}
+        </span>
+        <button 
+          onClick={() => goToPage(currentPage + 1)} 
+          disabled={currentPage === totalPages}
+          className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200' : 'bg-blue-500 text-white hover:bg-blue-600'}`}>
+          Siguiente
+        </button>
+      </div>
+    );
+  };
+
+  const renderTable = () => {
+    if (loading) return <div className="text-center py-4">Cargando sesiones...</div>;
+    if (sortedSessions.length === 0) return <div className="text-center py-4">No hay sesiones disponibles</div>;
+
+    return (
+      <>
+        <table className="min-w-full divide-y divide-gray-200 border border-slate-400">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-6 py-4 border">Fecha y hora</th>
+              <th className="px-6 py-4 border">Materia</th>
+              <th className="px-6 py-4 border">Temas</th>
+              <th className="px-6 py-4 border">Estado</th>
+              <th className="px-6 py-4 border">Estudiante</th>
+              <th className="px-6 py-4 border">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {paginatedSessions.map((session) => {
+              const stateText = getStateText(session);
+              
+              return (
+                <tr key={session.classId}>
+                  <td className="px-6 py-4 border text-center">{new Date(session.classDate).toLocaleString()}</td>
+                  <td className="px-6 py-4 border text-center">{session.subjectName}</td>
+                  <td className="px-6 py-4 border text-center">{session.classTopics}</td>
+                  <td className="px-6 py-4 border text-center">
+                    {renderStateLabel(stateText)}
+                  </td>
+                  <td className="px-6 py-4 border text-center">
+                    {`${session.studentName} ${session.studentLastname}`}
+                  </td>
+                  <td className="px-6 py-4 border text-center">
+                    <div className="flex flex-col items-center space-y-2">
+                      {session.canceledBy === "NONE" && !session.registered && session.accepted &&(
+                        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                          onClick={() => handleCancel(session.classId)}>Cancelar</button>
+                      )}
+                      {session.registered && session.classRate === 0 && (
+                        <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
+                          onClick={() => setSelectedSession(session)}>Valorar tutoría</button>
+                      )}
+                      {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
+                        <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded"
+                          onClick={() => handleAccept(session.classId)}>Aceptar</button>
+                      )}
+                      {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
+                        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                          onClick={() => handleReject(session.classId)}>Rechazar</button>
+                      )}
+                      <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
+                        onClick={() => handlePerfilStudent(session.studentId)}>Ver perfil del estudiante</button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        {renderPagination()}
+      </>
     );
   };
 
@@ -250,11 +353,17 @@ export default function TablePendingTutor() {
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-96">
             <h2 className="text-xl font-bold mb-4">Perfil del Estudiante</h2>
-            <ul className="space-y-2">
-              {Object.entries(studentData).map(([key, value]) => (
-                <li key={key}><strong>{key}:</strong> {value}</li>
-              ))}
-            </ul>
+            {studentData.mensaje ? (
+              <div className="text-center py-4">
+                <p>{studentData.mensaje}</p>
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {Object.entries(studentData).map(([key, value]) => (
+                  <li key={key}><strong>{key}:</strong> {value}</li>
+                ))}
+              </ul>
+            )}
             <div className="mt-4 text-right">
               <button onClick={() => setStudentData(null)}
                 className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cerrar</button>
