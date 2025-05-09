@@ -14,6 +14,13 @@ const TablePool = ({ title, columns }) => {
   const [showModal, setShowModal] = useState(false);
   const URL_STUDENT = "http://localhost:8081/api/v1/persons/";
 
+  const URLS = {
+    POOL: "http://localhost:8081/api/v1/session/pool",
+    STUDENT: "http://localhost:8081/api/v1/persons/",
+    ACCEPT: "http://localhost:8081/api/v1/session/accept/",
+    REJECT: "http://localhost:8081/api/v1/session/rejectClass/"
+  };
+
   useEffect(() => {
     const token = Cookies.get("token");
     const userCookie = Cookies.get("user");
@@ -40,7 +47,7 @@ const TablePool = ({ title, columns }) => {
       if (!token) return toast.error('Token no encontrado en cookies');
 
       try {
-        const response = await fetch("http://localhost:8081/api/v1/session/pool", {
+        const response = await fetch(URLS.POOL, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -58,6 +65,30 @@ const TablePool = ({ title, columns }) => {
 
     fetchData();
   }, []);
+
+  const handleAccept = async (sessionId) => {
+      const token = Cookies.get("token");
+      if (!token) return toast.error("Token no encontrado");
+      console.log(`Se hará la petición a ${URLS.ACCEPT}${sessionId}` )
+      try {
+        const res = await fetch(`${URLS.ACCEPT}${sessionId}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (!res.ok) throw new Error("Error al aceptar la sesión");
+  
+        toast.warning("Sesión aceptada correctamente");
+      } catch (err) {
+        toast.error(err.message || "Error al aceptar la sesión");
+      }
+  
+    }
+
+
   const handlePerfilStudent= async (studentId) => {
       const token = Cookies.get("token");
   
@@ -67,7 +98,7 @@ const TablePool = ({ title, columns }) => {
       }
   
       try {
-        const res = await fetch(`${URL_STUDENT}${studentId}`, {
+        const res = await fetch(`${URLS.STUDENT}${studentId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -149,7 +180,12 @@ const TablePool = ({ title, columns }) => {
               </td>
               <td className="px-6 py-4 border text-center space-y-2">
                 <div className="flex flex-col items-center space-y-2">
-                  
+                <button
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
+                    onClick={() => handleAccept(session.classId)}
+                  >
+                    Aceptar tutoría
+                  </button>
                   <button
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
                     onClick={() => handlePerfilStudent(session.studentId)}
