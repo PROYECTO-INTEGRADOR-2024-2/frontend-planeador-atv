@@ -1,251 +1,210 @@
-"use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
+'use client';
+import { useEffect, useRef, useState } from 'react';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 
-const TablePendingTutor = ({ title, columns }) => {
-  const [tutorials, setTutorials] = useState({
-    pending: [],
-    accepted: [],
-    rejected: [],
-    canceled: [],
-    completed: [],
-  });
-  const [error, setError] = useState(null);
-  const [subject, setSubject] = useState([]);
-  const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("pending");
+export default function TablePendingTutor() {
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [studentData, setStudentData] = useState(null);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [rating, setRating] = useState(1);
 
-  const router = useRouter();
+  const fetchedOnce = useRef(false);
 
-  useEffect(() => {
-    const token = Cookies.get("token");
-    const userCookie = Cookies.get("user");
-
-    if (token && userCookie) {
-      try {
-        const parsedUser = JSON.parse(userCookie);
-        setUser(parsedUser);
-      } catch (error) {
-        console.error("Error parsing user cookie:", error);
-        router.push("/landing");
-      }
-    } else {
-      router.push("/landing");
-    }
-  }, [router]);
+  const URLS = {
+    REGISTER: "http://localhost:8080/api/v1/session/registerClass/",
+    STUDENT: "http://localhost:8081/api/v1/persons/",
+    CANCEL: "http://localhost:8081/api/v1/session/cancelTutoTutor/",
+    SESSIONS: "http://localhost:8081/api/v1/session/sessionstutor",
+    ACCEPT: "http://localhost:8081/api/v1/session/accept/"
+  };
 
   useEffect(() => {
-    const fetchAndSeparateTutorials = async () => {
-      if (!user?.user_id) {
-        console.log("Esperando ID de usuario...");
-        return;
-      }
+    if (fetchedOnce.current) return;
+    fetchedOnce.current = true;
+
+    const fetchSessions = async () => {
+      const token = Cookies.get('token');
+      if (!token) return toast.error('Token no encontrado en cookies');
 
       try {
-        const token = Cookies.get("token");
-
-        const response = await fetch(
-          `http://localhost:8081/api/v1/session/sessionstutor/tutosTutor`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-
-        const result = await response.json();
-        console.log("Tutorías obtenidas:", result);
-
-        const categorizedTutorials = {
-          pending: [],
-          accepted: [],
-          rejected: [],
-          canceled: [],
-          completed: [],
-        };
-
-        result.forEach((tutorial) => {
-          const tutorialData = Object.values(tutorial);
-          const status = tutorialData[3]?.toLowerCase();
-
-          if (status === "pendiente_asignada") {
-            categorizedTutorials.pending.push(tutorialData);
-          } else if (status === "aceptada") {
-            categorizedTutorials.accepted.push(tutorialData);
-          } else if (status === "rechazada") {
-            categorizedTutorials.rejected.push(tutorialData);
-          } else if (status === "cancelada") {
-            categorizedTutorials.canceled.push(tutorialData);
-          } else if (["valorada_noregistrada", "registrada_novalorada", "registrada_valorada"].includes(status)) {
-            categorizedTutorials.completed.push(tutorialData);
-          }
+        const response = await fetch(URLS.SESSIONS, {
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        setTutorials(categorizedTutorials);
+        if (!response.ok) throw new Error('Error al obtener las sesiones');
+
+        const data = await response.json();
+        setSessions(data);
+        toast.success('Sesiones cargadas correctamente');
       } catch (error) {
-        console.error("Error al cargar tutorías:", error);
-        setError(error.message);
+        toast.error(error.message || 'Error desconocido');
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchAndSeparateTutorials();
-  }, [user]);
-
-  useEffect(() => {
-    const fetchDataSubject = async () => {
-      try {
-        const token = Cookies.get("token");
-
-        const response = await fetch("http://localhost:8081/api/v1/subject/", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-        const result = await response.json();
-        setSubject(result.map((item) => Object.values(item)));
-      } catch (error) {
-        console.error("Error al cargar materias:", error);
-        setError(error.message);
-      }
-    };
-
-    fetchDataSubject();
+    fetchSessions();
   }, []);
 
-  const handleSessionAction = async (id, action) => {
-    if (!user?.userId) return;
+  const handleAccept = async (sessionId) => {
+    const token = Cookies.get("token");
+    if (!token) return toast.error("Token no encontrado");
+
     try {
-      const token = Cookies.get("token");
+      const res = await fetch(`${URLS.ACCEPT}${sessionId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-      const response = await fetch(
-        `http://localhost:8081/api/v1/session/${action}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ sessionId: id, tutorId: user.userId }),
-        }
+      if (!res.ok) throw new Error("Error al aceptar la sesión");
+
+      toast.warning("Sesión aceptada correctamente");
+      setSessions((prev) =>
+        prev.map((s) => (s.classId === sessionId ? { ...s, accepted: true } : s))
       );
-      if (!response.ok) throw new Error(`Error al ${action} la sesión`);
-      window.location.reload();
-    } catch (error) {
-      setError(error.message);
+    } catch (err) {
+      toast.error(err.message || "Error al aceptar la sesión");
+    }
+
+  }
+
+  const handleCancel = async (sessionId) => {
+    const token = Cookies.get("token");
+    if (!token) return toast.error("Token no encontrado");
+
+    try {
+      const res = await fetch(`${URLS.CANCEL}${sessionId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) throw new Error("Error al cancelar la sesión");
+
+      toast.warning("Sesión cancelada correctamente");
+      setSessions((prev) =>
+        prev.map((s) => (s.classId === sessionId ? { ...s, canceledBy: "TUTOR" } : s))
+      );
+    } catch (err) {
+      toast.error(err.message || "Error al cancelar la sesión");
     }
   };
 
-  const renderActionButtons = (tutorial) => {
-    const status = tutorial[3]?.toLowerCase();
+  const handlePerfilStudent = async (studentId) => {
+    const token = Cookies.get("token");
+    if (!token) return toast.error("Token no encontrado");
 
-    switch (activeTab) {
-      case "pending":
-        return (
-          <div className="flex gap-2 justify-center">
-            <button
-              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => handleSessionAction(tutorial[0], "sessionsPoolAccept")}
-            >
-              Aceptar
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => handleSessionAction(tutorial[0], "rejectSession")}
-            >
-              Rechazar
-            </button>
-          </div>
-        );
+    try {
+      const res = await fetch(`${URLS.STUDENT}${studentId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-      case "accepted":
-        return (
-          <button
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => handleSessionAction(tutorial[0], "cancelSession")}
-          >
-            Cancelar
-          </button>
-        );
+      if (!res.ok) throw new Error("No se pudo obtener el perfil del estudiante");
 
-      case "completed":
-        switch (status) {
-          case "valorada_noregistrada":
-            return (
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => handleSessionAction(tutorial[0], "registerSession")}
-              >
-                Registrar
-              </button>
-            );
-          case "registrada_novalorada":
-            return (
-              <span className="text-gray-500">
-                Pendiente de valoración por parte del estudiante
-              </span>
-            );
-          case "registrada_valorada":
-            return (
-              <span className="text-green-500 font-medium">
-                ¡Tutoría realizada con éxito!
-              </span>
-            );
-          default:
-            return null;
-        }
-
-      default:
-        return null;
+      const data = await res.json();
+      setStudentData({
+        Nombre: data.userFirstname,
+        Apellido: data.userLastname,
+        Correo: data.userEmail,
+        Teléfono: data.userPhone,
+        Departamento: data.userDepartment,
+        Ciudad: data.userCity,
+      });
+    } catch (err) {
+      toast.error(err.message || "Error al cargar perfil del estudiante");
     }
   };
 
-  const renderTable = (tutorials) => {
-    if (tutorials.length === 0) {
-      return (
-        <div className="text-center py-4">No hay tutorías disponibles</div>
-      );
+  const handleRegisterSubmit = async () => {
+    const token = Cookies.get("token");
+    if (!selectedSession || !token) return;
+
+    try {
+      const res = await fetch(URLS.REGISTER, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          classId: selectedSession.classId,
+          rate: parseInt(rating),
+        }),
+      });
+
+      if (!res.ok) throw new Error("Error al enviar valoración");
+
+      toast.success("Valoración enviada correctamente");
+      setSelectedSession(null);
+    } catch (err) {
+      toast.error(err.message || "Error al enviar valoración");
     }
+  };
+
+  const renderTable = () => {
+    if (loading) return <div className="text-center py-4">Cargando sesiones...</div>;
+    if (sessions.length === 0) return <div className="text-center py-4">No hay sesiones disponibles</div>;
 
     return (
-      <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
-        <thead className="bg-gray-50 border border-gray-400">
-          <tr className="border border-slate-500">
-            {columns.map((item, rowIndex) => (
-              <th
-                key={rowIndex}
-                className="px-6 py-4 whitespace-nowrap border border-slate-300"
-              >
-                {item?.toString() || ""}
-              </th>
-            ))}
+      <table className="min-w-full divide-y divide-gray-200 border border-slate-400">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-4 border">Fecha y hora</th>
+            <th className="px-6 py-4 border">Materia</th>
+            <th className="px-6 py-4 border">Temas</th>
+            <th className="px-6 py-4 border">Estado</th>
+            <th className="px-6 py-4 border">Tutor</th>
+            <th className="px-6 py-4 border">Acciones</th>
           </tr>
         </thead>
-        <tbody className="border border-slate-500">
-          {tutorials.map((item) => (
-            <tr key={item[0]}>
-              <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{item[2]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {subject.find((element) => element[0] === item[4])?.[2] ||
-                  "Materia no encontrada"}
+        <tbody>
+          {sessions.map((session) => (
+            <tr key={session.classId}>
+              <td className="px-6 py-4 border text-center">{new Date(session.classDate).toLocaleString()}</td>
+              <td className="px-6 py-4 border text-center">{session.subjectName}</td>
+              <td className="px-6 py-4 border text-center">{session.classTopics}</td>
+              <td className="px-6 py-4 border text-center">
+                {session.canceledBy !== "NONE"
+                  ? "Cancelada"
+                  : !session.registered && session.accepted
+                  ? "Aceptada"
+                  : session.registered && session.classRate !== 0
+                  ? "Cerrada"
+                  : session.registered
+                  ? "Realizada"
+                  : "Pendiente de aceptar"}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap">{item[5]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">{item[6]}</td>
-              <td className="px-6 py-4 whitespace-nowrap">
-                {renderActionButtons(item)}
+              <td className="px-6 py-4 border text-center">
+                {`${session.studentName} ${session.studentLastname}`}
+              </td>
+              <td className="px-6 py-4 border text-center">
+                <div className="flex flex-col items-center space-y-2">
+                  {session.canceledBy === "NONE" && !session.registered && session.accepted &&(
+                    <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                      onClick={() => handleCancel(session.classId)}>Cancelar</button>
+                  )}
+                  {session.registered && session.classRate === 0 && (
+                    <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
+                      onClick={() => setSelectedSession(session)}>Valorar tutoría</button>
+                  )}
+                  {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
+                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded"
+                      onClick={() => handleAccept(session.classId)}>Aceptar</button>
+                  )}
+                  {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
+                    <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                      onClick={() => handleReject(session)}>Rechazar</button>
+                  )}
+                  <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
+                    onClick={() => handlePerfilStudent(session.studentId)}>Ver perfil del estudiante</button>
+                </div>
               </td>
             </tr>
           ))}
@@ -254,71 +213,56 @@ const TablePendingTutor = ({ title, columns }) => {
     );
   };
 
-  if (!user) {
-    return <div className="p-8">Cargando usuario...</div>;
-  }
-
-  if (error) {
-    return <div className="p-8 text-red-500">Error: {error}</div>;
-  }
-
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <div className="bg-gray-200 mx-auto border border-slate-400">
-        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
+        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">Tutorías asignadas</h1>
       </div>
+      <div className="p-8">{renderTable()}</div>
 
-      <div className="flex border-b border-gray-200 mb-4">
-        <button
-          className={`py-2 px-4 ${activeTab === "pending"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-            }`}
-          onClick={() => setActiveTab("pending")}
-        >
-          Pendientes ({tutorials.pending.length})
-        </button>
-        <button
-          className={`py-2 px-4 ${activeTab === "accepted"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-            }`}
-          onClick={() => setActiveTab("accepted")}
-        >
-          Aceptadas ({tutorials.accepted.length})
-        </button>
-        <button
-          className={`py-2 px-4 ${activeTab === "rejected"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-            }`}
-          onClick={() => setActiveTab("rejected")}
-        >
-          Rechazadas ({tutorials.rejected.length})
-        </button>
-        <button
-          className={`py-2 px-4 ${activeTab === "canceled"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-            }`}
-          onClick={() => setActiveTab("canceled")}
-        >
-          Canceladas ({tutorials.canceled.length})
-        </button>
-        <button
-          className={`py-2 px-4 ${activeTab === "completed"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-            }`}
-          onClick={() => setActiveTab("completed")}
-        >
-          Completadas ({tutorials.completed.length})
-        </button>
-      </div>
+      {studentData && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-xl font-bold mb-4">Perfil del Estudiante</h2>
+            <ul className="space-y-2">
+              {Object.entries(studentData).map(([key, value]) => (
+                <li key={key}><strong>{key}:</strong> {value}</li>
+              ))}
+            </ul>
+            <div className="mt-4 text-right">
+              <button onClick={() => setStudentData(null)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cerrar</button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      <div className="overflow-x-auto">{renderTable(tutorials[activeTab])}</div>
+      {selectedSession && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-xl font-bold mb-4">Valorar Tutoría</h2>
+            <label htmlFor="rating" className="block mb-2 font-medium">
+              Selecciona una calificación:
+            </label>
+            <select
+              id="rating"
+              value={rating}
+              onChange={(e) => setRating(e.target.value)}
+              className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
+            >
+              {[1, 2, 3, 4, 5].map((val) => (
+                <option key={val} value={val}>{val}</option>
+              ))}
+            </select>
+            <div className="flex justify-end space-x-2">
+              <button onClick={() => setSelectedSession(null)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cancelar</button>
+              <button onClick={handleRegisterSubmit}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Enviar</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default TablePendingTutor;
+}

@@ -7,8 +7,6 @@ function MainTutor() {
     <div>
       <NavbarHome name={"Juan"} rol={"Student"} />
       <TablePendingTutor
-        columns={[
-        ]}
         title={"Gestión de tutorías"}
       />
     </div>

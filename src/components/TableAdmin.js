@@ -8,10 +8,7 @@ import SessionReschedule from "./SessionReschedule";
 import Image from "next/image";
 
 const TablePool = ({ title, columns }) => {
-  const [pendingTutorials, setPendingTutorials] = useState([]);
-  const [acceptedTutorials, setAcceptedTutorials] = useState([]);
-  const [completedTutorials, setCompletedTutorials] = useState([]);
-  const [canceledTutorials, setCanceledTutorials] = useState([]);
+  const [allTutorials, setAllTutorials] = useState([]);
   const [openEditar, setOpenEditar] = useState(false);
   const [openReschedule, setOpenReschedule] = useState(false);
   const [error, setError] = useState(null);
@@ -120,63 +117,26 @@ const TablePool = ({ title, columns }) => {
   }, []);
 
   //Data de allsesions
-  useEffect(() => {
-    const fetchAndSeparateTutorials = async () => {
-      if (!user?.user_id) {
-        console.log("Esperando ID de usuario...");
-        return;
-      }
-
+  uuseEffect(() => {
+    const fetchAllSessions = async () => {
       try {
-        console.log("Fetching tutorías para usuario:", user.user_id);
-        const response = await fetch(`http://localhost:8081/api/v1/session/`);
-
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
-        }
-
+        const response = await fetch("http://localhost:8081/api/v1/session/");
+        if (!response.ok) throw new Error("Error al obtener sesiones");
+  
         const result = await response.json();
-        console.log("Tutorías obtenidas:", result);
-
-        const pending = [];
-        const accepted = [];
-        const completed = [];
-        const canceled = [];
-
-        result.forEach((tutorial) => {
-          const tutorialData = Object.values(tutorial);
-          console.log("Datos de tutoría:", tutorialData);
-
-          // Actualizar la lógica de clasificación según el estado
-          const status = tutorialData[1]?.toLowerCase();
-          if (status === "pendiente_asignada") {
-            pending.push(tutorialData);
-          } else if (status === "aceptada") {
-            accepted.push(tutorialData);
-          } else if (status === "cancelada") {
-            canceled.push(tutorialData);
-          } else if (
-            [
-              "valorada_noregistrada",
-              "registrada_novalorada",
-              "registrada_valorada",
-            ].includes(status)
-          ) {
-            completed.push(tutorialData);
-          }
-        });
-
-        setPendingTutorials(pending);
-        setAcceptedTutorials(accepted);
-        setCompletedTutorials(completed);
-        setCanceledTutorials(canceled);
+  
+        // Ordena por fecha
+        const sorted = result.sort((a, b) => new Date(a.classDate) - new Date(b.classDate));
+        setAllTutorials(sorted);
       } catch (error) {
-        console.error("Error al cargar tutorías:", error);
+        console.error("Error al cargar sesiones:", error);
         setError(error.message);
       }
     };
-
-    fetchAndSeparateTutorials();
+  
+    if (user?.user_id) {
+      fetchAllSessions();
+    }
   }, [user]);
 
   const cancelSession = async (id) => {
