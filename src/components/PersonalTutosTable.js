@@ -21,6 +21,7 @@ const PersonalTutosTable = ({ title }) => {
   const [showRateModal, setShowRateModal] = useState(false);
   const [selectedSession, setSelectedSession] = useState(null);
   const [rating, setRating] = useState(1);
+  const [noTutorMessage, setNoTutorMessage] = useState(false);
 
   const router = useRouter();
 
@@ -109,6 +110,14 @@ const PersonalTutosTable = ({ title }) => {
   };
 
   const handlePerfilTutor = async (tutorId) => {
+    // Verifica si el tutorId es "0"
+    if (tutorId === "0" || tutorId === 0) {
+      setNoTutorMessage(true);
+      setShowModal(true);
+      return;
+    }
+    
+    setNoTutorMessage(false);
     const token = Cookies.get("token");
 
     if (!token) {
@@ -188,6 +197,7 @@ const PersonalTutosTable = ({ title }) => {
   const closeModal = () => {
     setShowModal(false);
     setTutorData(null);
+    setNoTutorMessage(false);
   };
 
   const renderTable = () => {
@@ -224,13 +234,15 @@ const PersonalTutosTable = ({ title }) => {
               <td className="px-6 py-4 border text-center">{session.subjectName}</td>
               <td className="px-6 py-4 border text-center">{session.classTopics}</td>
               <td className="px-6 py-4 border text-center">
-                {session.canceledBy !== "NONE" 
+              {session.canceledBy !== "NONE"
                   ? "Cancelada"
-                  : session.registered && session.classRate != 0
+                  : !session.registered && session.accepted
+                  ? "Aceptada"
+                  : session.registered && session.classRate !== 0
                   ? "Cerrada"
                   : session.registered
                   ? "Realizada"
-                  : "Pendiente"}
+                  : "Pendiente de aceptar"}
               </td>
               <td className="px-6 py-4 border text-center">
                 {`${session.tutorName} ${session.tutorLastname}`}
@@ -276,17 +288,25 @@ const PersonalTutosTable = ({ title }) => {
       </div>
       <div className="p-8">{renderTable()}</div>
 
-      {showModal && tutorData && (
+      {showModal && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-96">
             <h2 className="text-xl font-bold mb-4">Perfil del Tutor</h2>
-            <ul className="space-y-2">
-              {Object.entries(tutorData).map(([key, value]) => (
-                <li key={key}>
-                  <strong>{key}:</strong> {value}
-                </li>
-              ))}
-            </ul>
+            
+            {noTutorMessage ? (
+              <div className="text-center py-4">
+                <p>Ningún tutor la ha tomado aún</p>
+              </div>
+            ) : (
+              <ul className="space-y-2">
+                {tutorData && Object.entries(tutorData).map(([key, value]) => (
+                  <li key={key}>
+                    <strong>{key}:</strong> {value}
+                  </li>
+                ))}
+              </ul>
+            )}
+            
             <div className="mt-4 text-right">
               <button
                 onClick={closeModal}

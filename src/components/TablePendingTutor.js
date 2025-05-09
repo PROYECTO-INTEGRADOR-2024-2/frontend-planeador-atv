@@ -17,6 +17,7 @@ export default function TablePendingTutor() {
     STUDENT: "http://localhost:8081/api/v1/persons/",
     CANCEL: "http://localhost:8081/api/v1/session/cancelTutoTutor/",
     SESSIONS: "http://localhost:8081/api/v1/session/sessionstutor",
+    ACCEPT: "http://localhost:8081/api/v1/session/accept/"
   };
 
   useEffect(() => {
@@ -46,6 +47,31 @@ export default function TablePendingTutor() {
 
     fetchSessions();
   }, []);
+
+  const handleAccept = async (sessionId) => {
+    const token = Cookies.get("token");
+    if (!token) return toast.error("Token no encontrado");
+
+    try {
+      const res = await fetch(`${URLS.ACCEPT}${sessionId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) throw new Error("Error al aceptar la sesión");
+
+      toast.warning("Sesión aceptada correctamente");
+      setSessions((prev) =>
+        prev.map((s) => (s.classId === sessionId ? { ...s, accepted: true } : s))
+      );
+    } catch (err) {
+      toast.error(err.message || "Error al aceptar la sesión");
+    }
+
+  }
 
   const handleCancel = async (sessionId) => {
     const token = Cookies.get("token");
@@ -147,24 +173,34 @@ export default function TablePendingTutor() {
               <td className="px-6 py-4 border text-center">
                 {session.canceledBy !== "NONE"
                   ? "Cancelada"
+                  : !session.registered && session.accepted
+                  ? "Aceptada"
                   : session.registered && session.classRate !== 0
                   ? "Cerrada"
                   : session.registered
                   ? "Realizada"
-                  : "Pendiente"}
+                  : "Pendiente de aceptar"}
               </td>
               <td className="px-6 py-4 border text-center">
                 {`${session.studentName} ${session.studentLastname}`}
               </td>
               <td className="px-6 py-4 border text-center">
                 <div className="flex flex-col items-center space-y-2">
-                  {session.canceledBy === "NONE" && !session.registered && (
+                  {session.canceledBy === "NONE" && !session.registered && session.accepted &&(
                     <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
                       onClick={() => handleCancel(session.classId)}>Cancelar</button>
                   )}
                   {session.registered && session.classRate === 0 && (
                     <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
                       onClick={() => setSelectedSession(session)}>Valorar tutoría</button>
+                  )}
+                  {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
+                    <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded"
+                      onClick={() => handleAccept(session.classId)}>Aceptar</button>
+                  )}
+                  {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
+                    <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                      onClick={() => handleReject(session)}>Rechazar</button>
                   )}
                   <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
                     onClick={() => handlePerfilStudent(session.studentId)}>Ver perfil del estudiante</button>
