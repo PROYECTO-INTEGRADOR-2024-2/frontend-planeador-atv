@@ -145,7 +145,7 @@ const TablePool = ({ title, columns }) => {
                   : "Pendiente"}
               </td>
               <td className="px-6 py-4 border text-center">
-                {`${session.studentName} ${session.studentLastName}`}
+                {`${session.studentName} ${session.studentLastname}`}
               </td>
               <td className="px-6 py-4 border text-center space-y-2">
                 <div className="flex flex-col items-center space-y-2">

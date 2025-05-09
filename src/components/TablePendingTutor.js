@@ -17,7 +17,8 @@ export default function TablePendingTutor() {
     STUDENT: "http://localhost:8081/api/v1/persons/",
     CANCEL: "http://localhost:8081/api/v1/session/cancelTutoTutor/",
     SESSIONS: "http://localhost:8081/api/v1/session/sessionstutor",
-    ACCEPT: "http://localhost:8081/api/v1/session/accept/"
+    ACCEPT: "http://localhost:8081/api/v1/session/accept/",
+    REJECT: "http://localhost:8081/api/v1/session/rejectClass/"
   };
 
   useEffect(() => {
@@ -69,6 +70,31 @@ export default function TablePendingTutor() {
       );
     } catch (err) {
       toast.error(err.message || "Error al aceptar la sesión");
+    }
+
+  }
+
+  const handleReject = async (sessionId) => {
+    const token = Cookies.get("token");
+    if (!token) return toast.error("Token no encontrado");
+
+    try {
+      const res = await fetch(`${URLS.REJECT}${sessionId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) throw new Error("Error al rechazar la sesión");
+
+      toast.warning("Sesión rechazada correctamente");
+      setSessions((prev) =>
+        prev.map((s) => (s.classId === sessionId ? { ...s, accepted: true } : s))
+      );
+    } catch (err) {
+      toast.error(err.message || "Error al rechazar la sesión");
     }
 
   }
@@ -200,7 +226,7 @@ export default function TablePendingTutor() {
                   )}
                   {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
                     <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-                      onClick={() => handleReject(session)}>Rechazar</button>
+                      onClick={() => handleReject(session.classId)}>Rechazar</button>
                   )}
                   <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
                     onClick={() => handlePerfilStudent(session.studentId)}>Ver perfil del estudiante</button>
