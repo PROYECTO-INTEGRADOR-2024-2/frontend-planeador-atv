@@ -9,6 +9,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const API_URL = "http://localhost:8081/api/v1/session/personalTutos";
 const URL_CANCEL = "http://localhost:8081/api/v1/session/cancelTuto/";
 const URL_TUTOR = "http://localhost:8081/api/v1/persons/";
+const URL_RATE = "http://localhost:8081/api/v1/session/rateClass";
 
 const PersonalTutosTable = ({ title }) => {
   const [sessions, setSessions] = useState([]);
@@ -17,6 +18,9 @@ const PersonalTutosTable = ({ title }) => {
   const [error, setError] = useState(null);
   const [tutorData, setTutorData] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const [showRateModal, setShowRateModal] = useState(false);
+  const [selectedSession, setSelectedSession] = useState(null);
+  const [rating, setRating] = useState(1);
 
   const router = useRouter();
 
@@ -141,6 +145,46 @@ const PersonalTutosTable = ({ title }) => {
     }
   };
 
+  const openRateModal = (session) => {
+    setSelectedSession(session);
+    setRating(1);
+    setShowRateModal(true);
+  };
+
+  const closeRateModal = () => {
+    setShowRateModal(false);
+    setSelectedSession(null);
+  };
+
+  const handleRateSubmit = async () => {
+    if (!selectedSession) return;
+
+    const token = Cookies.get("token");
+
+    try {
+      const res = await fetch(`${URL_RATE}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          classId: selectedSession.classId,
+          rate: parseFloat(rating),
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Error al enviar valoración");
+      }
+
+      toast.success("Valoración enviada correctamente");
+      closeRateModal();
+    } catch (err) {
+      toast.error(err.message || "Error al enviar valoración");
+    }
+  };
+
   const closeModal = () => {
     setShowModal(false);
     setTutorData(null);
@@ -163,37 +207,35 @@ const PersonalTutosTable = ({ title }) => {
       <table className="min-w-full divide-y divide-gray-200 border border-slate-400">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-4 border border-slate-300">Fecha y hora</th>
-            <th className="px-6 py-4 border border-slate-300">Materia</th>
-            <th className="px-6 py-4 border border-slate-300">Temas</th>
-            <th className="px-6 py-4 border border-slate-300">Estado</th>
-            <th className="px-6 py-4 border border-slate-300">Tutor</th>
-            <th className="px-6 py-4 border border-slate-300">Acciones</th>
+            <th className="px-6 py-4 border">Fecha y hora</th>
+            <th className="px-6 py-4 border">Materia</th>
+            <th className="px-6 py-4 border">Temas</th>
+            <th className="px-6 py-4 border">Estado</th>
+            <th className="px-6 py-4 border">Tutor</th>
+            <th className="px-6 py-4 border">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {sessions.map((session) => (
             <tr key={session.classId}>
-              <td className="px-6 py-4 border border-slate-300 text-center">
+              <td className="px-6 py-4 border text-center">
                 {new Date(session.classDate).toLocaleString()}
               </td>
-              <td className="px-6 py-4 border border-slate-300 text-center">
-                {session.subjectName}
-              </td>
-              <td className="px-6 py-4 border border-slate-300 text-center">
-                {session.classTopics}
-              </td>
-              <td className="px-6 py-4 border border-slate-300 text-center">
-                {session.canceledBy !== "NONE"
+              <td className="px-6 py-4 border text-center">{session.subjectName}</td>
+              <td className="px-6 py-4 border text-center">{session.classTopics}</td>
+              <td className="px-6 py-4 border text-center">
+                {session.canceledBy !== "NONE" 
                   ? "Cancelada"
+                  : session.registered && session.classRate != 0
+                  ? "Cerrada"
                   : session.registered
                   ? "Realizada"
                   : "Pendiente"}
               </td>
-              <td className="px-6 py-4 border border-slate-300 text-center">
+              <td className="px-6 py-4 border text-center">
                 {`${session.tutorName} ${session.tutorLastname}`}
               </td>
-              <td className="px-6 py-4 border border-slate-300 text-center space-y-2">
+              <td className="px-6 py-4 border text-center space-y-2">
                 <div className="flex flex-col items-center space-y-2">
                   {session.canceledBy === "NONE" && !session.registered && (
                     <button
@@ -203,11 +245,10 @@ const PersonalTutosTable = ({ title }) => {
                       Cancelar
                     </button>
                   )}
-
-                  {session.registered && (
+                  {session.registered && session.classRate == 0 &&(
                     <button
                       className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
-                      onClick={() => console.log("Implementa valoración")}
+                      onClick={() => openRateModal(session)}
                     >
                       Valorar tutoría
                     </button>
@@ -252,6 +293,45 @@ const PersonalTutosTable = ({ title }) => {
                 className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
               >
                 Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showRateModal && selectedSession && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+          <div className="bg-white rounded-lg p-6 w-96">
+            <h2 className="text-xl font-bold mb-4">Valorar Tutoría</h2>
+            <div className="mb-4">
+              <label htmlFor="rating" className="block mb-2 font-medium">
+                Selecciona una calificación:
+              </label>
+              <select
+                id="rating"
+                value={rating}
+                onChange={(e) => setRating(e.target.value)}
+                className="w-full border border-gray-300 rounded px-3 py-2"
+              >
+                {[1, 2, 3, 4, 5].map((val) => (
+                  <option key={val} value={val}>
+                    {val}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="flex justify-end space-x-2">
+              <button
+                onClick={closeRateModal}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleRateSubmit}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Enviar
               </button>
             </div>
           </div>
