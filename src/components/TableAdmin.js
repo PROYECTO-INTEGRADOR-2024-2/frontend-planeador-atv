@@ -6,6 +6,7 @@ import es from "date-fns/locale/es";
 import { useRouter } from "next/navigation";
 import SessionReschedule from "./SessionReschedule";
 import Image from "next/image";
+import { toast } from 'react-toastify';
 
 const TablePool = () => {
   const [allTutorials, setAllTutorials] = useState([]);
@@ -14,6 +15,32 @@ const TablePool = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const router = useRouter();
+
+  const handleCancel = (classId) => {
+    const token = Cookies.get("token");
+    const cancelTutoAdmin = async () => {
+      try {
+        const res = await fetch(`http://localhost:8081/api/v1/session/cancelTutoAdmin/${classId}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+        
+        );
+        if (!res.ok) {
+          toast.error("Error al cancelar la tutoría")
+        }
+
+        toast.warning("Tutoría cancelada exitosamente")
+        window.location.reload();
+      } catch (err) {
+        toast.error("Error al cancelar la tutoría")
+      }
+    };
+    if (user?.user_id) cancelTutoAdmin();
+    
+  } 
 
   const handleModalReschedule = (id) => {
     setId(id);
@@ -88,13 +115,14 @@ const TablePool = () => {
               <th className="px-2 py-2 border">Calificación</th>
               <th className="px-2 py-2 border">Estudiante</th>
               <th className="px-2 py-2 border">Tutor</th>
+              <th className="px-2 py-2 border">Acciones</th> {/* Nueva columna */}
             </tr>
           </thead>
           <tbody>
             {allTutorials.map((tut) => (
-              <tr key={tut[0]} className="border-t">
+              <tr key={tut.classId} className="border-t">
                 <td className="px-2 py-1 border whitespace-nowrap flex items-center gap-2">
-                {format(new Date(tut.classDate), "dd MMMM yyyy HH:mm", { locale: es })}
+                  {format(new Date(tut.classDate), "dd MMMM yyyy HH:mm", { locale: es })}
                   <div
                     className="hover:cursor-pointer w-[16px] h-[16px]"
                     onClick={() => handleModalReschedule(tut.classId)}
@@ -105,20 +133,29 @@ const TablePool = () => {
                 </td>
                 <td className="px-2 py-1 border">{tut.subjectName}</td>
                 <td className="px-2 py-1 border">{tut.registered ? "Registrada" : "No registrada"}</td>
-                <td className="px-2 py-1 border">{tut.canceledBy === "NONE"
-                                                  ? "-"
-                                                  : tut.canceledBy === "STUDENT"
-                                                  ? "Cancelada por estudiante"
-                                                  : tut.canceledBy === "TUTOR"
-                                                  ? "Cancelada por tutor"
-                                                  : tut.canceledBy === "ADMIN"
-                                                  ? "Cancelada por admin"
-                                                  : "-"
-                                                  }</td>
+                <td className="px-2 py-1 border">
+                  {tut.canceledBy === "NONE"
+                    ? "-"
+                    : tut.canceledBy === "STUDENT"
+                    ? "Cancelada por estudiante"
+                    : tut.canceledBy === "TUTOR"
+                    ? "Cancelada por tutor"
+                    : tut.canceledBy === "ADMIN"
+                    ? "Cancelada por admin"
+                    : "-"}
+                </td>
                 <td className="px-2 py-1 border">{tut.classTopics}</td>
                 <td className="px-2 py-1 border">{tut.classRate}</td>
                 <td className="px-2 py-1 border">{tut.studentFirstName + " " + tut.studentLastName}</td>
                 <td className="px-2 py-1 border">{tut.tutorFirstName + " " + tut.tutorLastName}</td>
+                <td className="px-2 py-1 border">
+                  <button
+                    onClick={() => handleCancel(tut.classId)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
+                  >
+                    Cancelar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
