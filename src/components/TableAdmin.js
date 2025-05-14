@@ -145,7 +145,10 @@ const TablePool = () => {
                     : "-"}
                 </td>
                 <td className="px-2 py-1 border">{tut.classTopics}</td>
-                <td className="px-2 py-1 border">{tut.classRate}</td>
+                <td className="px-2 py-1 border">{tut.classRate === 0 
+                                                  ? "..."
+                                                  : tut.classRate
+                                                }</td>
                 <td className="px-2 py-1 border">{tut.studentFirstName + " " + tut.studentLastName}</td>
                 <td className="px-2 py-1 border">{tut.tutorFirstName + " " + tut.tutorLastName}</td>
                 <td className="px-2 py-1 border">
