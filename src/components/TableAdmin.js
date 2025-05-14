@@ -1,371 +1,128 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 import { format } from "date-fns";
 import es from "date-fns/locale/es";
-import EditTutorModal from "./EditTutorModal";
+import { useRouter } from "next/navigation";
 import SessionReschedule from "./SessionReschedule";
 import Image from "next/image";
 
-const TablePool = ({ title, columns }) => {
+const TablePool = () => {
   const [allTutorials, setAllTutorials] = useState([]);
-  const [openEditar, setOpenEditar] = useState(false);
   const [openReschedule, setOpenReschedule] = useState(false);
-  const [error, setError] = useState(null);
-  const [subject, setSubject] = useState([]);
-  const [user, setUser] = useState(null);
-  const [activeTab, setActiveTab] = useState("pending");
-  const [person, setPerson] = useState([]);
   const [id, setId] = useState(null);
-  const [data, setData] = useState([]);
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState(null);
+  const router = useRouter();
 
-  const handleModalEditar = (id) => {
-    setId(id);
-    setOpenEditar(true);
-  };
   const handleModalReschedule = (id) => {
     setId(id);
     setOpenReschedule(true);
-    console.log("si funciona");
   };
 
-  const closeModalEditar = () => {
-    setOpenEditar(false);
-    setId(null);
-  };
   const closeModalReschedule = () => {
     setOpenReschedule(false);
     setId(null);
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const token = Cookies.get("token");
+    const userCookie = Cookies.get("user");
+
+    if (token && userCookie) {
       try {
-        const [subjectsResponse, degreesResponse] = await Promise.all([
-          fetch("http://localhost:8081/api/v1/subject/"),
-          fetch("http://localhost:8081/api/v1/degree"),
-        ]);
-
-        if (!subjectsResponse.ok || !degreesResponse.ok) {
-          throw new Error("Error en una de las respuestas");
-        }
-
-        const subjects = await subjectsResponse.json();
-        const degrees = await degreesResponse.json();
-
-        const subjectsWithNames = subjects.map((subject) => {
-          const degree = degrees.find((d) => d.degreeId === subject.degreeId);
-          return {
-            ...subject,
-            degreeName: degree ? degree.degreeName : "Carrera desconocida",
-          };
-        });
-
-        setData(subjectsWithNames);
-      } catch (error) {
-        setError(error.message);
-        console.log("Error al obtener datos: ", error.message);
+        setUser(JSON.parse(userCookie));
+      } catch (err) {
+        console.error("Error parsing user cookie:", err);
+        router.push("/landing");
       }
-    };
-    fetchData();
-  }, []);
-
-  //información del token
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      const user = jwtDecode(token);
-      setUser(user);
-      console.log("Usuario cargado:", user);
+    } else {
+      router.push("/");
     }
-  }, []);
+  }, [router]);
 
-  //Data con las tutorias
   useEffect(() => {
-    const fetchDataSubject = async () => {
+    const token = Cookies.get("token");
+    const fetchAll = async () => {
       try {
-        const response = await fetch("http://localhost:8081/api/v1/subject/");
-        if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
+        const res = await fetch("http://localhost:8081/api/v1/session/tutosNew", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
-        const result = await response.json();
-        setSubject(result.map((item) => Object.values(item)));
-      } catch (error) {
-        console.error("Error al cargar materias:", error);
-        setError(error.message);
-      }
-    };
-    fetchDataSubject();
-  }, []);
+        );
 
-  //Data de las persons
-  useEffect(() => {
-    const fetchDataUser = async () => {
-      try {
-        const resp = await fetch("http://localhost:8081/api/v1/persons");
-        if (!resp.ok) {
-          throw new Error(`Error HTTP: ${resp.status}`);
+        if (!res.ok) {
+          throw new Error("Error al cargar datos");
         }
-        const rpta = await resp.json();
-        setPerson(rpta.map((item) => Object.values(item)));
-      } catch (error) {
-        console.error("Error al trear personas", error);
-        setError(error.message);
-      }
-    };
-    fetchDataUser();
-  }, []);
 
-  //Data de allsesions
-  uuseEffect(() => {
-    const fetchAllSessions = async () => {
-      try {
-        const response = await fetch("http://localhost:8081/api/v1/session/");
-        if (!response.ok) throw new Error("Error al obtener sesiones");
-  
-        const result = await response.json();
-  
-        // Ordena por fecha
-        const sorted = result.sort((a, b) => new Date(a.classDate) - new Date(b.classDate));
-        setAllTutorials(sorted);
-      } catch (error) {
-        console.error("Error al cargar sesiones:", error);
-        setError(error.message);
+        const sessions = await res.json();
+
+        setAllTutorials(
+          sessions.sort((a, b) => new Date(a.classDate) - new Date(b.classDate))
+        );
+      } catch (err) {
+        console.error(err);
+        setError(err.message);
       }
     };
-  
-    if (user?.user_id) {
-      fetchAllSessions();
-    }
+
+    if (user?.user_id) fetchAll();
   }, [user]);
 
-  const cancelSession = async (id) => {
-    if (!user?.user_id) return;
-    try {
-      const response = await fetch(
-        `http://localhost:8081/api/v1/session/cancelTuto/${id}`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sessionId: id, tutorId: user.user_id }),
-        }
-      );
-      if (!response.ok) throw new Error("Error al cancelar la tutoría");
-      window.location.reload();
-    } catch (error) {
-      setError(error.message);
-    }
-  };
+  if (!user) return <div className="p-8">Cargando usuario...</div>;
+  if (error) return <div className="p-8 text-red-500">Error: {error}</div>;
 
-  const renderActionButtons = (tutorial) => {
-    const status = tutorial[1]?.toLowerCase();
-
-    switch (activeTab) {
-      case "pending":
-        return (
-          <div className="flex gap-2 justify-center">
-            <button
-              className="bg-gray-300 hover:bg-gray-500 text-black hover:text-white font-bold py-2 px-4 rounded"
-              onClick={() => {
-                setId(tutorial[0]);
-                handleModalEditar(tutorial[0]);
-              }}
-            >
-              Cambiar Tutor
-            </button>
-            <button
-              className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-              onClick={() => cancelSession(tutorial[0])}
-            >
-              Cancelar
-            </button>
-            <EditTutorModal
-              open={openEditar}
-              id={id}
-              onClose={closeModalEditar}
-            />
-          </div>
-        );
-
-      case "accepted":
-        return (
-          <button
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-            onClick={() => cancelSession(tutorial[0])}
-          >
-            Cancelar
-          </button>
-        );
-
-      case "completed":
-        switch (status) {
-          case "valorada_noregistrada":
-            return (
-              <button
-                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                onClick={() => registerSession(tutorial[0])}
-              >
-                Registrar
-              </button>
-            );
-          case "registrada_novalorada":
-            return (
-              <span className="text-gray-500">
-                Pendiente de valoración por parte del estudiante
-              </span>
-            );
-          case "registrada_valorada":
-            return (
-              <span className="text-green-500 font-medium">
-                ¡Tutoría realizada con éxito!
-              </span>
-            );
-          default:
-            return null;
-        }
-
-      default:
-        return null;
-    }
-  };
-
-  const renderTable = (tutorials) => {
-    if (tutorials.length === 0) {
-      return (
-        <div className="text-center py-4">No hay tutorías disponibles</div>
-      );
-    }
-
-    return (
+  return (
+    <div className="bg-white p-4 rounded-lg shadow-md">
+      <h1 className="text-lg font-semibold text-gray-700 mb-4">Tutorías</h1>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-400">
-          <thead className="bg-gray-50 border border-gray-400">
-            <tr className="border border-slate-500">
-              {columns.map((item, rowIndex) => (
-                <th
-                  key={rowIndex}
-                  className="px-6 py-4 whitespace-nowrap border border-slate-300"
-                >
-                  {item?.toString() || ""}
-                </th>
-              ))}
+        <table className="min-w-full text-xs text-left text-gray-700 border border-gray-300">
+          <thead className="bg-gray-100 text-gray-600">
+            <tr>
+              <th className="px-2 py-2 border">Fecha y hora</th>
+              <th className="px-2 py-2 border">Materia</th>
+              <th className="px-2 py-2 border">Estado</th>
+              <th className="px-2 py-2 border">Cancelado por</th>
+              <th className="px-2 py-2 border">Temas</th>
+              <th className="px-2 py-2 border">Calificación</th>
+              <th className="px-2 py-2 border">Estudiante</th>
+              <th className="px-2 py-2 border">Tutor</th>
             </tr>
           </thead>
-          <tbody className="border border-slate-500">
-            {tutorials.map((item) => (
-              <tr key={item[0]}>
-                <td className="px-6 py-4 whitespace-nowrap">{item[1]}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {person.find((element) => element[0] === item[2])?.[2] ||
-                    "Estudiante no encontrado"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {person.find((element) => element[0] === item[3])?.[2] ||
-                    "Tutor no encontrado"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {subject.find((element) => element[0] === item[4])?.[2] ||
-                    "Materia no encontrada"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">{item[5]}</td>
-                <td className="px-6 py-4 whitespace-nowrap flex items-center gap-5 ">
-                  {format(new Date(item[6]), "dd MMMM yyyy HH:mm", {
-                    locale: es,
-                  })}
+          <tbody>
+            {allTutorials.map((tut) => (
+              <tr key={tut[0]} className="border-t">
+                <td className="px-2 py-1 border whitespace-nowrap flex items-center gap-2">
+                {format(new Date(tut.classDate), "dd MMMM yyyy HH:mm", { locale: es })}
                   <div
-                    className="hover:cursor-pointer w-[20px] h-[20px]"
-                    onClick={() => {
-                      //setId(tutorial[0]);
-                      handleModalReschedule(item[0]);
-                    }}
+                    className="hover:cursor-pointer w-[16px] h-[16px]"
+                    onClick={() => handleModalReschedule(tut.classId)}
                   >
-                    <Image
-                      src="/images/edit.png"
-                      alt="edit Icon"
-                      width={20}
-                      height={20}
-                    />
+                    <Image src="/images/edit.png" alt="edit Icon" width={16} height={16} />
                   </div>
-                  <SessionReschedule
-                    open={openReschedule}
-                    id={id}
-                    onClose={closeModalReschedule}
-                  />
+                  <SessionReschedule open={openReschedule} id={id} onClose={closeModalReschedule} />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">{item[7]}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  {renderActionButtons(item)}
-                </td>
+                <td className="px-2 py-1 border">{tut.subjectName}</td>
+                <td className="px-2 py-1 border">{tut.registered ? "Registrada" : "No registrada"}</td>
+                <td className="px-2 py-1 border">{tut.canceledBy === "NONE"
+                                                  ? "-"
+                                                  : tut.canceledBy === "STUDENT"
+                                                  ? "Cancelada por estudiante"
+                                                  : tut.canceledBy === "TUTOR"
+                                                  ? "Cancelada por tutor"
+                                                  : tut.canceledBy === "ADMIN"
+                                                  ? "Cancelada por admin"
+                                                  : "-"
+                                                  }</td>
+                <td className="px-2 py-1 border">{tut.classTopics}</td>
+                <td className="px-2 py-1 border">{tut.classRate}</td>
+                <td className="px-2 py-1 border">{tut.studentFirstName + " " + tut.studentLastName}</td>
+                <td className="px-2 py-1 border">{tut.tutorFirstName + " " + tut.tutorLastName}</td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
-    );
-  };
-
-  if (!user) {
-    return <div className="p-8">Cargando usuario...</div>;
-  }
-
-  if (error) {
-    return <div className="p-8 text-red-500">Error: {error}</div>;
-  }
-
-  return (
-    <div className="bg-gray-100 rounded-lg shadow-md py-2 flex-1">
-      <div className="bg-gray-200 mx-auto border border-slate-400">
-        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
-      </div>
-
-      <div className="flex border-b border-gray-200 mb-4">
-        <button
-          className={`py-2 px-4 ${
-            activeTab === "pending"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("pending")}
-        >
-          Pendientes ({pendingTutorials.length})
-        </button>
-        <button
-          className={`py-2 px-4 ${
-            activeTab === "accepted"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("accepted")}
-        >
-          Aceptadas ({acceptedTutorials.length})
-        </button>
-        <button
-          className={`py-2 px-4 ${
-            activeTab === "completed"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("completed")}
-        >
-          Realizadas ({completedTutorials.length})
-        </button>
-        <button
-          className={`py-2 px-4 ${
-            activeTab === "canceled"
-              ? "border-b-2 border-blue-500 text-blue-600"
-              : "text-gray-600"
-          }`}
-          onClick={() => setActiveTab("canceled")}
-        >
-          Canceladas ({canceledTutorials.length})
-        </button>
-      </div>
-
-      <div className="p-8">
-        {activeTab === "pending" && renderTable(pendingTutorials)}
-        {activeTab === "accepted" && renderTable(acceptedTutorials)}
-        {activeTab === "completed" && renderTable(completedTutorials)}
-        {activeTab === "canceled" && renderTable(canceledTutorials)}
       </div>
     </div>
   );
