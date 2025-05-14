@@ -40,7 +40,11 @@ const TablePool = () => {
     };
     if (user?.user_id) cancelTutoAdmin();
     
-  } 
+  }
+
+  const handleChangeTutor = (classId) => {
+    toast.warning("Método no implementado aún")
+  }
 
   const handleModalReschedule = (id) => {
     setId(id);
@@ -157,6 +161,12 @@ const TablePool = () => {
                     className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
                   >
                     Cancelar
+                  </button>
+                  <button
+                    onClick={() => handleChangeTutor(tut.classId)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
+                  >
+                    Cambiar tutor
                   </button>
                 </td>
               </tr>
