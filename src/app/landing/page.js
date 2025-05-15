@@ -30,7 +30,6 @@ function Landing() {
   }, [router]);
 
   if (!user) {
-    // Optionally, render a loading state or nothing until the user data is fetched
     return <div>Loading...</div>;
   }
 
