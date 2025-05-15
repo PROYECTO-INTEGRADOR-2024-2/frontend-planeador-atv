@@ -33,7 +33,11 @@ const Login = () => {
         body: JSON.stringify(person),
       });
 
-      if (!response.ok) throw new Error("Login fallido");
+      if (!response.ok) {
+        const message = await response.text();
+        toast.error(message || "Credenciales inválidas.");
+        return;
+      }
 
       const res = await response.json();
       const token = res.token;
@@ -42,13 +46,16 @@ const Login = () => {
       Cookies.set("token", token);
       Cookies.set("user", JSON.stringify(user));
 
-      router.push("/landing");
       toast.success("Inicio de sesión correcto.");
+      router.push("/landing");
     } catch (error) {
       console.error("Error al iniciar sesión:", error.message);
-      toast.error("Credenciales inválidas.");
+      toast.error("Ocurrió un error inesperado.");
     }
   };
+
+
+  
 
   const { data: session } = useSession();
   console.log(session);
