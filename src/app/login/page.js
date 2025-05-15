@@ -39,7 +39,8 @@ const Login = () => {
         return;
       }
 
-      const res = await response.json(); 
+      const res = await response.json();
+      const token = res.token;
       const user = jwtDecode(token);
 
       Cookies.set("token", token);
@@ -52,6 +53,7 @@ const Login = () => {
       toast.error("Ocurrió un error inesperado.");
     }
   };
+
 
   
 
