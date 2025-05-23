@@ -381,7 +381,7 @@ export default function PersonalTutosTable({ title }) {
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-      <div className="bg-gray-200 mx-auto border border-slate-400">
+      <div className="text-center bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
       </div>
       <div className="p-8">{renderTable()}</div>
