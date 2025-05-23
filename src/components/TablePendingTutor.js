@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { FaCheck, FaMixer, FaAddressBook } from "react-icons/fa";
+import { FaCheck, FaMixer, FaAddressBook, FaStar } from "react-icons/fa";
 
 export default function TablePendingTutor() {
   const [sessions, setSessions] = useState([]);
@@ -345,24 +345,38 @@ export default function TablePendingTutor() {
                     {`${session.studentName} ${session.studentLastname}`}
                   </td>
                   <td className="px-6 py-4 border text-center">
-                    <div className="py-4 px-4 border whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
+                    <div className="py-4 px-4 whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
                       {session.canceledBy === "NONE" &&
                         !session.registered &&
                         session.accepted && (
-                          <button
-                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                          <FaMixer
+                            size={30}
+                            color="red"
                             onClick={() => handleCancel(session.classId)}
-                          >
-                            Cancelar
-                          </button>
+                            className="hover:cursor-pointer"
+                            title="Rechazar tutoría"
+                          />
+                          // <button
+                          //   className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                          //   onClick={() => handleCancel(session.classId)}
+                          // >
+                          //   Cancelar
+                          // </button>
                         )}
                       {session.registered && session.classRate === 0 && (
-                        <button
-                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
+                        // <button
+                        //   className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
+                        //   onClick={() => setSelectedSession(session)}
+                        // >
+                        //   Valorar tutoría
+                        // </button>
+                        <FaStar
+                          size={30}
+                          className="hover:cursor-pointer"
+                          color="orange"
                           onClick={() => setSelectedSession(session)}
-                        >
-                          Valorar tutoría
-                        </button>
+                          title="Valorar tutoría"
+                        />
                       )}
                       {!session.registered &&
                         !session.accepted &&

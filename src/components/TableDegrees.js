@@ -105,7 +105,7 @@ const TableDegrees = () => {
                 </td>
                 <td className="py-4 px-4 border whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
                   <FaRegEdit
-                    size={40}
+                    size={20}
                     className="hover:cursor-pointer"
                     color="blue"
                     onClick={() => {
@@ -115,7 +115,7 @@ const TableDegrees = () => {
                     title="Editar Carrera"
                   />
                   <FaRegTrashAlt
-                    size={40}
+                    size={20}
                     color="red"
                     onClick={() => handleModalEliminar(item.degreeId)}
                     className="hover:cursor-pointer"
