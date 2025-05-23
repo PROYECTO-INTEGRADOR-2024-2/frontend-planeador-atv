@@ -1,12 +1,11 @@
 import React from "react";
-import Card from "@/components/Card";
 import NavbarHome from "@/components/NavbarHome";
 import TableAdmin from "@/components/TableAdmin";
 import Footer from "../../components/Footer";
 
 function landing() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen justify-between">
       <NavbarHome name={"Juan"} rol={"Student"} />
       <TableAdmin
         columns={[
@@ -19,9 +18,9 @@ function landing() {
           "Calificación",
           "Acciones",
         ]}
-        title={"Tutorias"}
+        title={"Tutorías"}
       />
-      <Footer></Footer>
+      <Footer />
     </div>
   );
 }

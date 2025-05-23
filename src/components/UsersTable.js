@@ -2,14 +2,14 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
+import { FaUserLock, FaRegAddressCard } from "react-icons/fa6";
 
 const Alert = ({ message, type }) => {
   return (
     <div
-      className={`fixed bottom-4 left-4 p-4 rounded-lg z-50 ${type === "success"
-        ? "bg-green-500 text-white"
-        : "bg-red-500 text-white"
-        }`}
+      className={`fixed bottom-4 left-4 p-4 rounded-lg z-50 ${
+        type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+      }`}
     >
       {message}
     </div>
@@ -27,12 +27,25 @@ const Modal = ({ user, onClose }) => {
           &times;
         </button>
         <h2 className="text-2xl font-bold mb-4">Perfil del Usuario</h2>
-        <p><strong>ID:</strong> {user.id}</p>
-        <p><strong>Nombre:</strong> {user.name}</p>
-        <p><strong>Correo:</strong> {user.email}</p>
-        <p><strong>Rol:</strong> {user.role}</p>
-        <p><strong>Ciudad:</strong> {user.city}</p>
-        <p><strong>Estado:</strong> {user.status === "1" ? "Habilitado" : "Deshabilitado"}</p>
+        <p>
+          <strong>ID:</strong> {user.id}
+        </p>
+        <p>
+          <strong>Nombre:</strong> {user.name}
+        </p>
+        <p>
+          <strong>Correo:</strong> {user.email}
+        </p>
+        <p>
+          <strong>Rol:</strong> {user.role}
+        </p>
+        <p>
+          <strong>Ciudad:</strong> {user.city}
+        </p>
+        <p>
+          <strong>Estado:</strong>{" "}
+          {user.status === "1" ? "Habilitado" : "Deshabilitado"}
+        </p>
       </div>
     </div>
   );
@@ -62,7 +75,7 @@ const UsersTable = ({ title }) => {
         email: user.userEmail,
         role: user.userRole,
         city: user.userCity,
-        status: user.userState
+        status: user.userState,
       }));
       setUsers(processed);
       setFilteredUsers(processed);
@@ -80,7 +93,6 @@ const UsersTable = ({ title }) => {
     fetchUsers();
   }, [activeTab]);
 
-
   useEffect(() => {
     const filtered = users.filter((user) => {
       const matchStatus =
@@ -91,7 +103,7 @@ const UsersTable = ({ title }) => {
         : true;
       return matchStatus && matchId && matchName;
     });
-  
+
     setFilteredUsers(filtered);
   }, [idFilter, nameFilter, users, activeTab]);
 
@@ -104,13 +116,16 @@ const UsersTable = ({ title }) => {
         return;
       }
 
-      const response = await fetch(`http://localhost:8081/api/v1/persons/disableUser/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8081/api/v1/persons/disableUser/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {
@@ -139,13 +154,16 @@ const UsersTable = ({ title }) => {
         return;
       }
 
-      const response = await fetch(`http://localhost:8081/api/v1/persons/enableUser/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `http://localhost:8081/api/v1/persons/enableUser/${id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       const data = await response.json();
       if (!response.ok) {
@@ -186,9 +204,9 @@ const UsersTable = ({ title }) => {
   }
 
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md py-2 relative max-w-7xl mx-auto">
+    <div className="bg-gray-100 rounded-lg shadow-md py-2 mx-auto w-full">
       {alert && <Alert message={alert.message} type={alert.type} />}
-      
+
       {isModalOpen && selectedUser && (
         <Modal user={selectedUser} onClose={handleCloseModal} />
       )}
@@ -202,7 +220,9 @@ const UsersTable = ({ title }) => {
         <button
           onClick={() => setActiveTab("enabled")}
           className={`py-2 px-4 font-semibold ${
-            activeTab === "enabled" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-600"
+            activeTab === "enabled"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-600"
           }`}
         >
           Usuarios Habilitados
@@ -210,7 +230,9 @@ const UsersTable = ({ title }) => {
         <button
           onClick={() => setActiveTab("disabled")}
           className={`py-2 px-4 font-semibold ${
-            activeTab === "disabled" ? "border-b-2 border-blue-500 text-blue-500" : "text-gray-600"
+            activeTab === "disabled"
+              ? "border-b-2 border-blue-500 text-blue-500"
+              : "text-gray-600"
           }`}
         >
           Usuarios Deshabilitados
@@ -256,26 +278,50 @@ const UsersTable = ({ title }) => {
             <tbody>
               {filteredUsers.map((user) => (
                 <tr key={user.id} className="text-center">
-                  <td className="px-6 py-4 border border-slate-300">{user.id}</td>
-                  <td className="px-6 py-4 border border-slate-300">{user.name}</td>
-                  <td className="px-6 py-4 border border-slate-300">{user.email}</td>
-                  <td className="px-6 py-4 border border-slate-300">{user.role}</td>
-                  <td className="px-6 py-4 border border-slate-300">{user.city}</td>
+                  <td className="px-6 py-4 border border-slate-300">
+                    {user.id}
+                  </td>
+                  <td className="px-6 py-4 border border-slate-300">
+                    {user.name}
+                  </td>
+                  <td className="px-6 py-4 border border-slate-300">
+                    {user.email}
+                  </td>
+                  <td className="px-6 py-4 border border-slate-300">
+                    {user.role}
+                  </td>
+                  <td className="px-6 py-4 border border-slate-300">
+                    {user.city}
+                  </td>
                   <td className="px-6 py-4 border border-slate-300">
                     {activeTab === "enabled" ? (
-                      <div className="flex flex-col space-y-1">
-                        <button
+                      <div className="py-1 px-4 whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
+                        <FaUserLock
+                          size={30}
+                          className="hover:cursor-pointer"
+                          color="orange"
+                          onClick={() => handleDisable(user.id)}
+                          title="Deshabilitar Usuario"
+                        />
+                        <FaRegAddressCard
+                          size={30}
+                          color="blue"
+                          onClick={() => handleOpenProfile(user)}
+                          className="hover:cursor-pointer"
+                          title="Ver perfil del estudiante"
+                        />
+                        {/* <button
                           onClick={() => handleDisable(user.id)}
                           className="bg-yellow-200 hover:bg-yellow-300 text-black px-3 py-1 rounded"
                         >
                           Deshabilitar
-                        </button>
-                        <button
+                        </button> */}
+                        {/* <button
                           onClick={() => handleOpenProfile(user)}
                           className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
                         >
                           Ver perfil
-                        </button>
+                        </button> */}
                       </div>
                     ) : (
                       <div className="flex flex-col space-y-1">

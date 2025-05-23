@@ -5,11 +5,11 @@ import Footer from "../../components/Footer";
 
 function users() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen justify-between">
       <NavbarHome />
-      <UsersTable title="Listado de usuarios registrados" />
-      <Footer></Footer>
-    </>
+      <UsersTable title="Listado de usuarios registrados" className="w-full" />
+      <Footer />
+    </div>
   );
 }
 

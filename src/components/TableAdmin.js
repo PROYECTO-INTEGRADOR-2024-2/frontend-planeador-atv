@@ -5,8 +5,8 @@ import { format } from "date-fns";
 import es from "date-fns/locale/es";
 import { useRouter } from "next/navigation";
 import SessionReschedule from "./SessionReschedule";
-import Image from "next/image";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import { FaRegTrashAlt, FaExchangeAlt, FaRegEdit } from "react-icons/fa";
 
 const TablePool = () => {
   const [allTutorials, setAllTutorials] = useState([]);
@@ -20,31 +20,31 @@ const TablePool = () => {
     const token = Cookies.get("token");
     const cancelTutoAdmin = async () => {
       try {
-        const res = await fetch(`http://localhost:8081/api/v1/session/cancelTutoAdmin/${classId}`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-        
+        const res = await fetch(
+          `http://localhost:8081/api/v1/session/cancelTutoAdmin/${classId}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
         if (!res.ok) {
-          toast.error("Error al cancelar la tutoría")
+          toast.error("Error al cancelar la tutoría");
         }
 
-        toast.warning("Tutoría cancelada exitosamente")
+        toast.warning("Tutoría cancelada exitosamente");
         window.location.reload();
       } catch (err) {
-        toast.error("Error al cancelar la tutoría")
+        toast.error("Error al cancelar la tutoría");
       }
     };
     if (user?.user_id) cancelTutoAdmin();
-    
-  }
+  };
 
   const handleChangeTutor = (classId) => {
-    toast.warning("Método no implementado aún")
-  }
+    toast.warning("Método no implementado aún");
+  };
 
   const handleModalReschedule = (id) => {
     setId(id);
@@ -76,11 +76,13 @@ const TablePool = () => {
     const token = Cookies.get("token");
     const fetchAll = async () => {
       try {
-        const res = await fetch("http://localhost:8081/api/v1/session/tutosNew", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
+        const res = await fetch(
+          "http://localhost:8081/api/v1/session/tutosNew",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
         );
 
         if (!res.ok) {
@@ -119,24 +121,34 @@ const TablePool = () => {
               <th className="px-2 py-2 border">Calificación</th>
               <th className="px-2 py-2 border">Estudiante</th>
               <th className="px-2 py-2 border">Tutor</th>
-              <th className="px-2 py-2 border">Acciones</th> {/* Nueva columna */}
+              <th className="px-2 py-2 border">Acciones</th>{" "}
+              {/* Nueva columna */}
             </tr>
           </thead>
           <tbody>
             {allTutorials.map((tut) => (
               <tr key={tut.classId} className="border-t">
-                <td className="px-2 py-1 border whitespace-nowrap flex items-center gap-2">
-                  {format(new Date(tut.classDate), "dd MMMM yyyy HH:mm", { locale: es })}
-                  <div
-                    className="hover:cursor-pointer w-[16px] h-[16px]"
+                <td className="py-4 px-4 border whitespace-nowrap flex items-center justify-between gap-x-8">
+                  {format(new Date(tut.classDate), "dd MMMM yyyy HH:mm", {
+                    locale: es,
+                  })}
+                  <FaRegEdit
+                    size={20}
+                    className="hover:cursor-pointer"
+                    color="blue"
                     onClick={() => handleModalReschedule(tut.classId)}
-                  >
-                    <Image src="/images/edit.png" alt="edit Icon" width={16} height={16} />
-                  </div>
-                  <SessionReschedule open={openReschedule} id={id} onClose={closeModalReschedule} />
+                    title="Reprogramar tutoría"
+                  />
+                  <SessionReschedule
+                    open={openReschedule}
+                    id={id}
+                    onClose={closeModalReschedule}
+                  />
                 </td>
                 <td className="px-2 py-1 border">{tut.subjectName}</td>
-                <td className="px-2 py-1 border">{tut.registered ? "Registrada" : "No registrada"}</td>
+                <td className="px-2 py-1 border">
+                  {tut.registered ? "Registrada" : "No registrada"}
+                </td>
                 <td className="px-2 py-1 border">
                   {tut.canceledBy === "NONE"
                     ? "-"
@@ -149,25 +161,42 @@ const TablePool = () => {
                     : "-"}
                 </td>
                 <td className="px-2 py-1 border">{tut.classTopics}</td>
-                <td className="px-2 py-1 border">{tut.classRate === 0 
-                                                  ? "..."
-                                                  : tut.classRate
-                                                }</td>
-                <td className="px-2 py-1 border">{tut.studentFirstName + " " + tut.studentLastName}</td>
-                <td className="px-2 py-1 border">{tut.tutorFirstName + " " + tut.tutorLastName}</td>
                 <td className="px-2 py-1 border">
-                  <button
+                  {tut.classRate === 0 ? "..." : tut.classRate}
+                </td>
+                <td className="px-2 py-1 border">
+                  {tut.studentFirstName + " " + tut.studentLastName}
+                </td>
+                <td className="px-2 py-1 border">
+                  {tut.tutorFirstName + " " + tut.tutorLastName}
+                </td>
+                <td className="px-2 py-1 p-10 flex justify-center gap-x-4">
+                  <FaRegTrashAlt
+                    size={20}
+                    color="red"
+                    onClick={() => handleCancel(tut.classId)}
+                    className="hover:cursor-pointer"
+                    title="Cancelar tutoría"
+                  />
+                  <FaExchangeAlt
+                    size={20}
+                    color="blue"
+                    className="hover:cursor-pointer"
+                    title="Cambiar tutor"
+                    onClick={() => handleChangeTutor(tut.classId)}
+                  />
+                  {/* <button
                     onClick={() => handleCancel(tut.classId)}
                     className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
                   >
                     Cancelar
-                  </button>
-                  <button
+                  </button> */}
+                  {/* <button
                     onClick={() => handleChangeTutor(tut.classId)}
                     className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
                   >
                     Cambiar tutor
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

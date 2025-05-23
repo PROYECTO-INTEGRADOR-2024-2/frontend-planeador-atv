@@ -5,7 +5,7 @@ import Footer from "../../components/Footer";
 
 function tutorsPool() {
   return (
-    <>
+    <div className="flex flex-col min-h-screen justify-between">
       <NavbarHome />
       <TableTutorsPool
         columns={[
@@ -17,8 +17,8 @@ function tutorsPool() {
         ]}
         title={"Solicitudes de Tutor Pendientes"}
       />
-      <Footer></Footer>
-    </>
+      <Footer />
+    </div>
   );
 }
 

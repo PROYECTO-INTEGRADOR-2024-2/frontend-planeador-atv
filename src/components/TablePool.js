@@ -2,7 +2,8 @@
 import React, { useEffect, useState, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import { FaRegAddressCard, FaCheck } from "react-icons/fa";
 
 const TablePool = ({ title, columns }) => {
   const [data, setData] = useState([]);
@@ -18,7 +19,7 @@ const TablePool = ({ title, columns }) => {
     POOL: "http://localhost:8081/api/v1/session/pool",
     STUDENT: "http://localhost:8081/api/v1/persons/",
     ACCEPT: "http://localhost:8081/api/v1/session/accept/",
-    REJECT: "http://localhost:8081/api/v1/session/rejectClass/"
+    REJECT: "http://localhost:8081/api/v1/session/rejectClass/",
   };
 
   useEffect(() => {
@@ -43,21 +44,21 @@ const TablePool = ({ title, columns }) => {
     fetchedOnce.current = true;
 
     const fetchData = async () => {
-      const token = Cookies.get('token');
-      if (!token) return toast.error('Token no encontrado en cookies');
+      const token = Cookies.get("token");
+      if (!token) return toast.error("Token no encontrado en cookies");
 
       try {
         const response = await fetch(URLS.POOL, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!response.ok) throw new Error('Error al obtener las sesiones');
+        if (!response.ok) throw new Error("Error al obtener las sesiones");
 
         const data = await response.json();
         setData(data);
-        toast.success('Sesiones cargadas correctamente');
+        toast.success("Sesiones cargadas correctamente");
       } catch (error) {
-        toast.error(error.message || 'Error desconocido');
+        toast.error(error.message || "Error desconocido");
       } finally {
         setLoading(false);
       }
@@ -67,67 +68,64 @@ const TablePool = ({ title, columns }) => {
   }, []);
 
   const handleAccept = async (sessionId) => {
-      const token = Cookies.get("token");
-      if (!token) return toast.error("Token no encontrado");
-      console.log(`Se hará la petición a ${URLS.ACCEPT}${sessionId}` )
-      try {
-        const res = await fetch(`${URLS.ACCEPT}${sessionId}`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-  
-        if (!res.ok) throw new Error("Error al aceptar la sesión");
-  
-        toast.warning("Sesión aceptada correctamente");
-      } catch (err) {
-        toast.error(err.message || "Error al aceptar la sesión");
-      }
-  
+    const token = Cookies.get("token");
+    if (!token) return toast.error("Token no encontrado");
+    console.log(`Se hará la petición a ${URLS.ACCEPT}${sessionId}`);
+    try {
+      const res = await fetch(`${URLS.ACCEPT}${sessionId}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) throw new Error("Error al aceptar la sesión");
+
+      toast.warning("Sesión aceptada correctamente");
+    } catch (err) {
+      toast.error(err.message || "Error al aceptar la sesión");
+    }
+  };
+
+  const handlePerfilStudent = async (studentId) => {
+    const token = Cookies.get("token");
+
+    if (!token) {
+      toast.error("Token no encontrado");
+      return;
     }
 
+    try {
+      const res = await fetch(`${URLS.STUDENT}${studentId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-  const handlePerfilStudent= async (studentId) => {
-      const token = Cookies.get("token");
-  
-      if (!token) {
-        toast.error("Token no encontrado");
-        return;
+      if (!res.ok) {
+        throw new Error("No se pudo obtener la información del estudiante");
       }
-  
-      try {
-        const res = await fetch(`${URLS.STUDENT}${studentId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        if (!res.ok) {
-          throw new Error("No se pudo obtener la información del estudiante");
-        }
-  
-        const data = await res.json();
-  
-        const filteredStudent = {
-          Nombre: data.userFirstname,
-          Apellido: data.userLastname,
-          Correo: data.userEmail,
-          Teléfono: data.userPhone,
-          Departamento: data.userDepartment,
-          Ciudad: data.userCity,
-        };
-  
-        setStudentData(filteredStudent);
-        setShowModal(true);
-      } catch (err) {
-        toast.error(err.message || "Error al cargar perfil del estudiante");
-      }
-    };
+
+      const data = await res.json();
+
+      const filteredStudent = {
+        Nombre: data.userFirstname,
+        Apellido: data.userLastname,
+        Correo: data.userEmail,
+        Teléfono: data.userPhone,
+        Departamento: data.userDepartment,
+        Ciudad: data.userCity,
+      };
+
+      setStudentData(filteredStudent);
+      setShowModal(true);
+    } catch (err) {
+      toast.error(err.message || "Error al cargar perfil del estudiante");
+    }
+  };
   const allColumns = [...columns, "Acciones"];
 
-  
   const closeModal = () => {
     setShowModal(false);
     setStudentData(null);
@@ -143,7 +141,9 @@ const TablePool = ({ title, columns }) => {
     }
 
     if (data.length === 0) {
-      return <div className="text-center py-4">No hay sesiones disponibles</div>;
+      return (
+        <div className="text-center py-4">No hay sesiones disponibles</div>
+      );
     }
 
     return (
@@ -164,10 +164,14 @@ const TablePool = ({ title, columns }) => {
               <td className="px-6 py-4 border text-center">
                 {new Date(session.classDate).toLocaleString()}
               </td>
-              <td className="px-6 py-4 border text-center">{session.subjectName}</td>
-              <td className="px-6 py-4 border text-center">{session.classTopics}</td>
               <td className="px-6 py-4 border text-center">
-                {session.canceledBy !== "NONE" 
+                {session.subjectName}
+              </td>
+              <td className="px-6 py-4 border text-center">
+                {session.classTopics}
+              </td>
+              <td className="px-6 py-4 border text-center">
+                {session.canceledBy !== "NONE"
                   ? "Cancelada"
                   : session.registered && session.classRate != 0
                   ? "Cerrada"
@@ -179,19 +183,33 @@ const TablePool = ({ title, columns }) => {
                 {`${session.studentName} ${session.studentLastname}`}
               </td>
               <td className="px-6 py-4 border text-center space-y-2">
-                <div className="flex flex-col items-center space-y-2">
-                <button
+                <div className="py-4 px-4 border whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
+                  {/* <button
                     className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
                     onClick={() => handleAccept(session.classId)}
                   >
                     Aceptar tutoría
-                  </button>
-                  <button
+                  </button> */}
+                  <FaCheck
+                    size={30}
+                    className="hover:cursor-pointer"
+                    color="orange"
+                    onClick={() => handleAccept(session.classId)}
+                    title="Aceptar tutoría"
+                  />
+                  <FaRegAddressCard
+                    size={30}
+                    color="blue"
+                    onClick={() => handlePerfilStudent(session.studentId)}
+                    className="hover:cursor-pointer"
+                    title="Ver perfil del estudiante"
+                  />
+                  {/* <button
                     className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
                     onClick={() => handlePerfilStudent(session.studentId)}
                   >
                     Ver perfil de estudiante
-                  </button>
+                  </button> */}
                 </div>
               </td>
             </tr>
@@ -203,7 +221,6 @@ const TablePool = ({ title, columns }) => {
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
-      
       <div className="bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
       </div>
@@ -231,8 +248,6 @@ const TablePool = ({ title, columns }) => {
           </div>
         </div>
       )}
-
-      
     </div>
   );
 };

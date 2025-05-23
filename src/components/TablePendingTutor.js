@@ -1,7 +1,8 @@
-'use client';
-import { useEffect, useRef, useState } from 'react';
-import Cookies from 'js-cookie';
-import { toast } from 'react-toastify';
+"use client";
+import { useEffect, useRef, useState } from "react";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import { FaCheck, FaMixer, FaAddressBook } from "react-icons/fa";
 
 export default function TablePendingTutor() {
   const [sessions, setSessions] = useState([]);
@@ -21,7 +22,7 @@ export default function TablePendingTutor() {
     CANCEL: "http://localhost:8081/api/v1/session/cancelTutoTutor/",
     SESSIONS: "http://localhost:8081/api/v1/session/sessionstutor",
     ACCEPT: "http://localhost:8081/api/v1/session/accept/",
-    REJECT: "http://localhost:8081/api/v1/session/rejectClass/"
+    REJECT: "http://localhost:8081/api/v1/session/rejectClass/",
   };
 
   useEffect(() => {
@@ -29,21 +30,21 @@ export default function TablePendingTutor() {
     fetchedOnce.current = true;
 
     const fetchSessions = async () => {
-      const token = Cookies.get('token');
-      if (!token) return toast.error('Token no encontrado en cookies');
+      const token = Cookies.get("token");
+      if (!token) return toast.error("Token no encontrado en cookies");
 
       try {
         const response = await fetch(URLS.SESSIONS, {
           headers: { Authorization: `Bearer ${token}` },
         });
 
-        if (!response.ok) throw new Error('Error al obtener las sesiones');
+        if (!response.ok) throw new Error("Error al obtener las sesiones");
 
         const data = await response.json();
         setSessions(data);
-        toast.success('Sesiones cargadas correctamente');
+        toast.success("Sesiones cargadas correctamente");
       } catch (error) {
-        toast.error(error.message || 'Error desconocido');
+        toast.error(error.message || "Error desconocido");
       } finally {
         setLoading(false);
       }
@@ -58,7 +59,12 @@ export default function TablePendingTutor() {
       // Función para obtener prioridad del estado
       const getStatePriority = (session) => {
         if (!session.accepted && session.canceledBy === "NONE") return 1; // Pendientes
-        if (session.accepted && !session.registered && session.canceledBy === "NONE") return 2; // Aceptadas
+        if (
+          session.accepted &&
+          !session.registered &&
+          session.canceledBy === "NONE"
+        )
+          return 2; // Aceptadas
         if (session.registered) return 3; // Terminadas
         if (session.canceledBy !== "NONE") return 4; // Canceladas
         return 5; // Otros
@@ -72,7 +78,7 @@ export default function TablePendingTutor() {
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }
-        
+
         // Si tienen la misma prioridad, ordenar por fecha
         return new Date(a.classDate) - new Date(b.classDate);
       });
@@ -99,7 +105,9 @@ export default function TablePendingTutor() {
 
       toast.warning("Sesión aceptada correctamente");
       setSessions((prev) =>
-        prev.map((s) => (s.classId === sessionId ? { ...s, accepted: true } : s))
+        prev.map((s) =>
+          s.classId === sessionId ? { ...s, accepted: true } : s
+        )
       );
     } catch (err) {
       toast.error(err.message || "Error al aceptar la sesión");
@@ -144,7 +152,9 @@ export default function TablePendingTutor() {
 
       toast.warning("Sesión cancelada correctamente");
       setSessions((prev) =>
-        prev.map((s) => (s.classId === sessionId ? { ...s, canceledBy: "TUTOR" } : s))
+        prev.map((s) =>
+          s.classId === sessionId ? { ...s, canceledBy: "TUTOR" } : s
+        )
       );
     } catch (err) {
       toast.error(err.message || "Error al cancelar la sesión");
@@ -154,7 +164,9 @@ export default function TablePendingTutor() {
   const handlePerfilStudent = async (studentId) => {
     // Verificar si el studentId es "0"
     if (studentId === "0" || studentId === 0) {
-      setStudentData({ mensaje: "Ningún estudiante ha solicitado esta tutoría aún" });
+      setStudentData({
+        mensaje: "Ningún estudiante ha solicitado esta tutoría aún",
+      });
       return;
     }
 
@@ -166,7 +178,8 @@ export default function TablePendingTutor() {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (!res.ok) throw new Error("No se pudo obtener el perfil del estudiante");
+      if (!res.ok)
+        throw new Error("No se pudo obtener el perfil del estudiante");
 
       const data = await res.json();
       setStudentData({
@@ -248,7 +261,11 @@ export default function TablePendingTutor() {
       default:
         bgColor = "bg-gray-200";
     }
-    return <span className={`inline-block px-2 py-1 rounded ${bgColor}`}>{stateText}</span>;
+    return (
+      <span className={`inline-block px-2 py-1 rounded ${bgColor}`}>
+        {stateText}
+      </span>
+    );
   };
 
   const renderPagination = () => {
@@ -256,19 +273,29 @@ export default function TablePendingTutor() {
 
     return (
       <div className="flex justify-center mt-4 space-x-2">
-        <button 
-          onClick={() => goToPage(currentPage - 1)} 
+        <button
+          onClick={() => goToPage(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-blue-500 text-white hover:bg-blue-600'}`}>
+          className={`px-3 py-1 rounded ${
+            currentPage === 1
+              ? "bg-gray-200"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
+        >
           Anterior
         </button>
         <span className="px-3 py-1">
           Página {currentPage} de {totalPages}
         </span>
-        <button 
-          onClick={() => goToPage(currentPage + 1)} 
+        <button
+          onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200' : 'bg-blue-500 text-white hover:bg-blue-600'}`}>
+          className={`px-3 py-1 rounded ${
+            currentPage === totalPages
+              ? "bg-gray-200"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
+        >
           Siguiente
         </button>
       </div>
@@ -276,8 +303,12 @@ export default function TablePendingTutor() {
   };
 
   const renderTable = () => {
-    if (loading) return <div className="text-center py-4">Cargando sesiones...</div>;
-    if (sortedSessions.length === 0) return <div className="text-center py-4">No hay sesiones disponibles</div>;
+    if (loading)
+      return <div className="text-center py-4">Cargando sesiones...</div>;
+    if (sortedSessions.length === 0)
+      return (
+        <div className="text-center py-4">No hay sesiones disponibles</div>
+      );
 
     return (
       <>
@@ -295,12 +326,18 @@ export default function TablePendingTutor() {
           <tbody>
             {paginatedSessions.map((session) => {
               const stateText = getStateText(session);
-              
+
               return (
                 <tr key={session.classId}>
-                  <td className="px-6 py-4 border text-center">{new Date(session.classDate).toLocaleString()}</td>
-                  <td className="px-6 py-4 border text-center">{session.subjectName}</td>
-                  <td className="px-6 py-4 border text-center">{session.classTopics}</td>
+                  <td className="px-6 py-4 border text-center">
+                    {new Date(session.classDate).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 border text-center">
+                    {session.subjectName}
+                  </td>
+                  <td className="px-6 py-4 border text-center">
+                    {session.classTopics}
+                  </td>
                   <td className="px-6 py-4 border text-center">
                     {renderStateLabel(stateText)}
                   </td>
@@ -308,25 +345,72 @@ export default function TablePendingTutor() {
                     {`${session.studentName} ${session.studentLastname}`}
                   </td>
                   <td className="px-6 py-4 border text-center">
-                    <div className="flex flex-col items-center space-y-2">
-                      {session.canceledBy === "NONE" && !session.registered && session.accepted &&(
-                        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-                          onClick={() => handleCancel(session.classId)}>Cancelar</button>
-                      )}
+                    <div className="py-4 px-4 border whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
+                      {session.canceledBy === "NONE" &&
+                        !session.registered &&
+                        session.accepted && (
+                          <button
+                            className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                            onClick={() => handleCancel(session.classId)}
+                          >
+                            Cancelar
+                          </button>
+                        )}
                       {session.registered && session.classRate === 0 && (
-                        <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
-                          onClick={() => setSelectedSession(session)}>Valorar tutoría</button>
+                        <button
+                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
+                          onClick={() => setSelectedSession(session)}
+                        >
+                          Valorar tutoría
+                        </button>
                       )}
-                      {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
-                        <button className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-1 rounded"
-                          onClick={() => handleAccept(session.classId)}>Aceptar</button>
-                      )}
-                      {!session.registered && !session.accepted && session.canceledBy === "NONE" &&(
-                        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-                          onClick={() => handleReject(session.classId)}>Rechazar</button>
-                      )}
-                      <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
-                        onClick={() => handlePerfilStudent(session.studentId)}>Ver perfil del estudiante</button>
+                      {!session.registered &&
+                        !session.accepted &&
+                        session.canceledBy === "NONE" && (
+                          <FaCheck
+                            size={30}
+                            className="hover:cursor-pointer"
+                            color="orange"
+                            onClick={() => handleAccept(session.classId)}
+                            title="Aceptar tutoría"
+                          />
+                          // <button
+                          //   className="bg-yellow-700 hover:bg-yellow-600 text-white px-4 py-1 rounded"
+                          //   onClick={() => handleAccept(session.classId)}
+                          // >
+                          //   Aceptar
+                          // </button>
+                        )}
+                      {!session.registered &&
+                        !session.accepted &&
+                        session.canceledBy === "NONE" && (
+                          <FaMixer
+                            size={30}
+                            color="red"
+                            onClick={() => handleReject(session.classId)}
+                            className="hover:cursor-pointer"
+                            title="Rechazar tutoría"
+                          />
+                          // <button
+                          //   className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                          //   onClick={() => handleReject(session.classId)}
+                          // >
+                          //   Rechazar
+                          // </button>
+                        )}
+                      <FaAddressBook
+                        size={30}
+                        color="blue"
+                        onClick={() => handlePerfilStudent(session.studentId)}
+                        className="hover:cursor-pointer"
+                        title="Ver perfil del estudiante"
+                      />
+                      {/* <button
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
+                        onClick={() => handlePerfilStudent(session.studentId)}
+                      >
+                        Ver perfil del estudiante
+                      </button> */}
                     </div>
                   </td>
                 </tr>
@@ -342,7 +426,9 @@ export default function TablePendingTutor() {
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <div className="bg-gray-200 mx-auto border border-slate-400">
-        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">Tutorías asignadas</h1>
+        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">
+          Tutorías asignadas
+        </h1>
       </div>
       <div className="p-8">{renderTable()}</div>
 
@@ -357,13 +443,19 @@ export default function TablePendingTutor() {
             ) : (
               <ul className="space-y-2">
                 {Object.entries(studentData).map(([key, value]) => (
-                  <li key={key}><strong>{key}:</strong> {value}</li>
+                  <li key={key}>
+                    <strong>{key}:</strong> {value}
+                  </li>
                 ))}
               </ul>
             )}
             <div className="mt-4 text-right">
-              <button onClick={() => setStudentData(null)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cerrar</button>
+              <button
+                onClick={() => setStudentData(null)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cerrar
+              </button>
             </div>
           </div>
         </div>
@@ -383,14 +475,24 @@ export default function TablePendingTutor() {
               className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
             >
               {[1, 2, 3, 4, 5].map((val) => (
-                <option key={val} value={val}>{val}</option>
+                <option key={val} value={val}>
+                  {val}
+                </option>
               ))}
             </select>
             <div className="flex justify-end space-x-2">
-              <button onClick={() => setSelectedSession(null)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cancelar</button>
-              <button onClick={handleRegisterSubmit}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Enviar</button>
+              <button
+                onClick={() => setSelectedSession(null)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleRegisterSubmit}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Enviar
+              </button>
             </div>
           </div>
         </div>
