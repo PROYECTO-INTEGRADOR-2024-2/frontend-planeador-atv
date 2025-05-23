@@ -54,9 +54,6 @@ const Login = () => {
     }
   };
 
-
-  
-
   const { data: session } = useSession();
   console.log(session);
 
@@ -68,8 +65,13 @@ const Login = () => {
 
       <div className="flex items-center justify-center h-screen">
         <div className="w-full max-w-md px-8">
-          <div className="text-center mb-6">
-            <Image src={"/images/logo-lock.png"} alt="lock" height={50} width={50} />
+          <div className="flex flex-col items-center mb-6">
+            <Image
+              src={"/images/logo-lock.png"}
+              alt="lock"
+              height={50}
+              width={50}
+            />
             <h1 className="font-bold text-2xl mt-4">Iniciar Sesión</h1>
           </div>
           <form className="space-y-4" onSubmit={validateLogin}>

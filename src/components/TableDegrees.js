@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import DeleteDegreeModal from "./DeleteDegreeModal";
 import EditDegreeModal from "./EditDegreeModal";
 import AddDegreeModal from "./AddDegreeModal";
+import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 
 const TableDegrees = () => {
   const [data, setData] = useState([]);
@@ -69,7 +70,7 @@ const TableDegrees = () => {
       <div className="p-8">
         <table className="min-w-full divide-y divide-gray-200 border-solid border-slate-500">
           <thead className="bg-gray-50 border border-gray-400">
-            <tr className="border border-slate-500">
+            <tr className="border border-slate-500 select-none">
               <th className="px-6 py-3 text-left text-xl font-bold text-gray-500 tracking-wider border border-slate-500">
                 Código
               </th>
@@ -89,22 +90,39 @@ const TableDegrees = () => {
           </thead>
           <tbody className="border border-slate-500">
             {data.map((item) => (
-              <tr key={item.degreeId}>
-                <td className="px-6 py-4 whitespace-nowrap">
+              <tr key={item.degreeId} className="border border-slate-500">
+                <td className="px-6 py-4 whitespace-nowrap border border-slate-500">
                   {item.degreeId}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap border border-slate-500">
                   {item.degreeName}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap border border-slate-500">
                   {item.degreeModality}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="px-6 py-4 whitespace-nowrap border border-slate-500">
                   {item.degreeDepartment}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
-                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                <td className="py-4 px-4 border whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
+                  <FaRegEdit
+                    size={20}
+                    className="hover:cursor-pointer"
+                    color="blue"
+                    onClick={() => {
+                      setId(item.degreeId);
+                      handleModalEditar(item.degreeId);
+                    }}
+                    title="Editar Carrera"
+                  />
+                  <FaRegTrashAlt
+                    size={20}
+                    color="red"
+                    onClick={() => handleModalEliminar(item.degreeId)}
+                    className="hover:cursor-pointer"
+                    title="Eliminar Carrera"
+                  />
+                  {/* <button
+                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 py-4rounded"
                     onClick={() => {
                       setId(item.degreeId);
                       handleModalEditar(item.degreeId);
@@ -117,7 +135,7 @@ const TableDegrees = () => {
                     onClick={() => handleModalEliminar(item.degreeId)}
                   >
                     Eliminar
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

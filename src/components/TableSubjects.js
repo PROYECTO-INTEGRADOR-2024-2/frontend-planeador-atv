@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import DeleteSubjectModal from "./DeleteSubjectModal";
 import EditSubjectModal from "./EditSubjectModal";
 import AddSubjectModal from "./AddSubjectModal";
+import { FaRegEdit, FaRegTrashAlt } from "react-icons/fa";
 
 const TableSubjects = () => {
   const [data, setData] = useState([]);
@@ -102,18 +103,18 @@ const TableSubjects = () => {
           </thead>
           <tbody className="border border-slate-500">
             {data.map((item) => (
-              <tr key={item.subjectId}>
-                <td className="px-6 py-4 whitespace-nowrap">
+              <tr key={item.subjectId} className="border border-slate-500">
+                <td className="border border-slate-500 px-6 py-4 whitespace-nowrap">
                   {item.subjectId}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="border border-slate-500 px-6 py-4 whitespace-nowrap">
                   {item.subjectName}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+                <td className="border border-slate-500 px-6 py-4 whitespace-nowrap">
                   {item.degreeName}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <button
+                <td className="border py-4 px-4 whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
+                  {/* <button
                     className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => {
                       setId(item.subjectId);
@@ -121,13 +122,30 @@ const TableSubjects = () => {
                     }}
                   >
                     Editar
-                  </button>
-                  <button
+                  </button> */}
+                  <FaRegEdit
+                    size={20}
+                    className="hover:cursor-pointer"
+                    color="blue"
+                    onClick={() => {
+                      setId(item.subjectId);
+                      handleModalEditar(item.subjectId);
+                    }}
+                    title="Editar Asignatura"
+                  />
+                  <FaRegTrashAlt
+                    size={20}
+                    color="red"
+                    onClick={() => handleModalEliminar(item.subjectId)}
+                    className="hover:cursor-pointer"
+                    title="Eliminar Asignatura"
+                  />
+                  {/* <button
                     className="ml-5 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
                     onClick={() => handleModalEliminar(item.subjectId)}
                   >
                     Eliminar
-                  </button>
+                  </button> */}
                 </td>
               </tr>
             ))}

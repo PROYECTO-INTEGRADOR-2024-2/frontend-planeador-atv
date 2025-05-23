@@ -13,6 +13,9 @@ const myFont = Roboto({
 export const metadata = {
   title: "Agendador ATV",
   description: "Powered by UdeA",
+  icons: {
+    icon: "/favicon.ico", // o "/icon.png"
+  },
 };
 
 export default function RootLayout({ children }) {

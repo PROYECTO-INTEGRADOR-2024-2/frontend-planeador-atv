@@ -6,8 +6,9 @@ import { jwtDecode } from "jwt-decode";
 const Alert = ({ message, type }) => {
   return (
     <div
-      className={`fixed bottom-4 left-4 p-4 rounded-lg z-50 ${type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
-        }`}
+      className={`fixed bottom-4 left-4 p-4 rounded-lg z-50 ${
+        type === "success" ? "bg-green-500 text-white" : "bg-red-500 text-white"
+      }`}
     >
       {message}
     </div>
@@ -246,28 +247,31 @@ const TableTutorsPool = ({ title, columns }) => {
 
       <div className="flex border-b border-gray-200 mb-4">
         <button
-          className={`py-2 px-4 ${activeTab === "pending"
+          className={`py-2 px-4 ${
+            activeTab === "pending"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-            }`}
+          }`}
           onClick={() => setActiveTab("pending")}
         >
           Pendientes ({pendingApplications.length})
         </button>
         <button
-          className={`py-2 px-4 ${activeTab === "accepted"
+          className={`py-2 px-4 ${
+            activeTab === "accepted"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-            }`}
+          }`}
           onClick={() => setActiveTab("accepted")}
         >
           Aceptadas ({acceptedApplications.length})
         </button>
         <button
-          className={`py-2 px-4 ${activeTab === "rejected"
+          className={`py-2 px-4 ${
+            activeTab === "rejected"
               ? "border-b-2 border-blue-500 text-blue-600"
               : "text-gray-600"
-            }`}
+          }`}
           onClick={() => setActiveTab("rejected")}
         >
           Rechazadas ({rejectedApplications.length})

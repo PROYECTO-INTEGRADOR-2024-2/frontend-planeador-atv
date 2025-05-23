@@ -1,9 +1,10 @@
-'use client';
-import { useEffect, useRef, useState } from 'react';
+"use client";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import Cookies from 'js-cookie';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import Cookies from "js-cookie";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { FaMixer, FaAddressBook } from "react-icons/fa";
 
 export default function PersonalTutosTable({ title }) {
   const [sessions, setSessions] = useState([]);
@@ -25,7 +26,7 @@ export default function PersonalTutosTable({ title }) {
     SESSIONS: "http://localhost:8081/api/v1/session/personalTutos",
     CANCEL: "http://localhost:8081/api/v1/session/cancelTutoStudent/",
     TUTOR: "http://localhost:8081/api/v1/persons/",
-    RATE: "http://localhost:8081/api/v1/session/rateClass"
+    RATE: "http://localhost:8081/api/v1/session/rateClass",
   };
 
   useEffect(() => {
@@ -54,7 +55,8 @@ export default function PersonalTutosTable({ title }) {
       setError(null);
 
       const token = Cookies.get("token");
-      if (!token) return toast.error("Token no encontrado, por favor inicia sesión");
+      if (!token)
+        return toast.error("Token no encontrado, por favor inicia sesión");
 
       try {
         const res = await fetch(URLS.SESSIONS, {
@@ -85,7 +87,12 @@ export default function PersonalTutosTable({ title }) {
       // Función para obtener prioridad del estado
       const getStatePriority = (session) => {
         if (!session.accepted && session.canceledBy === "NONE") return 1; // Pendientes
-        if (session.accepted && !session.registered && session.canceledBy === "NONE") return 2; // Aceptadas
+        if (
+          session.accepted &&
+          !session.registered &&
+          session.canceledBy === "NONE"
+        )
+          return 2; // Aceptadas
         if (session.registered) return 3; // Terminadas o Realizadas
         if (session.canceledBy !== "NONE") return 4; // Canceladas
         return 5; // Otros
@@ -99,7 +106,7 @@ export default function PersonalTutosTable({ title }) {
         if (priorityA !== priorityB) {
           return priorityA - priorityB;
         }
-        
+
         // Si tienen la misma prioridad, ordenar por fecha
         return new Date(a.classDate) - new Date(b.classDate);
       });
@@ -111,7 +118,8 @@ export default function PersonalTutosTable({ title }) {
 
   const handleCancel = async (sessionId) => {
     const token = Cookies.get("token");
-    if (!token) return toast.error("Token no encontrado, por favor inicia sesión");
+    if (!token)
+      return toast.error("Token no encontrado, por favor inicia sesión");
 
     try {
       const res = await fetch(`${URLS.CANCEL}${sessionId}`, {
@@ -126,7 +134,9 @@ export default function PersonalTutosTable({ title }) {
 
       toast.success("Sesión cancelada correctamente");
       setSessions((prev) =>
-        prev.map((s) => (s.classId === sessionId ? { ...s, canceledBy: "STUDENT" } : s))
+        prev.map((s) =>
+          s.classId === sessionId ? { ...s, canceledBy: "STUDENT" } : s
+        )
       );
     } catch (err) {
       toast.error(err.message || "Ocurrió un error al cancelar la sesión");
@@ -140,7 +150,7 @@ export default function PersonalTutosTable({ title }) {
       setTutorData(null);
       return;
     }
-    
+
     setNoTutorMessage(false);
     const token = Cookies.get("token");
     if (!token) return toast.error("Token no encontrado");
@@ -152,7 +162,8 @@ export default function PersonalTutosTable({ title }) {
         },
       });
 
-      if (!res.ok) throw new Error("No se pudo obtener la información del tutor");
+      if (!res.ok)
+        throw new Error("No se pudo obtener la información del tutor");
 
       const data = await res.json();
       setTutorData({
@@ -236,7 +247,11 @@ export default function PersonalTutosTable({ title }) {
       default:
         bgColor = "bg-gray-200";
     }
-    return <span className={`inline-block px-2 py-1 rounded ${bgColor}`}>{stateText}</span>;
+    return (
+      <span className={`inline-block px-2 py-1 rounded ${bgColor}`}>
+        {stateText}
+      </span>
+    );
   };
 
   const renderPagination = () => {
@@ -244,19 +259,29 @@ export default function PersonalTutosTable({ title }) {
 
     return (
       <div className="flex justify-center mt-4 space-x-2">
-        <button 
-          onClick={() => goToPage(currentPage - 1)} 
+        <button
+          onClick={() => goToPage(currentPage - 1)}
           disabled={currentPage === 1}
-          className={`px-3 py-1 rounded ${currentPage === 1 ? 'bg-gray-200' : 'bg-blue-500 text-white hover:bg-blue-600'}`}>
+          className={`px-3 py-1 rounded ${
+            currentPage === 1
+              ? "bg-gray-200"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
+        >
           Anterior
         </button>
         <span className="px-3 py-1">
           Página {currentPage} de {totalPages}
         </span>
-        <button 
-          onClick={() => goToPage(currentPage + 1)} 
+        <button
+          onClick={() => goToPage(currentPage + 1)}
           disabled={currentPage === totalPages}
-          className={`px-3 py-1 rounded ${currentPage === totalPages ? 'bg-gray-200' : 'bg-blue-500 text-white hover:bg-blue-600'}`}>
+          className={`px-3 py-1 rounded ${
+            currentPage === totalPages
+              ? "bg-gray-200"
+              : "bg-blue-500 text-white hover:bg-blue-600"
+          }`}
+        >
           Siguiente
         </button>
       </div>
@@ -264,9 +289,14 @@ export default function PersonalTutosTable({ title }) {
   };
 
   const renderTable = () => {
-    if (loading) return <div className="text-center py-4">Cargando sesiones...</div>;
-    if (error) return <div className="text-center py-4 text-red-600">{error}</div>;
-    if (sortedSessions.length === 0) return <div className="text-center py-4">No hay sesiones disponibles</div>;
+    if (loading)
+      return <div className="text-center py-4">Cargando sesiones...</div>;
+    if (error)
+      return <div className="text-center py-4 text-red-600">{error}</div>;
+    if (sortedSessions.length === 0)
+      return (
+        <div className="text-center py-4">No hay sesiones disponibles</div>
+      );
 
     return (
       <>
@@ -284,12 +314,18 @@ export default function PersonalTutosTable({ title }) {
           <tbody>
             {paginatedSessions.map((session) => {
               const stateText = getStateText(session);
-              
+
               return (
                 <tr key={session.classId}>
-                  <td className="px-6 py-4 border text-center">{new Date(session.classDate).toLocaleString()}</td>
-                  <td className="px-6 py-4 border text-center">{session.subjectName}</td>
-                  <td className="px-6 py-4 border text-center">{session.classTopics}</td>
+                  <td className="px-6 py-4 border text-center">
+                    {new Date(session.classDate).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 border text-center">
+                    {session.subjectName}
+                  </td>
+                  <td className="px-6 py-4 border text-center">
+                    {session.classTopics}
+                  </td>
                   <td className="px-6 py-4 border text-center">
                     {renderStateLabel(stateText)}
                   </td>
@@ -297,17 +333,39 @@ export default function PersonalTutosTable({ title }) {
                     {`${session.tutorName} ${session.tutorLastname}`}
                   </td>
                   <td className="px-6 py-4 border text-center">
-                    <div className="flex flex-col items-center space-y-2">
+                    <div className="py-4 px-4 whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
                       {session.canceledBy === "NONE" && !session.registered && (
-                        <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-                          onClick={() => handleCancel(session.classId)}>Cancelar</button>
+                        // <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
+                        //   onClick={() => handleCancel(session.classId)}>Cancelar</button>
+                        <FaMixer
+                          size={20}
+                          color="red"
+                          onClick={() => handleCancel(session.classId)}
+                          className="hover:cursor-pointer"
+                          title="Cancelar tutoría"
+                        />
                       )}
                       {session.registered && session.classRate === 0 && (
-                        <button className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
-                          onClick={() => setSelectedSession(session)}>Valorar tutoría</button>
+                        <button
+                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
+                          onClick={() => setSelectedSession(session)}
+                        >
+                          Valorar tutoría
+                        </button>
                       )}
-                      <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
-                        onClick={() => handlePerfilTutor(session.tutorId)}>Ver perfil de tutor</button>
+                      {/* <button
+                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
+                        onClick={() => handlePerfilTutor(session.tutorId)}
+                      >
+                        Ver perfil de tutor
+                      </button> */}
+                      <FaAddressBook
+                        size={20}
+                        color="blue"
+                        onClick={() => handlePerfilStudent(session.studentId)}
+                        className="hover:cursor-pointer"
+                        title="Ver perfil del tutor"
+                      />
                     </div>
                   </td>
                 </tr>
@@ -323,7 +381,7 @@ export default function PersonalTutosTable({ title }) {
   return (
     <div className="bg-gray-100 rounded-lg shadow-md py-2">
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-      <div className="bg-gray-200 mx-auto border border-slate-400">
+      <div className="text-center bg-gray-200 mx-auto border border-slate-400">
         <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
       </div>
       <div className="p-8">{renderTable()}</div>
@@ -334,12 +392,18 @@ export default function PersonalTutosTable({ title }) {
             <h2 className="text-xl font-bold mb-4">Perfil del Tutor</h2>
             <ul className="space-y-2">
               {Object.entries(tutorData).map(([key, value]) => (
-                <li key={key}><strong>{key}:</strong> {value}</li>
+                <li key={key}>
+                  <strong>{key}:</strong> {value}
+                </li>
               ))}
             </ul>
             <div className="mt-4 text-right">
-              <button onClick={() => setTutorData(null)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cerrar</button>
+              <button
+                onClick={() => setTutorData(null)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cerrar
+              </button>
             </div>
           </div>
         </div>
@@ -353,8 +417,12 @@ export default function PersonalTutosTable({ title }) {
               <p>Ningún tutor la ha tomado aún</p>
             </div>
             <div className="mt-4 text-right">
-              <button onClick={() => setNoTutorMessage(false)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cerrar</button>
+              <button
+                onClick={() => setNoTutorMessage(false)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cerrar
+              </button>
             </div>
           </div>
         </div>
@@ -374,14 +442,24 @@ export default function PersonalTutosTable({ title }) {
               className="w-full border border-gray-300 rounded px-3 py-2 mb-4"
             >
               {[1, 2, 3, 4, 5].map((val) => (
-                <option key={val} value={val}>{val}</option>
+                <option key={val} value={val}>
+                  {val}
+                </option>
               ))}
             </select>
             <div className="flex justify-end space-x-2">
-              <button onClick={() => setSelectedSession(null)}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded">Cancelar</button>
-              <button onClick={handleRateSubmit}
-                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded">Enviar</button>
+              <button
+                onClick={() => setSelectedSession(null)}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleRateSubmit}
+                className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
+              >
+                Enviar
+              </button>
             </div>
           </div>
         </div>
