@@ -200,11 +200,11 @@ const TablePool = () => {
         cell: (row) => {
           const estado = getEstado(row);
           return (
-            <div className="flex gap-2">
+            <div className="flex gap-3 text-2xl ">
               {estado === "Pendiente" && (
                 <>
                   <button onClick={() => handleAccept(row.classId)} title="Aceptar">
-                    <FaCheck className="text-green-600" />
+                    <FaCheck className="text-green-600 " />
                   </button>
                   
                 </>
@@ -212,7 +212,7 @@ const TablePool = () => {
               {estado === "Aceptada" && (
                 <>
                   <button onClick={() => handleCancel(row.classId)} title="Cancelar">
-                    <FaMixer className="text-yellow-600" />
+                    <FaMixer className="text-yellow-600 " />
                   </button>
                   <button onClick={() => handleRegisterSubmit(row.classId)} title="Registrar">
                     <FaStar className="text-purple-600" />
