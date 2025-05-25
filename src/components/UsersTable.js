@@ -2,7 +2,9 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { FaUserLock, FaRegAddressCard } from "react-icons/fa6";
+import { FaUserLock, FaRegAddressCard, FaOptinMonster, FaAddressBook } from "react-icons/fa6";
+import DataTable from "react-data-table-component";
+import moment from "moment";
 
 const Alert = ({ message, type }) => {
   return (
@@ -61,8 +63,10 @@ const UsersTable = ({ title }) => {
   const [selectedUser, setSelectedUser] = useState(null); // Estado para el usuario seleccionado
   const [idFilter, setIdFilter] = useState(""); // Filtro de ID
   const [nameFilter, setNameFilter] = useState(""); // Filtro de nombre
+  const [loading, setLoading] = useState(true);
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const response = await fetch("http://localhost:8081/api/v1/persons");
       if (!response.ok) {
@@ -81,6 +85,8 @@ const UsersTable = ({ title }) => {
       setFilteredUsers(processed);
     } catch (error) {
       setError(error.message);
+    } finally{
+      setLoading(false);
     }
   };
 
@@ -199,6 +205,114 @@ const UsersTable = ({ title }) => {
     setNameFilter("");
   }, [activeTab]);
 
+ 
+
+  // Estilos personalizados para DataTable
+  const customStyles = {
+    rows: {
+      style: {
+        minHeight: '60px',
+        fontSize: '14px',
+        borderBottom: '1px solid #ddd',
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: '12px',
+        paddingRight: '12px',
+        fontWeight: 'bold',
+        fontSize: '15px',
+        backgroundColor: '#f4f4f4',
+        color: '#333',
+        textTransform: 'uppercase',
+        borderBottom: '2px solid #ccc',
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: '12px',
+        paddingRight: '12px',
+        fontSize: '14px',
+        color: '#444',
+      },
+    },
+  };
+
+  // Definición de columnas para DataTable
+  const columns = [
+    {
+      name: "ID",
+      selector: (row) => row.id,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Nombre",
+      selector: (row) => row.name,
+      sortable: true,
+    },
+    {
+      name: "Correo",
+      selector: (row) => row.email,
+      sortable: true,
+    },
+    {
+      name: "Rol",
+      selector: (row) => row.role,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Ciudad",
+      selector: (row) => row.city,
+      sortable: true,
+    },
+    {
+      name: "Acciones",
+      cell: (row) => (
+        <div className="flex items-center justify-center gap-x-2 select-none">
+          {activeTab === "enabled" ? (
+            <>
+              <FaUserLock
+                size={30}
+                className="hover:cursor-pointer hover:scale-110 transition-transform"
+                color="orange"
+                onClick={() => handleDisable(row.id)}
+                title="Deshabilitar Usuario"
+              />
+              <FaRegAddressCard
+                size={30}
+                color="blue"
+                onClick={() => handleOpenProfile(row)}
+                className="hover:cursor-pointer hover:scale-110 transition-transform"
+                title="Ver perfil del usuario"
+              />
+            </>
+          ) : (
+            <div className="flex flex-col space-y-1">
+              <button
+                onClick={() => handleEnable(row.id)}
+                className="bg-yellow-200 hover:bg-yellow-300 text-black px-3 py-1 rounded text-sm transition-colors"
+              >
+                Habilitar
+              </button>
+              <button
+                onClick={() => handleOpenProfile(row)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+              >
+                Ver perfil
+              </button>
+            </div>
+          )}
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      width: "150px",
+    },
+  ];
+
   if (error) {
     return <div className="p-8 text-red-500">Error: {error}</div>;
   }
@@ -219,20 +333,20 @@ const UsersTable = ({ title }) => {
       <div className="flex border-b">
         <button
           onClick={() => setActiveTab("enabled")}
-          className={`py-2 px-4 font-semibold ${
+          className={`py-2 px-4 font-semibold transition-colors ${
             activeTab === "enabled"
               ? "border-b-2 border-blue-500 text-blue-500"
-              : "text-gray-600"
+              : "text-gray-600 hover:text-blue-400"
           }`}
         >
           Usuarios Habilitados
         </button>
         <button
           onClick={() => setActiveTab("disabled")}
-          className={`py-2 px-4 font-semibold ${
+          className={`py-2 px-4 font-semibold transition-colors ${
             activeTab === "disabled"
               ? "border-b-2 border-blue-500 text-blue-500"
-              : "text-gray-600"
+              : "text-gray-600 hover:text-blue-400"
           }`}
         >
           Usuarios Deshabilitados
@@ -246,105 +360,37 @@ const UsersTable = ({ title }) => {
           placeholder="Filtrar por ID"
           value={idFilter}
           onChange={(e) => setIdFilter(e.target.value)}
-          className="p-2 border rounded"
-          disabled={nameFilter.length > 0} // Deshabilitar si hay filtro por nombre
+          className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          disabled={nameFilter.length > 0}
         />
         <input
           type="text"
           placeholder="Filtrar por Nombre"
           value={nameFilter}
           onChange={(e) => setNameFilter(e.target.value)}
-          className="p-2 border rounded"
-          disabled={idFilter.length > 0} // Deshabilitar si hay filtro por ID
+          className="p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+          disabled={idFilter.length > 0}
         />
       </div>
 
-      {/* Tabla de usuarios */}
-      <div className="p-4 overflow-x-auto">
-        {filteredUsers.length === 0 ? (
-          <div className="text-center py-4">No hay usuarios disponibles</div>
-        ) : (
-          <table className="min-w-full divide-y divide-gray-200 border border-slate-400">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-4 border border-slate-300">ID</th>
-                <th className="px-6 py-4 border border-slate-300">Nombre</th>
-                <th className="px-6 py-4 border border-slate-300">Correo</th>
-                <th className="px-6 py-4 border border-slate-300">Rol</th>
-                <th className="px-6 py-4 border border-slate-300">Ciudad</th>
-                <th className="px-6 py-4 border border-slate-300">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user) => (
-                <tr key={user.id} className="text-center">
-                  <td className="px-6 py-4 border border-slate-300">
-                    {user.id}
-                  </td>
-                  <td className="px-6 py-4 border border-slate-300">
-                    {user.name}
-                  </td>
-                  <td className="px-6 py-4 border border-slate-300">
-                    {user.email}
-                  </td>
-                  <td className="px-6 py-4 border border-slate-300">
-                    {user.role}
-                  </td>
-                  <td className="px-6 py-4 border border-slate-300">
-                    {user.city}
-                  </td>
-                  <td className="px-6 py-4 border border-slate-300">
-                    {activeTab === "enabled" ? (
-                      <div className="py-1 px-4 whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
-                        <FaUserLock
-                          size={30}
-                          className="hover:cursor-pointer"
-                          color="orange"
-                          onClick={() => handleDisable(user.id)}
-                          title="Deshabilitar Usuario"
-                        />
-                        <FaRegAddressCard
-                          size={30}
-                          color="blue"
-                          onClick={() => handleOpenProfile(user)}
-                          className="hover:cursor-pointer"
-                          title="Ver perfil del estudiante"
-                        />
-                        {/* <button
-                          onClick={() => handleDisable(user.id)}
-                          className="bg-yellow-200 hover:bg-yellow-300 text-black px-3 py-1 rounded"
-                        >
-                          Deshabilitar
-                        </button> */}
-                        {/* <button
-                          onClick={() => handleOpenProfile(user)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-                        >
-                          Ver perfil
-                        </button> */}
-                      </div>
-                    ) : (
-                      <div className="flex flex-col space-y-1">
-                        <button
-                          onClick={() => handleEnable(user.id)}
-                          className="bg-yellow-200 hover:bg-yellow-300 text-black px-3 py-1 rounded"
-                        >
-                          Habilitar
-                        </button>
-                        <button
-                          onClick={() => handleOpenProfile(user)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-                        >
-                          Ver perfil
-                        </button>
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+      {/* DataTable */}
+      <div className="p-4">
+        <DataTable
+          columns={columns}
+          data={filteredUsers}
+          progressPending={loading}
+          pagination
+          paginationPerPage={10}
+          paginationRowsPerPageOptions={[5, 10, 15, 20]}
+          customStyles={customStyles}
+          noDataComponent={
+            <div className="text-center py-8 text-gray-500">
+              No hay usuarios disponibles
+            </div>
+          }
+          highlightOnHover
+          pointerOnHover
+        />
       </div>
     </div>
   );
