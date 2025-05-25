@@ -3,12 +3,19 @@ import React, { useState, useEffect } from "react";
 import { Calendar, Clock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const disponibilidadTutor = () => {
     const [disponibilidad, setDisponibilidad] = useState({});
     const [guardar, setGuardar] = useState(false);
     const [user, setUser] = useState();
     const router = useRouter();
+
+    const URLS = {
+        DISPONIBILIDAD: "http://localhost:8081/api/v1/tutor/availability",
+        OBTENER: "http://localhost:8081/api/v1/tutor/{tutorId}/availability"
+    }
+
 
     const days = [
         { key: 'lunes', name: 'Lunes' },
@@ -104,9 +111,35 @@ const disponibilidadTutor = () => {
         };
         console.log('Disponibilidad a enviar: ', JSON.stringify(dispobilidadJson), null, 2)
         setGuardar(true);
-
+        guardarServidor();
         setTimeout(() => setGuardar(false), 2000);
     }
+
+    const guardarServidor = async () => {
+        const dispobilidadJson = {
+            tutorId: user.user_id,
+            disponibilidad: formatearFechas(),
+            totalBloques: getSelectedCount()
+        };
+        try {
+            const res = await fetch(URLS.DISPONIBILIDAD, {
+                method: "POST",
+                headers: {
+                    // Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(dispobilidadJson)
+            });
+
+            if (!res.ok) throw new Error("Error al guardar la disponibilidad");
+
+            toast.success("Disponibilidad guardada exitosamente");
+
+        } catch (err) {
+            toast.error(err.message || "Error al guardar la disponibilidad");
+        }
+    }
+
     return (
         <div className="min-h-screen   p-4" >
             <div className="max-w-6xl mx-auto">
@@ -147,7 +180,7 @@ const disponibilidadTutor = () => {
                             onClick={guardarDisponibilidad}
                             disabled={guardar}
                             className={`px-6 py-2 rounded-lg transition-all text-sm font-medium p-2 ${guardar ? 'bg-green-500 text-white cursor-not-allowed'
-                                    : 'bg-blue-500 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
+                                : 'bg-blue-500 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl'
                                 }`}>
                             {guardar ? '✓ Guardado' : 'Guardar Disponibilidad'}
                         </button>
