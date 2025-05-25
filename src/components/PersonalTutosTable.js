@@ -278,7 +278,7 @@ export default function PersonalTutosTable({ title }) {
   ];
     
   return (
-    <div>
+    <div className="px-4">
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
       
       {loading ? (

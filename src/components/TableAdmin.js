@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import SessionReschedule from "./SessionReschedule";
 import { toast } from "react-toastify";
 import { FaRegTrashAlt, FaExchangeAlt, FaRegEdit } from "react-icons/fa";
+import DataTable from "react-data-table-component";
 
 const TablePool = () => {
   const [allTutorials, setAllTutorials] = useState([]);
@@ -14,6 +15,7 @@ const TablePool = () => {
   const [id, setId] = useState(null);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   const handleCancel = (classId) => {
@@ -75,6 +77,7 @@ const TablePool = () => {
   useEffect(() => {
     const token = Cookies.get("token");
     const fetchAll = async () => {
+      setLoading(true);
       try {
         const res = await fetch(
           "http://localhost:8081/api/v1/session/tutosNew",
@@ -97,11 +100,135 @@ const TablePool = () => {
       } catch (err) {
         console.error(err);
         setError(err.message);
+      } finally {
+        setLoading(false);
       }
     };
 
     if (user?.user_id) fetchAll();
   }, [user]);
+
+  const customStyles = {
+    rows: {
+      style: {
+        minHeight: '60px',
+        fontSize: '14px',
+        borderBottom: '1px solid #ddd',
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: '12px',
+        paddingRight: '12px',
+        fontWeight: 'bold',
+        fontSize: '15px',
+        backgroundColor: '#f4f4f4',
+        color: '#333',
+        textTransform: 'uppercase',
+        borderBottom: '2px solid #ccc',
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: '12px',
+        paddingRight: '12px',
+        fontSize: '14px',
+        color: '#444',
+      },
+    },
+  };
+
+  const columns = [
+    {
+      name: "Fecha y hora",
+      selector: (row) => row.classDate,
+      cell: (row) => (
+        <div className="flex items-center justify-between gap-4 w-full">
+          <span className="whitespace-nowrap">
+            {format(new Date(row.classDate), "dd MMMM yyyy HH:mm", {
+              locale: es,
+            })}
+          </span>
+          <FaRegEdit
+            size={18}
+            className="hover:cursor-pointer text-blue-600 hover:text-blue-800"
+            onClick={() => handleModalReschedule(row.classId)}
+            title="Reprogramar tutoría"
+          />
+        </div>
+      ),
+      sortable: true,
+      width: "200px",
+    },
+    {
+      name: "Materia",
+      selector: (row) => row.subjectName,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Estado",
+      selector: (row) => row.registered ? "Registrada" : "No registrada",
+      sortable: true,
+    },
+    {
+      name: "Cancelado por",
+      selector: (row) => {
+        if (row.canceledBy === "NONE") return "-";
+        if (row.canceledBy === "STUDENT") return "Estudiante";
+        if (row.canceledBy === "TUTOR") return "Tutor";
+        if (row.canceledBy === "ADMIN") return "Admin";
+        return "-";
+      },
+      sortable: true,
+    },
+    {
+      name: "Temas",
+      selector: (row) => row.classTopics,
+      wrap: true,
+    },
+    {
+      name: "Calificación",
+      selector: (row) => row.classRate === 0 ? "..." : row.classRate,
+      sortable: true,
+      center: true,
+    },
+    {
+      name: "Estudiante",
+      selector: (row) => `${row.studentFirstName} ${row.studentLastName}`,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Tutor",
+      selector: (row) => `${row.tutorFirstName} ${row.tutorLastName}`,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Acciones",
+      cell: (row) => (
+        <div className="flex justify-center gap-3">
+          <FaRegTrashAlt
+            size={18}
+            className="text-red-600 hover:text-red-800 hover:cursor-pointer"
+            onClick={() => handleCancel(row.classId)}
+            title="Cancelar tutoría"
+          />
+          <FaExchangeAlt
+            size={18}
+            className="text-blue-600 hover:text-blue-800 hover:cursor-pointer"
+            onClick={() => handleChangeTutor(row.classId)}
+            title="Cambiar tutor"
+          />
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
+      center: true,
+    },
+  ];
 
   if (!user) return <div className="p-8">Cargando usuario...</div>;
   if (error) return <div className="p-8 text-red-500">Error: {error}</div>;
@@ -109,100 +236,28 @@ const TablePool = () => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
       <h1 className="text-lg font-semibold text-gray-700 mb-4">Tutorías</h1>
-      <div className="overflow-x-auto">
-        <table className="min-w-full text-xs text-left text-gray-700 border border-gray-300">
-          <thead className="bg-gray-100 text-gray-600">
-            <tr>
-              <th className="px-2 py-2 border">Fecha y hora</th>
-              <th className="px-2 py-2 border">Materia</th>
-              <th className="px-2 py-2 border">Estado</th>
-              <th className="px-2 py-2 border">Cancelado por</th>
-              <th className="px-2 py-2 border">Temas</th>
-              <th className="px-2 py-2 border">Calificación</th>
-              <th className="px-2 py-2 border">Estudiante</th>
-              <th className="px-2 py-2 border">Tutor</th>
-              <th className="px-2 py-2 border">Acciones</th>{" "}
-              {/* Nueva columna */}
-            </tr>
-          </thead>
-          <tbody>
-            {allTutorials.map((tut) => (
-              <tr key={tut.classId} className="border-t">
-                <td className="py-4 px-4 border whitespace-nowrap flex items-center justify-between gap-x-8">
-                  {format(new Date(tut.classDate), "dd MMMM yyyy HH:mm", {
-                    locale: es,
-                  })}
-                  <FaRegEdit
-                    size={20}
-                    className="hover:cursor-pointer"
-                    color="blue"
-                    onClick={() => handleModalReschedule(tut.classId)}
-                    title="Reprogramar tutoría"
-                  />
-                  <SessionReschedule
-                    open={openReschedule}
-                    id={id}
-                    onClose={closeModalReschedule}
-                  />
-                </td>
-                <td className="px-2 py-1 border">{tut.subjectName}</td>
-                <td className="px-2 py-1 border">
-                  {tut.registered ? "Registrada" : "No registrada"}
-                </td>
-                <td className="px-2 py-1 border">
-                  {tut.canceledBy === "NONE"
-                    ? "-"
-                    : tut.canceledBy === "STUDENT"
-                    ? "Cancelada por estudiante"
-                    : tut.canceledBy === "TUTOR"
-                    ? "Cancelada por tutor"
-                    : tut.canceledBy === "ADMIN"
-                    ? "Cancelada por admin"
-                    : "-"}
-                </td>
-                <td className="px-2 py-1 border">{tut.classTopics}</td>
-                <td className="px-2 py-1 border">
-                  {tut.classRate === 0 ? "..." : tut.classRate}
-                </td>
-                <td className="px-2 py-1 border">
-                  {tut.studentFirstName + " " + tut.studentLastName}
-                </td>
-                <td className="px-2 py-1 border">
-                  {tut.tutorFirstName + " " + tut.tutorLastName}
-                </td>
-                <td className="px-2 py-1 p-10 flex justify-center gap-x-4">
-                  <FaRegTrashAlt
-                    size={20}
-                    color="red"
-                    onClick={() => handleCancel(tut.classId)}
-                    className="hover:cursor-pointer"
-                    title="Cancelar tutoría"
-                  />
-                  <FaExchangeAlt
-                    size={20}
-                    color="blue"
-                    className="hover:cursor-pointer"
-                    title="Cambiar tutor"
-                    onClick={() => handleChangeTutor(tut.classId)}
-                  />
-                  {/* <button
-                    onClick={() => handleCancel(tut.classId)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded"
-                  >
-                    Cancelar
-                  </button> */}
-                  {/* <button
-                    onClick={() => handleChangeTutor(tut.classId)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-2 py-1 rounded"
-                  >
-                    Cambiar tutor
-                  </button> */}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      
+      <DataTable
+        columns={columns}
+        data={allTutorials}
+        customStyles={customStyles}
+        pagination
+        paginationPerPage={10}
+        paginationRowsPerPageOptions={[5, 10, 15, 20]}
+        progressPending={loading}
+        progressComponent={<div className="text-center py-4">Cargando tutorías...</div>}
+        noDataComponent="No hay tutorías disponibles"
+        highlightOnHover
+        pointerOnHover
+        responsive
+        striped
+      />
+
+      <SessionReschedule
+        open={openReschedule}
+        id={id}
+        onClose={closeModalReschedule}
+      />
     </div>
   );
 };
