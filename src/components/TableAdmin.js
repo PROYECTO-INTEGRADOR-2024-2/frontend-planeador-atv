@@ -6,7 +6,8 @@ import es from "date-fns/locale/es";
 import { useRouter } from "next/navigation";
 import SessionReschedule from "./SessionReschedule";
 import { toast } from "react-toastify";
-import { FaRegTrashAlt, FaExchangeAlt, FaRegEdit } from "react-icons/fa";
+import { FaExchangeAlt, FaRegEdit } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
 
 const TablePool = () => {
   const [allTutorials, setAllTutorials] = useState([]);
@@ -171,7 +172,7 @@ const TablePool = () => {
                   {tut.tutorFirstName + " " + tut.tutorLastName}
                 </td>
                 <td className="px-2 py-1 p-10 flex justify-center gap-x-4">
-                  <FaRegTrashAlt
+                  <MdCancel
                     size={20}
                     color="red"
                     onClick={() => handleCancel(tut.classId)}

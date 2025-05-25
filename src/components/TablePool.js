@@ -193,7 +193,7 @@ const TablePool = ({ title, columns }) => {
                   <FaCheck
                     size={30}
                     className="hover:cursor-pointer"
-                    color="orange"
+                    color="green"
                     onClick={() => handleAccept(session.classId)}
                     title="Aceptar tutoría"
                   />

@@ -2,7 +2,8 @@
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { FaCheck, FaMixer, FaAddressBook, FaStar } from "react-icons/fa";
+import { FaCheck, FaAddressBook, FaStar } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
 
 export default function TablePendingTutor() {
   const [sessions, setSessions] = useState([]);
@@ -349,7 +350,7 @@ export default function TablePendingTutor() {
                       {session.canceledBy === "NONE" &&
                         !session.registered &&
                         session.accepted && (
-                          <FaMixer
+                          <MdCancel
                             size={30}
                             color="red"
                             onClick={() => handleCancel(session.classId)}
@@ -384,7 +385,7 @@ export default function TablePendingTutor() {
                           <FaCheck
                             size={30}
                             className="hover:cursor-pointer"
-                            color="orange"
+                            color="green"
                             onClick={() => handleAccept(session.classId)}
                             title="Aceptar tutoría"
                           />
@@ -398,7 +399,7 @@ export default function TablePendingTutor() {
                       {!session.registered &&
                         !session.accepted &&
                         session.canceledBy === "NONE" && (
-                          <FaMixer
+                          <MdCancel
                             size={30}
                             color="red"
                             onClick={() => handleReject(session.classId)}
