@@ -235,8 +235,7 @@ const TablePool = () => {
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
-      <h1 className="text-lg font-semibold text-gray-700 mb-4">Tutorías</h1>
-      
+      <h1 className="text-lg font-semibold text-gray-700 mb-4">Tutorías</h1>      
       <DataTable
         columns={columns}
         data={allTutorials}

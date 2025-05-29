@@ -6,7 +6,6 @@ import { FaCheck, FaMixer, FaAddressBook, FaStar, FaTimes } from "react-icons/fa
 import DataTable from "react-data-table-component";
 import moment from "moment";
 
-
 export default function TablePendingTutor() {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -190,6 +189,7 @@ export default function TablePendingTutor() {
     if (row.canceledBy !== "NONE") return `Cancelada por ${row.canceledBy}`;
     return "Estado desconocido";
   };
+
 
   const customStyles = {
     rows: {

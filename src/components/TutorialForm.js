@@ -32,6 +32,8 @@ const TutorialForm = () => {
     return date.toISOString();
   }
 
+
+
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
@@ -93,9 +95,7 @@ const TutorialForm = () => {
     const { name, value } = event.target;
 
     if (name === "tutorId") {
-
       const tutorId = value.split("-")[0];
-
       setTutorial((prev) => ({
         ...prev,
         [name]: tutorId,
@@ -117,18 +117,14 @@ const TutorialForm = () => {
   };
 
   const getTime = (event) => {
-    // Crear una nueva fecha basada en la fecha seleccionada en el DatePicker
+    const selectedHour = event.target.value; // Solo la hora: "08", "09", etc.
     const selectedDate = new Date(startDate);
 
-    // Obtener las horas y minutos del input de hora
-    const [hours, minutes] = event.target.value.split(':');
-
-    // Establecer las horas y minutos en la fecha
-    selectedDate.setHours(parseInt(hours, 10));
-    selectedDate.setMinutes(parseInt(minutes, 10));
+    // Establecer la hora seleccionada, minutos siempre en 00
+    selectedDate.setHours(parseInt(selectedHour, 10));
+    selectedDate.setMinutes(0);
     selectedDate.setSeconds(0);
 
-    // Actualizar el estado con la fecha completa en formato ISO
     setTutorial({
       ...tutorial,
       classDate: formatDateForBackend(selectedDate)
@@ -261,19 +257,35 @@ const TutorialForm = () => {
             </div>
             <div>
               <label
-                htmlFor="timePicker"
+                htmlFor="hourPicker"
                 className="block text-sm font-bold text-gray-900"
               >
                 Hora
               </label>
               <div className="border-b-2">
-                <input
-                  id="timePicker"
-                  name="timePicker"
-                  aria-label="Time"
-                  type="time"
+                <select
+                  id="hourPicker"
+                  name="hourPicker"
                   onChange={getTime}
-                />
+                  className="bg-transparent border-none outline-none text-gray-900 text-sm py-1"
+                >
+                  <option value="">Seleccionar hora</option>
+                  <option value="8">06:00 AM</option>
+                  <option value="8">07:00 AM</option>
+                  <option value="8">08:00 AM</option>
+                  <option value="9">09:00 AM</option>
+                  <option value="10">10:00 AM</option>
+                  <option value="11">11:00 AM</option>
+                  <option value="12">12:00 PM</option>
+                  <option value="13">01:00 PM</option>
+                  <option value="14">02:00 PM</option>
+                  <option value="15">03:00 PM</option>
+                  <option value="16">04:00 PM</option>
+                  <option value="17">05:00 PM</option>
+                  <option value="18">06:00 PM</option>
+                  <option value="19">07:00 PM</option>
+                  <option value="20">08:00 PM</option>
+                </select>
               </div>
             </div>
           </div>
