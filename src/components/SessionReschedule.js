@@ -3,59 +3,48 @@ import Modal from "react-modal";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+// Función para formatear la fecha igual que en TutorialForm
 const formatDateForBackend = (date) => {
-  const pad = (n) => n.toString().padStart(2, "0");
-  
-  // Como el backend espera el formato sin zona horaria y lo interpreta como UTC,
-  // necesitamos ajustar la fecha para compensar la diferencia de zona horaria
-  const offsetMs = date.getTimezoneOffset() * 60000;
-  const adjustedDate = new Date(date.getTime() - offsetMs);
-  
-  return `${adjustedDate.getFullYear()}-${pad(adjustedDate.getMonth() + 1)}-${pad(
-    adjustedDate.getDate()
-  )}T${pad(adjustedDate.getHours())}:${pad(adjustedDate.getMinutes())}:00`;
+  return date.toISOString();
 };
 
 function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
   const [startDate, setStartDate] = useState(new Date());
 
-  // Inicializar la fecha cuando se abra el modal con los datos de la tutoría
   useEffect(() => {
-    if (open && tutorialData) {
-      const fecha = new Date(tutorialData.classDate);
-      setStartDate(fecha);
+    if (open && tutorialData?.classDate) {
+      setStartDate(new Date(tutorialData.classDate));
     }
   }, [open, tutorialData]);
 
   const handleDateChange = (date) => {
-    const updatedDate = new Date(date);
-    const current = new Date(startDate);
-    updatedDate.setHours(current.getHours(), current.getMinutes(), 0);
-    setStartDate(updatedDate);
+    // Mantener la hora actual cuando se cambia la fecha
+    const currentHours = startDate.getHours();
+    const currentMinutes = startDate.getMinutes();
+    
+    const updated = new Date(date);
+    updated.setHours(currentHours, currentMinutes, 0);
+    setStartDate(updated);
   };
 
-  const getTime = (event) => {
-    const [hours, minutes] = event.target.value.split(":").map(Number);
-    const updatedDate = new Date(startDate);
-    updatedDate.setHours(hours, minutes, 0);
-    setStartDate(updatedDate);
+  const handleTimeChange = (e) => {
+    const [hours, minutes] = e.target.value.split(":").map(Number);
+    const updated = new Date(startDate);
+    updated.setHours(hours, minutes, 0);
+    setStartDate(updated);
   };
 
-  const editTutorial = async (event) => {
-    event.preventDefault();
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     if (!tutorialData) return;
 
+    // Usar el mismo formato que TutorialForm
     const formattedDate = formatDateForBackend(startDate);
-    
-    // Debug: verificar qué fecha se está enviando
-    console.log("Fecha seleccionada:", startDate);
-    console.log("Fecha formateada para backend:", formattedDate);
 
     try {
       const updatedTutorial = {
         ...tutorialData,
-        classDate: formattedDate
+        classDate: formattedDate,
       };
 
       const response = await fetch(
@@ -68,14 +57,9 @@ function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
       );
 
       if (!response.ok) throw new Error("Error al actualizar la tutoría");
-
       await response.json();
-      
-      // Llamar callback para actualizar la tabla
-      if (onUpdate) {
-        onUpdate();
-      }
-      
+
+      if (onUpdate) onUpdate();
       onClose();
     } catch (error) {
       console.error("Error al editar la tutoría:", error.message);
@@ -96,14 +80,11 @@ function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
             Reprogramar Tutoría
           </h1>
 
-          <form className="space-y-4 md:space-y-2" onSubmit={editTutorial}>
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-2">
             <div className="py-8">
               <div className="flex justify-between bg-white p-2 px-8 pb-4">
                 <div>
-                  <label
-                    htmlFor="datePicker"
-                    className="block text-sm font-bold text-gray-900"
-                  >
+                  <label htmlFor="datePicker" className="block text-sm font-bold text-gray-900">
                     Fecha
                   </label>
                   <div className="flex border-b-2">
@@ -118,21 +99,17 @@ function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="timePicker"
-                    className="block text-sm font-bold text-gray-900"
-                  >
+                  <label htmlFor="timePicker" className="block text-sm font-bold text-gray-900">
                     Hora
                   </label>
                   <div className="border-b-2">
                     <input
                       id="timePicker"
                       type="time"
-                      value={`${String(startDate.getHours()).padStart(
-                        2,
-                        "0"
-                      )}:${String(startDate.getMinutes()).padStart(2, "0")}`}
-                      onChange={getTime}
+                      value={`${String(startDate.getHours()).padStart(2, "0")}:${String(
+                        startDate.getMinutes()
+                      ).padStart(2, "0")}`}
+                      onChange={handleTimeChange}
                     />
                   </div>
                 </div>
