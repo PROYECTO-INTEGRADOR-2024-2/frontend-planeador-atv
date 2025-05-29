@@ -12,7 +12,7 @@ import DataTable from "react-data-table-component";
 const TablePool = () => {
   const [allTutorials, setAllTutorials] = useState([]);
   const [openReschedule, setOpenReschedule] = useState(false);
-  const [id, setId] = useState(null);
+  const [selectedTutorial, setSelectedTutorial] = useState(null);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -48,14 +48,49 @@ const TablePool = () => {
     toast.warning("Método no implementado aún");
   };
 
-  const handleModalReschedule = (id) => {
-    setId(id);
+  const handleModalReschedule = (tutorial) => {
+    setSelectedTutorial(tutorial);
     setOpenReschedule(true);
   };
 
   const closeModalReschedule = () => {
     setOpenReschedule(false);
-    setId(null);
+    setSelectedTutorial(null);
+  };
+
+  const handleTutorialUpdate = () => {
+    // Recargar los datos después de actualizar
+    fetchAllTutorials();
+  };
+
+  const fetchAllTutorials = async () => {
+    const token = Cookies.get("token");
+    setLoading(true);
+    try {
+      const res = await fetch(
+        "http://localhost:8081/api/v1/session/tutosNew",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Error al cargar datos");
+      }
+
+      const sessions = await res.json();
+
+      setAllTutorials(
+        sessions.sort((a, b) => new Date(a.classDate) - new Date(b.classDate))
+      );
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -75,37 +110,7 @@ const TablePool = () => {
   }, [router]);
 
   useEffect(() => {
-    const token = Cookies.get("token");
-    const fetchAll = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(
-          "http://localhost:8081/api/v1/session/tutosNew",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (!res.ok) {
-          throw new Error("Error al cargar datos");
-        }
-
-        const sessions = await res.json();
-
-        setAllTutorials(
-          sessions.sort((a, b) => new Date(a.classDate) - new Date(b.classDate))
-        );
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    if (user?.user_id) fetchAll();
+    if (user?.user_id) fetchAllTutorials();
   }, [user]);
 
   const customStyles = {
@@ -152,7 +157,7 @@ const TablePool = () => {
           <FaRegEdit
             size={18}
             className="hover:cursor-pointer text-blue-600 hover:text-blue-800"
-            onClick={() => handleModalReschedule(row.classId)}
+            onClick={() => handleModalReschedule(row)}
             title="Reprogramar tutoría"
           />
         </div>
@@ -254,8 +259,9 @@ const TablePool = () => {
 
       <SessionReschedule
         open={openReschedule}
-        id={id}
+        tutorialData={selectedTutorial}
         onClose={closeModalReschedule}
+        onUpdate={handleTutorialUpdate}
       />
     </div>
   );
