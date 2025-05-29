@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 const Alert = ({ message, type }) => {
   return (
@@ -27,7 +28,7 @@ const TableTutorsPool = ({ title, columns }) => {
   const router = useRouter();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const token = Cookies.get("token");
     if (token) {
       const decoded = jwtDecode(token);
       setUser(decoded);

@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import ModalRegister from "./ModalRegister";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
 
 const CompleteRegisterPersonForm = () => {
   const PERSON_API_BASE_URL = "http://localhost:8081/api/v1/auth/register";
@@ -39,7 +40,7 @@ const CompleteRegisterPersonForm = () => {
     userState: "1",
     userRole: "STUDENT",
     userEmail: "",
-    userPassword: "oauth_temp_123", 
+    userPassword: "oauth_temp_123",
   });
 
   useEffect(() => {
@@ -108,8 +109,8 @@ const CompleteRegisterPersonForm = () => {
         .then((authData) => {
           const user = jwtDecode(authData.token);
           console.log("Token recibido:", authData.token);
-          localStorage.setItem("token", authData.token);
-          localStorage.setItem("user", JSON.stringify(user));
+          Cookies.set("token", authData.token);
+          Cookies.set("user", JSON.stringify(user));
           router.push("../landing");
         })
         .catch((err) => console.error("Error al solicitar token:", err));
