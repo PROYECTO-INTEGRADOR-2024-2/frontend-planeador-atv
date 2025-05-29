@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { FaUserLock, FaRegAddressCard, FaOptinMonster, FaAddressBook } from "react-icons/fa6";
+import { FaUserLock, FaUserCheck, FaAddressCard } from "react-icons/fa6";
 import DataTable from "react-data-table-component";
 import moment from "moment";
 
@@ -85,7 +85,7 @@ const UsersTable = ({ title }) => {
       setFilteredUsers(processed);
     } catch (error) {
       setError(error.message);
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
@@ -205,35 +205,33 @@ const UsersTable = ({ title }) => {
     setNameFilter("");
   }, [activeTab]);
 
- 
-
   // Estilos personalizados para DataTable
   const customStyles = {
     rows: {
       style: {
-        minHeight: '60px',
-        fontSize: '14px',
-        borderBottom: '1px solid #ddd',
+        minHeight: "60px",
+        fontSize: "14px",
+        borderBottom: "1px solid #ddd",
       },
     },
     headCells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontWeight: 'bold',
-        fontSize: '15px',
-        backgroundColor: '#f4f4f4',
-        color: '#333',
-        textTransform: 'uppercase',
-        borderBottom: '2px solid #ccc',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontWeight: "bold",
+        fontSize: "15px",
+        backgroundColor: "#f4f4f4",
+        color: "#333",
+        textTransform: "uppercase",
+        borderBottom: "2px solid #ccc",
       },
     },
     cells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontSize: '14px',
-        color: '#444',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontSize: "14px",
+        color: "#444",
       },
     },
   };
@@ -280,7 +278,7 @@ const UsersTable = ({ title }) => {
                 onClick={() => handleDisable(row.id)}
                 title="Deshabilitar Usuario"
               />
-              <FaRegAddressCard
+              <FaAddressCard
                 size={30}
                 color="blue"
                 onClick={() => handleOpenProfile(row)}
@@ -289,19 +287,33 @@ const UsersTable = ({ title }) => {
               />
             </>
           ) : (
-            <div className="flex flex-col space-y-1">
-              <button
+            <div className="py-1 px-4 whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
+              <FaUserCheck
+                size={30}
+                className="hover:cursor-pointer"
+                color="green"
                 onClick={() => handleEnable(row.id)}
-                className="bg-yellow-200 hover:bg-yellow-300 text-black px-3 py-1 rounded text-sm transition-colors"
-              >
-                Habilitar
-              </button>
-              <button
-                onClick={() => handleOpenProfile(row)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
-              >
-                Ver perfil
-              </button>
+                title="Habilitar Usuario"
+              />
+              {/* <button
+                          onClick={() => handleEnable(user.id)}
+                          className="bg-yellow-200 hover:bg-yellow-300 text-black px-3 py-1 rounded"
+                        >
+                          Habilitar
+                        </button> */}
+              <FaAddressCard
+                size={30}
+                color="blue"
+                onClick={() => handleOpenProfile(user)}
+                className="hover:cursor-pointer"
+                title="Ver perfil del usuario"
+              />
+              {/* <button
+                          onClick={() => handleOpenProfile(user)}
+                          className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
+                        >
+                          Ver perfil
+                        </button> */}
             </div>
           )}
         </div>
