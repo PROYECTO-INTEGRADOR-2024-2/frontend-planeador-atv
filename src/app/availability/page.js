@@ -9,13 +9,13 @@ const disponibilidadTutor = () => {
     const [disponibilidad, setDisponibilidad] = useState({});
     const [guardar, setGuardar] = useState(false);
     const [user, setUser] = useState();
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     const URLS = {
         DISPONIBILIDAD: "http://localhost:8081/api/v1/tutor/availability",
         OBTENER: "http://localhost:8081/api/v1/tutor/{tutorId}/availability"
     }
-
 
     const days = [
         { key: 'lunes', name: 'Lunes' },
@@ -45,6 +45,56 @@ const disponibilidadTutor = () => {
         { inicio: '08:00', final: '10:00', periodo: 'PM' },
     ]
 
+    // Función para obtener la disponibilidad desde el servidor
+    const obtenerDisponibilidad = async (tutorId) => {
+        try {
+            const url = URLS.OBTENER.replace('{tutorId}', tutorId);
+            const res = await fetch(url, {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+
+            if (!res.ok) {
+                if (res.status === 404) {
+                    // No hay disponibilidad guardada, mantener estado vacío
+                    console.log('No se encontró disponibilidad previa');
+                    return;
+                }
+                throw new Error("Error al cargar la disponibilidad");
+            }
+
+            const data = await res.json();
+            mapearDisponibilidad(data);
+
+        } catch (err) {
+            console.error('Error al obtener disponibilidad:', err);
+            toast.error(err.message || "Error al cargar la disponibilidad");
+        }
+    };
+
+    // Función para mapear la disponibilidad del servidor al formato del componente
+    const mapearDisponibilidad = (serverData) => {
+        const disponibilidadMapeada = {};
+
+        serverData.forEach(item => {
+            // Encontrar el índice del slot de tiempo que coincida
+            const slotIndex = timeSlots.findIndex(slot => 
+                slot.inicio === item.startTime && 
+                slot.final === item.endTime && 
+                slot.periodo === item.period
+            );
+
+            if (slotIndex !== -1) {
+                const key = `${item.day}_${slotIndex}`;
+                disponibilidadMapeada[key] = true;
+            }
+        });
+
+        setDisponibilidad(disponibilidadMapeada);
+    };
+
     useEffect(() => {
         const token = Cookies.get("token");
         const userCookie = Cookies.get("user");
@@ -53,6 +103,10 @@ const disponibilidadTutor = () => {
             try {
                 const parsedUser = JSON.parse(userCookie);
                 setUser(parsedUser);
+                
+                // Cargar disponibilidad existente
+                obtenerDisponibilidad(parsedUser.user_id);
+                
             } catch (error) {
                 console.error("Error parsing user cookie:", error);
                 router.push("/landing");
@@ -60,6 +114,8 @@ const disponibilidadTutor = () => {
         } else {
             router.push("/landing");
         }
+        
+        setLoading(false);
     }, [router]);
 
     const isSlotSelected = (day, slotIndex) => {
@@ -140,6 +196,17 @@ const disponibilidadTutor = () => {
         }
     }
 
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center">
+                <div className="text-center">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+                    <p className="text-gray-600">Cargando disponibilidad...</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen   p-4" >
             <div className="max-w-6xl mx-auto">
@@ -166,8 +233,6 @@ const disponibilidadTutor = () => {
 
                 </div>
 
-
-
                 <div className="mb-6 flex gap-3">
                     <button
                         onClick={clearAll}
@@ -186,7 +251,6 @@ const disponibilidadTutor = () => {
                         </button>
                     )}
                 </div>
-
 
                 {/* Tabla */}
                 <div className="bg-white rounded-2xl  overflow-hidden border border-indigo-100">
