@@ -3,8 +3,9 @@
 import { useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation";
-
 import { jwtDecode } from "jwt-decode";
+import Cookies from "js-cookie";
+
 export default function ValidateEmail() {
   const { data: session, status } = useSession()
   const router = useRouter();
@@ -35,8 +36,8 @@ export default function ValidateEmail() {
               .then(authData => {
                 const user = jwtDecode(authData.token);
                 console.log("Token recibido:", authData.token)
-                localStorage.setItem("token", authData.token)
-                localStorage.setItem("user", JSON.stringify(user));
+                Cookies.set("token", authData.token)
+                Cookies.set("user", JSON.stringify(user));
                 router.push("../landing")
               })
               .catch(err => console.error("Error al solicitar token:", err))
