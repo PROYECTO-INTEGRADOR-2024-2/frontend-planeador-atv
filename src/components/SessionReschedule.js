@@ -5,9 +5,15 @@ import "react-datepicker/dist/react-datepicker.css";
 
 const formatDateForBackend = (date) => {
   const pad = (n) => n.toString().padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
+  
+  // Como el backend espera el formato sin zona horaria y lo interpreta como UTC,
+  // necesitamos ajustar la fecha para compensar la diferencia de zona horaria
+  const offsetMs = date.getTimezoneOffset() * 60000;
+  const adjustedDate = new Date(date.getTime() - offsetMs);
+  
+  return `${adjustedDate.getFullYear()}-${pad(adjustedDate.getMonth() + 1)}-${pad(
+    adjustedDate.getDate()
+  )}T${pad(adjustedDate.getHours())}:${pad(adjustedDate.getMinutes())}:00`;
 };
 
 function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
@@ -40,10 +46,16 @@ function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
 
     if (!tutorialData) return;
 
+    const formattedDate = formatDateForBackend(startDate);
+    
+    // Debug: verificar qué fecha se está enviando
+    console.log("Fecha seleccionada:", startDate);
+    console.log("Fecha formateada para backend:", formattedDate);
+
     try {
       const updatedTutorial = {
         ...tutorialData,
-        classDate: formatDateForBackend(startDate)
+        classDate: formattedDate
       };
 
       const response = await fetch(
