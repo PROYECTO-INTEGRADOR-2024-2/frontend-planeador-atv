@@ -32,8 +32,6 @@ const TutorialForm = () => {
     return date.toISOString();
   }
 
-
-
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
@@ -130,6 +128,38 @@ const TutorialForm = () => {
       classDate: formatDateForBackend(selectedDate)
     });
   };
+
+  //Formatear fechas 
+  function procesarFecha(fechaISO) {
+    const fechaObj = new Date(fechaISO);
+
+    // Obtener componentes
+    const fecha = fechaObj.toISOString().split('T')[0];
+    const hora24 = fechaObj.toTimeString().split(' ')[0];
+
+    // Días de la semana en español
+    const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const diaSemana = diasSemana[fechaObj.getDay()];
+
+    // Convertir a formato 12 horas
+    let horas = fechaObj.getHours();
+  
+    const periodo = horas >= 12 ? 'PM' : 'AM';
+    horas = horas % 12 || 12; // Convertir 0 a 12 para formato 12h
+    const hora12 = horas < 10 ? `0${horas}`: `${horas}` ;
+    console.log("Fecha formateada mamapollas")
+
+    const fechaForm = {
+      fecha,
+      hora: hora24,
+      dia_semana: diaSemana,
+      hora_12h: hora12,
+      periodo
+    };
+    console.log((fechaForm))
+    return fechaForm;
+    
+  }
 
   const handleDateChange = (date) => {
     setStartDate(date);
@@ -256,6 +286,7 @@ const TutorialForm = () => {
               </div>
             </div>
             <div>
+
               <label
                 htmlFor="hourPicker"
                 className="block text-sm font-bold text-gray-900"
@@ -290,7 +321,16 @@ const TutorialForm = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-center">
+          <button
+            onClick={procesarFecha(tutorial.classDate)}
+            className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
+          >
+            Buscar tutores
+          </button>
+        </div>
         <div>
+
           <label
             htmlFor="tutor"
             className="block my-2 text-sm font-bold text-gray-900 text-center"
