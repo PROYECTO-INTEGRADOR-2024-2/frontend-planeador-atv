@@ -138,7 +138,7 @@ const TutorialForm = () => {
     const hora24 = fechaObj.toTimeString().split(' ')[0];
 
     // Días de la semana en español
-    const diasSemana = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+    const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
     const diaSemana = diasSemana[fechaObj.getDay()];
 
     // Convertir a formato 12 horas
@@ -148,13 +148,13 @@ const TutorialForm = () => {
     horas = horas % 12 || 12; // Convertir 0 a 12 para formato 12h
     const hora12 = horas < 10 ? `0${horas}`: `${horas}` ;
     console.log("Fecha formateada mamapollas")
-
+    
     const fechaForm = {
-      fecha,
-      hora: hora24,
-      dia_semana: diaSemana,
-      hora_12h: hora12,
-      periodo
+      subjectId: tutorial.subjectId,
+      date:fecha,
+      hour: `${hora12}:00`,
+      dayWeek: diaSemana,
+      period: periodo
     };
     console.log((fechaForm))
     return fechaForm;
@@ -226,6 +226,7 @@ const TutorialForm = () => {
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
             onChange={(e) => handleChange(e, true)}
           >
+            
             <option value="">Seleccione una asignatura</option>
             {dataSubject.map((item) => (
               <option key={item[0]} value={`${item[0]}-${item[2]}`}>
