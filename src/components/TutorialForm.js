@@ -34,30 +34,37 @@ const TutorialForm = () => {
 
   useEffect(() => {
     const token = Cookies.get("token");
-    if (token) {
-      const user = jwtDecode(token);
-      setUser(user);
-      setTutorial({ ...tutorial, studentId: user.user_id });
+    try {
+      const decoded = jwtDecode(token);
+      setUser(decoded);
+      setTutorial((prev) => ({ ...prev, studentId: decoded.user_id }));
+    } catch (error) {
+      console.error("Token inválido", error);
     }
   }, []);
 
-  useEffect(() => {
-    const fetchDataTutor = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8081/api/v1/persons/tutor"
-        );
-        if (!response.ok) {
-          throw new Error("Respuesta no valida");
-        }
-        const result = await response.json();
-        setDataTutor(result.map((item) => Object.values(item)));
-      } catch (error) {
-        setErrorTutor(error.message);
+
+  const fetchDataTutor = async (fechaISO) => {
+    try {
+      const response = await fetch(
+        "http://localhost:8081/api/v1/listarTutores", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(procesarFecha(fechaISO)),
       }
-    };
-    fetchDataTutor();
-  }, []);
+      );
+      if (!response.ok) {
+        throw new Error("Respuesta no valida");
+      }
+      const result = await response.json();
+      setDataTutor(result.map((item) => Object.values(item)));
+    } catch (error) {
+      setErrorTutor(error.message);
+    }
+  };
+
 
   useEffect(() => {
     const fetchDataSubject = async () => {
@@ -143,22 +150,22 @@ const TutorialForm = () => {
 
     // Convertir a formato 12 horas
     let horas = fechaObj.getHours();
-  
+
     const periodo = horas >= 12 ? 'PM' : 'AM';
     horas = horas % 12 || 12; // Convertir 0 a 12 para formato 12h
-    const hora12 = horas < 10 ? `0${horas}`: `${horas}` ;
+    const hora12 = horas < 10 ? `0${horas}` : `${horas}`;
     console.log("Fecha formateada mamapollas")
-    
+
     const fechaForm = {
       subjectId: tutorial.subjectId,
-      date:fecha,
+      date: fecha,
       hour: `${hora12}:00`,
       dayWeek: diaSemana,
       period: periodo
     };
     console.log((fechaForm))
     return fechaForm;
-    
+
   }
 
   const handleDateChange = (date) => {
@@ -170,14 +177,11 @@ const TutorialForm = () => {
     const minutes = currentDate.getMinutes();
 
     // Establecer la misma hora en la nueva fecha
-    date.setHours(hours);
-    date.setMinutes(minutes);
-    date.setSeconds(0);
+    const newDate = new Date(date);
+    newDate.setHours(hours);
+    newDate.setMinutes(minutes);
+    setTutorial({ ...tutorial, classDate: formatDateForBackend(newDate) });
 
-    setTutorial({
-      ...tutorial,
-      classDate: formatDateForBackend(date)
-    });
   };
 
   const saveTutorial = async (e) => {
@@ -226,7 +230,7 @@ const TutorialForm = () => {
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
             onChange={(e) => handleChange(e, true)}
           >
-            
+
             <option value="">Seleccione una asignatura</option>
             {dataSubject.map((item) => (
               <option key={item[0]} value={`${item[0]}-${item[2]}`}>
@@ -302,8 +306,8 @@ const TutorialForm = () => {
                   className="bg-transparent border-none outline-none text-gray-900 text-sm py-1"
                 >
                   <option value="">Seleccionar hora</option>
-                  <option value="8">06:00 AM</option>
-                  <option value="8">07:00 AM</option>
+                  <option value="6">06:00 AM</option>
+                  <option value="7">07:00 AM</option>
                   <option value="8">08:00 AM</option>
                   <option value="9">09:00 AM</option>
                   <option value="10">10:00 AM</option>
@@ -324,7 +328,8 @@ const TutorialForm = () => {
         </div>
         <div className="flex justify-center">
           <button
-            onClick={procesarFecha(tutorial.classDate)}
+            type="button"
+            onClick={() => fetchDataTutor(tutorial.classDate)}
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
           >
             Buscar tutores
@@ -349,9 +354,9 @@ const TutorialForm = () => {
             {dataTutor.map((item) => (
               <option
                 key={item[0]}
-                value={`${item[0]}-${item[2]} ${item[3]}`}
+                value={`${item[0]}-${item[1]} ${item[2]}`}
               >
-                {item[2]} {item[3]}
+                {item[1]} {item[2]}
               </option>
             ))}
           </select>
