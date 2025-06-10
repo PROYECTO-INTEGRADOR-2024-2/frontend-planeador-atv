@@ -3,106 +3,70 @@ import Modal from "react-modal";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+// Función para formatear la fecha igual que en TutorialForm
 const formatDateForBackend = (date) => {
-  const pad = (n) => n.toString().padStart(2, "0");
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(
-    date.getDate()
-  )}T${pad(date.getHours())}:${pad(date.getMinutes())}:00`;
+  return date.toISOString();
 };
 
-function SessionReschedule({ open, id, onClose }) {
-  const [tutors, setTutors] = useState([]);
+function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
   const [startDate, setStartDate] = useState(new Date());
-  const [tutorial, setTutorial] = useState({
-    classId: id,
-    classState: "",
-    studentId: "",
-    tutorId: "",
-    subjectId: 0,
-    classTopics: "",
-    classDate: formatDateForBackend(new Date()),
-    classRate: 0,
-  });
 
-  // Cargar tutores
   useEffect(() => {
-    const fetchTutorData = async () => {
-      try {
-        const response = await fetch(
-          "http://localhost:8081/api/v1/persons/tutor"
-        );
-        if (!response.ok) throw new Error("Error al obtener los tutores");
-        const data = await response.json();
-        setTutors(data);
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-
-    if (id) fetchTutorData();
-  }, [id]);
-
-  // Cargar datos de la tutoría
-  useEffect(() => {
-    const fetchTutorialData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:8081/api/v1/session/${id}`
-        );
-        if (!response.ok) throw new Error("Error al obtener la tutoría");
-        const data = await response.json();
-
-        const fecha = new Date(data.classDate);
-        setStartDate(fecha);
-        setTutorial({ ...data, classDate: formatDateForBackend(fecha) });
-      } catch (error) {
-        console.error(error.message);
-      }
-    };
-
-    if (id) fetchTutorialData();
-  }, [id]);
+    if (open && tutorialData?.classDate) {
+      setStartDate(new Date(tutorialData.classDate));
+    }
+  }, [open, tutorialData]);
 
   const handleDateChange = (date) => {
-    const updatedDate = new Date(date);
-    const current = new Date(startDate);
-    updatedDate.setHours(current.getHours(), current.getMinutes(), 0);
-
-    setStartDate(updatedDate);
-    setTutorial({ ...tutorial, classDate: formatDateForBackend(updatedDate) });
+    // Mantener la hora actual cuando se cambia la fecha
+    const currentHours = startDate.getHours();
+    const currentMinutes = startDate.getMinutes();
+    
+    const updated = new Date(date);
+    updated.setHours(currentHours, currentMinutes, 0);
+    setStartDate(updated);
   };
 
-  const getTime = (event) => {
-    const [hours, minutes] = event.target.value.split(":").map(Number);
-    const updatedDate = new Date(startDate);
-    updatedDate.setHours(hours, minutes, 0);
-
-    setStartDate(updatedDate);
-    setTutorial({ ...tutorial, classDate: formatDateForBackend(updatedDate) });
+  const handleTimeChange = (e) => {
+    const [hours, minutes] = e.target.value.split(":").map(Number);
+    const updated = new Date(startDate);
+    updated.setHours(hours, minutes, 0);
+    setStartDate(updated);
   };
 
-  const editTutorial = async (event) => {
-    event.preventDefault(); // CORRECTO: evita recarga del formulario
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!tutorialData) return;
+
+    // Usar el mismo formato que TutorialForm
+    const formattedDate = formatDateForBackend(startDate);
 
     try {
+      const updatedTutorial = {
+        ...tutorialData,
+        classDate: formattedDate,
+      };
+
       const response = await fetch(
-        `http://localhost:8081/api/v1/session/${id}`,
+        `http://localhost:8081/api/v1/session/${tutorialData.classId}`,
         {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(tutorial),
+          body: JSON.stringify(updatedTutorial),
         }
       );
 
       if (!response.ok) throw new Error("Error al actualizar la tutoría");
-
       await response.json();
+
+      if (onUpdate) onUpdate();
       onClose();
-      setTimeout(() => window.location.reload(), 500); // DEFER: correcta recarga
     } catch (error) {
       console.error("Error al editar la tutoría:", error.message);
     }
   };
+
+  if (!tutorialData) return null;
 
   return (
     <Modal
@@ -116,14 +80,11 @@ function SessionReschedule({ open, id, onClose }) {
             Reprogramar Tutoría
           </h1>
 
-          <form className="space-y-4 md:space-y-2" onSubmit={editTutorial}>
+          <form onSubmit={handleSubmit} className="space-y-4 md:space-y-2">
             <div className="py-8">
               <div className="flex justify-between bg-white p-2 px-8 pb-4">
                 <div>
-                  <label
-                    htmlFor="datePicker"
-                    className="block text-sm font-bold text-gray-900"
-                  >
+                  <label htmlFor="datePicker" className="block text-sm font-bold text-gray-900">
                     Fecha
                   </label>
                   <div className="flex border-b-2">
@@ -138,21 +99,17 @@ function SessionReschedule({ open, id, onClose }) {
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="timePicker"
-                    className="block text-sm font-bold text-gray-900"
-                  >
+                  <label htmlFor="timePicker" className="block text-sm font-bold text-gray-900">
                     Hora
                   </label>
                   <div className="border-b-2">
                     <input
                       id="timePicker"
                       type="time"
-                      value={`${String(startDate.getHours()).padStart(
-                        2,
-                        "0"
-                      )}:${String(startDate.getMinutes()).padStart(2, "0")}`}
-                      onChange={getTime}
+                      value={`${String(startDate.getHours()).padStart(2, "0")}:${String(
+                        startDate.getMinutes()
+                      ).padStart(2, "0")}`}
+                      onChange={handleTimeChange}
                     />
                   </div>
                 </div>

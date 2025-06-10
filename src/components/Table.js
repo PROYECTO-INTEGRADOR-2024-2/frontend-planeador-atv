@@ -2,6 +2,7 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Cookies from "js-cookie";
 
 const Table = ({ title, columns }) => {
   const [data, setData] = useState([]);
@@ -13,7 +14,7 @@ const Table = ({ title, columns }) => {
   const [user, setUser] = useState(false);
 
   useEffect(() => {
-    const user = localStorage.getItem("user");
+    const user = Cookies.get("user");
     if (user != null) {
       setUser(JSON.parse(user));
     } else {

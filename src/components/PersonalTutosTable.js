@@ -2,9 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { FaMixer, FaAddressBook } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { FaMixer, FaAddressBook, FaStar } from "react-icons/fa";
+import DataTable from "react-data-table-component";
+import moment from "moment";
 
 export default function PersonalTutosTable({ title }) {
   const [sessions, setSessions] = useState([]);
@@ -12,12 +13,9 @@ export default function PersonalTutosTable({ title }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [tutorData, setTutorData] = useState(null);
-  const [selectedSession, setSelectedSession] = useState(null);
   const [rating, setRating] = useState(1);
   const [noTutorMessage, setNoTutorMessage] = useState(false);
-  const [sortedSessions, setSortedSessions] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ITEMS_PER_PAGE = 10;
+  const [selectedSession, setSelectedSession] = useState(null);
 
   const fetchedOnce = useRef(false);
   const router = useRouter();
@@ -80,41 +78,6 @@ export default function PersonalTutosTable({ title }) {
 
     fetchSessions();
   }, [user]);
-
-  // Ordenar sesiones cada vez que cambien
-  useEffect(() => {
-    if (sessions.length > 0) {
-      // Función para obtener prioridad del estado
-      const getStatePriority = (session) => {
-        if (!session.accepted && session.canceledBy === "NONE") return 1; // Pendientes
-        if (
-          session.accepted &&
-          !session.registered &&
-          session.canceledBy === "NONE"
-        )
-          return 2; // Aceptadas
-        if (session.registered) return 3; // Terminadas o Realizadas
-        if (session.canceledBy !== "NONE") return 4; // Canceladas
-        return 5; // Otros
-      };
-
-      // Ordenar por estado y luego por fecha
-      const sorted = [...sessions].sort((a, b) => {
-        const priorityA = getStatePriority(a);
-        const priorityB = getStatePriority(b);
-
-        if (priorityA !== priorityB) {
-          return priorityA - priorityB;
-        }
-
-        // Si tienen la misma prioridad, ordenar por fecha
-        return new Date(a.classDate) - new Date(b.classDate);
-      });
-
-      setSortedSessions(sorted);
-      setCurrentPage(1); // Resetear a la primera página cuando cambian los datos
-    }
-  }, [sessions]);
 
   const handleCancel = async (sessionId) => {
     const token = Cookies.get("token");
@@ -181,10 +144,9 @@ export default function PersonalTutosTable({ title }) {
 
   const handleRateSubmit = async () => {
     if (!selectedSession) return;
-
     const token = Cookies.get("token");
     if (!token) return toast.error("Token no encontrado");
-
+    
     try {
       const res = await fetch(URLS.RATE, {
         method: "PUT",
@@ -201,202 +163,153 @@ export default function PersonalTutosTable({ title }) {
       if (!res.ok) throw new Error("Error al enviar valoración");
 
       toast.success("Valoración enviada correctamente");
+      // Actualizar el estado de la sesión en la lista
+      setSessions((prev) =>
+        prev.map((s) =>
+          s.classId === selectedSession.classId ? { ...s, classRate: parseFloat(rating) } : s
+        )
+      );
       setSelectedSession(null);
     } catch (err) {
       toast.error(err.message || "Error al enviar valoración");
     }
   };
 
+
+
   // Obtener el estado como texto para mostrarlo en la tabla
-  const getStateText = (session) => {
-    if (session.canceledBy !== "NONE") return "Cancelada";
-    if (!session.registered && session.accepted) return "Aceptada";
-    if (session.registered && session.classRate !== 0) return "Cerrada";
-    if (session.registered) return "Realizada";
-    return "Pendiente de aceptar";
+  const getEstado = (row) => {
+    if (!row.registered && row.canceledBy === "NONE" && !row.accepted) return "Pendiente";
+    if (!row.registered && row.canceledBy === "NONE" && row.accepted) return "Aceptada";
+    if (row.registered && row.canceledBy === "NONE" && row.accepted && row.classRate == 0.0) return "Registrada por tutor";
+    if (row.registered && row.canceledBy === "NONE" && row.accepted && row.classRate !== 0) return "Finalizada";
+    if (row.canceledBy !== "NONE") return `Cancelada por ${row.canceledBy}`;
+    return "Estado desconocido";
   };
 
-  // Calcular paginación
-  const totalPages = Math.ceil(sortedSessions.length / ITEMS_PER_PAGE);
-  const paginatedSessions = sortedSessions.slice(
-    (currentPage - 1) * ITEMS_PER_PAGE,
-    currentPage * ITEMS_PER_PAGE
-  );
-
-  const goToPage = (page) => {
-    if (page < 1 || page > totalPages) return;
-    setCurrentPage(page);
+  const customStyles = {
+    rows: {
+      style: {
+        minHeight: '60px',
+        fontSize: '14px',
+        borderBottom: '1px solid #ddd',
+      },
+    },
+    headCells: {
+      style: {
+        paddingLeft: '12px',
+        paddingRight: '12px',
+        fontWeight: 'bold',     
+        fontSize: '15px',            
+        backgroundColor: '#f4f4f4', 
+        color: '#333',               
+        textTransform: 'uppercase',  
+        borderBottom: '2px solid #ccc',
+      },
+    },
+    cells: {
+      style: {
+        paddingLeft: '12px',
+        paddingRight: '12px',
+        fontSize: '14px',
+        color: '#444',
+      },
+    },
   };
 
-  const renderStateLabel = (stateText) => {
-    let bgColor = "";
-    switch (stateText) {
-      case "Pendiente de aceptar":
-        bgColor = "bg-yellow-200";
-        break;
-      case "Aceptada":
-        bgColor = "bg-blue-200";
-        break;
-      case "Realizada":
-      case "Cerrada":
-        bgColor = "bg-green-200";
-        break;
-      case "Cancelada":
-        bgColor = "bg-red-200";
-        break;
-      default:
-        bgColor = "bg-gray-200";
-    }
-    return (
-      <span className={`inline-block px-2 py-1 rounded ${bgColor}`}>
-        {stateText}
-      </span>
-    );
-  };
-
-  const renderPagination = () => {
-    if (totalPages <= 1) return null;
-
-    return (
-      <div className="flex justify-center mt-4 space-x-2">
-        <button
-          onClick={() => goToPage(currentPage - 1)}
-          disabled={currentPage === 1}
-          className={`px-3 py-1 rounded ${
-            currentPage === 1
-              ? "bg-gray-200"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }`}
-        >
-          Anterior
-        </button>
-        <span className="px-3 py-1">
-          Página {currentPage} de {totalPages}
-        </span>
-        <button
-          onClick={() => goToPage(currentPage + 1)}
-          disabled={currentPage === totalPages}
-          className={`px-3 py-1 rounded ${
-            currentPage === totalPages
-              ? "bg-gray-200"
-              : "bg-blue-500 text-white hover:bg-blue-600"
-          }`}
-        >
-          Siguiente
-        </button>
-      </div>
-    );
-  };
-
-  const renderTable = () => {
-    if (loading)
-      return <div className="text-center py-4">Cargando sesiones...</div>;
-    if (error)
-      return <div className="text-center py-4 text-red-600">{error}</div>;
-    if (sortedSessions.length === 0)
-      return (
-        <div className="text-center py-4">No hay sesiones disponibles</div>
-      );
-
-    return (
-      <>
-        <table className="min-w-full divide-y divide-gray-200 border border-slate-400">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-4 border">Fecha y hora</th>
-              <th className="px-6 py-4 border">Materia</th>
-              <th className="px-6 py-4 border">Temas</th>
-              <th className="px-6 py-4 border">Estado</th>
-              <th className="px-6 py-4 border">Tutor</th>
-              <th className="px-6 py-4 border">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedSessions.map((session) => {
-              const stateText = getStateText(session);
-
-              return (
-                <tr key={session.classId}>
-                  <td className="px-6 py-4 border text-center">
-                    {new Date(session.classDate).toLocaleString()}
-                  </td>
-                  <td className="px-6 py-4 border text-center">
-                    {session.subjectName}
-                  </td>
-                  <td className="px-6 py-4 border text-center">
-                    {session.classTopics}
-                  </td>
-                  <td className="px-6 py-4 border text-center">
-                    {renderStateLabel(stateText)}
-                  </td>
-                  <td className="px-6 py-4 border text-center">
-                    {`${session.tutorName} ${session.tutorLastname}`}
-                  </td>
-                  <td className="px-6 py-4 border text-center">
-                    <div className="py-4 px-4 whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
-                      {session.canceledBy === "NONE" && !session.registered && (
-                        // <button className="bg-red-500 hover:bg-red-600 text-white px-4 py-1 rounded"
-                        //   onClick={() => handleCancel(session.classId)}>Cancelar</button>
-                        <FaMixer
-                          size={20}
-                          color="red"
-                          onClick={() => handleCancel(session.classId)}
-                          className="hover:cursor-pointer"
-                          title="Cancelar tutoría"
-                        />
-                      )}
-                      {session.registered && session.classRate === 0 && (
-                        <button
-                          className="bg-green-500 hover:bg-green-600 text-white px-4 py-1 rounded"
-                          onClick={() => setSelectedSession(session)}
-                        >
-                          Valorar tutoría
-                        </button>
-                      )}
-                      {/* <button
-                        className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded"
-                        onClick={() => handlePerfilTutor(session.tutorId)}
-                      >
-                        Ver perfil de tutor
-                      </button> */}
-                      <FaAddressBook
-                        size={20}
-                        color="blue"
-                        onClick={() => handlePerfilStudent(session.studentId)}
-                        className="hover:cursor-pointer"
-                        title="Ver perfil del tutor"
-                      />
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        {renderPagination()}
-      </>
-    );
-  };
-
+  const columns = [
+    {
+      name: "Fecha",
+      selector: (row) =>
+        moment(row.classDate).format("YYYY/MM/DD  |  hA"),
+    },
+    {
+      name: "Asignatura",
+      selector: (row) => row.subjectName,
+    },
+    {
+      name: "Temas",
+      selector: (row) => row.classTopics,
+      wrap: true,
+    },
+    {
+      name: "Estado",
+      selector: getEstado,
+    },
+    {
+      name: "Tutor",
+      cell: (row) => `${row.tutorName} ${row.tutorLastname}`,
+    },
+    {
+      name: "Acciones",
+      cell: (row) => {
+        const estado = getEstado(row);
+        return (
+          <div className="flex gap-2">
+            {estado === "Pendiente" && (
+              <>
+                <button onClick={() => handleCancel(row.classId)} title="Cancelar">
+                  <FaMixer className="text-yellow-600" />
+                </button>
+                <button onClick={() => handlePerfilTutor(row.tutorId)} title="Perfil Tutor">
+                  <FaAddressBook className="text-blue-600" />
+                </button>
+              </>
+            )}
+            {estado === "Registrada por tutor" && (
+              <>
+                <button onClick={() => handlePerfilTutor(row.tutorId)} title="Perfil Tutor">
+                  <FaAddressBook className="text-blue-600" />
+                </button>
+                <button onClick={() => setSelectedSession(row)} title="Valorar">
+                  <FaStar className="text-purple-600" />
+                </button>
+              </>
+            )}
+            {(estado === "Aceptada" || estado === "Finalizada" || estado.includes("Cancelada")) && (
+              <button onClick={() => handlePerfilTutor(row.tutorId)} title="Perfil Tutor">
+                <FaAddressBook className="text-blue-600" />
+              </button>
+            )}
+          </div>
+        );
+      },
+    },
+  ];
+    
   return (
-    <div className="bg-gray-100 rounded-lg shadow-md py-2">
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar />
-      <div className="text-center bg-gray-200 mx-auto border border-slate-400">
-        <h1 className="text-3xl font-bold py-5 text-gray-600 mx-4">{title}</h1>
-      </div>
-      <div className="p-8">{renderTable()}</div>
+    <div className="px-4">
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
+      
+      {loading ? (
+        <div className="text-center py-4">Cargando...</div>
+      ) : error ? (
+        <div className="text-red-500 text-center py-4">{error}</div>
+      ) : (
+        <DataTable
+          columns={columns}
+          data={sessions}
+          customStyles={customStyles}
+          pagination
+          paginationPerPage={10}
+          paginationRowsPerPageOptions={[5, 10, 15, 20]}
+          noDataComponent="No hay sesiones disponibles"
+        />
+      )}
 
+      {/* Modal para mostrar perfil del tutor */}
       {tutorData && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-96">
             <h2 className="text-xl font-bold mb-4">Perfil del Tutor</h2>
-            <ul className="space-y-2">
+            <div className="space-y-2">
               {Object.entries(tutorData).map(([key, value]) => (
-                <li key={key}>
-                  <strong>{key}:</strong> {value}
-                </li>
+                <div key={key} className="flex justify-between">
+                  <strong>{key}:</strong>
+                  <span>{value}</span>
+                </div>
               ))}
-            </ul>
+            </div>
             <div className="mt-4 text-right">
               <button
                 onClick={() => setTutorData(null)}
@@ -409,6 +322,7 @@ export default function PersonalTutosTable({ title }) {
         </div>
       )}
 
+      {/* Modal para mostrar mensaje de que no hay tutor asignado aún */}
       {noTutorMessage && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-96">
@@ -428,6 +342,7 @@ export default function PersonalTutosTable({ title }) {
         </div>
       )}
 
+      {/* Modal para valorar tutoría */}
       {selectedSession && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
           <div className="bg-white rounded-lg p-6 w-96">
@@ -455,7 +370,7 @@ export default function PersonalTutosTable({ title }) {
                 Cancelar
               </button>
               <button
-                onClick={handleRateSubmit}
+                onClick={() => handleRateSubmit()}
                 className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded"
               >
                 Enviar
