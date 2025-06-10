@@ -332,7 +332,7 @@ const TutorialForm = () => {
             onClick={() => fetchDataTutor(tutorial.classDate)}
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
           >
-            Buscar tutores
+            Buscar tutores disponibles
           </button>
         </div>
         <div>
