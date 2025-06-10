@@ -11,6 +11,8 @@ const TutorialForm = () => {
   //mapear la info en los componentes
   const [dataTutor, setDataTutor] = useState([]);
   const [errorTutor, setErrorTutor] = useState(null);
+  const [isDisabled, setIsDisabled] = useState(true);
+  const [tutorSelected, setTutorSelected] = useState(null);
   const [startDate, setStartDate] = useState(new Date());
   const [dataSubject, setDataSubject] = useState([]);
   const [errorSubject, setErrorSubject] = useState(null);
@@ -32,6 +34,10 @@ const TutorialForm = () => {
     return date.toISOString();
   }
 
+  const handleChangeItem = () => {
+    setIsDisabled(True);
+  };
+
   useEffect(() => {
     const token = Cookies.get("token");
     try {
@@ -43,28 +49,30 @@ const TutorialForm = () => {
     }
   }, []);
 
-
   const fetchDataTutor = async (fechaISO) => {
     try {
       const response = await fetch(
-        "http://localhost:8081/api/v1/listarTutores", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(procesarFecha(fechaISO)),
-      }
+        "http://localhost:8081/api/v1/listarTutores",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(procesarFecha(fechaISO)),
+        }
       );
       if (!response.ok) {
         throw new Error("Respuesta no valida");
       }
       const result = await response.json();
+      if (result.length > 0) {
+        setIsDisabled(false);
+      }
       setDataTutor(result.map((item) => Object.values(item)));
     } catch (error) {
       setErrorTutor(error.message);
     }
   };
-
 
   useEffect(() => {
     const fetchDataSubject = async () => {
@@ -83,6 +91,7 @@ const TutorialForm = () => {
   }, []);
 
   const handleChange = (event, number) => {
+    setIsDisabled(true);
     const value = event.target.value;
     let value2 = "";
     value.includes("-")
@@ -100,6 +109,9 @@ const TutorialForm = () => {
     const { name, value } = event.target;
 
     if (name === "tutorId") {
+      if (event.target.value === "Seleccione un tutor") {
+        setIsDisabled(true);
+      }
       const tutorId = value.split("-")[0];
       setTutorial((prev) => ({
         ...prev,
@@ -122,6 +134,7 @@ const TutorialForm = () => {
   };
 
   const getTime = (event) => {
+    setIsDisabled(true);
     const selectedHour = event.target.value; // Solo la hora: "08", "09", etc.
     const selectedDate = new Date(startDate);
 
@@ -132,43 +145,51 @@ const TutorialForm = () => {
 
     setTutorial({
       ...tutorial,
-      classDate: formatDateForBackend(selectedDate)
+      classDate: formatDateForBackend(selectedDate),
     });
   };
 
-  //Formatear fechas 
+  //Formatear fechas
   function procesarFecha(fechaISO) {
     const fechaObj = new Date(fechaISO);
 
     // Obtener componentes
-    const fecha = fechaObj.toISOString().split('T')[0];
-    const hora24 = fechaObj.toTimeString().split(' ')[0];
+    const fecha = fechaObj.toISOString().split("T")[0];
+    const hora24 = fechaObj.toTimeString().split(" ")[0];
 
     // Días de la semana en español
-    const diasSemana = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+    const diasSemana = [
+      "domingo",
+      "lunes",
+      "martes",
+      "miercoles",
+      "jueves",
+      "viernes",
+      "sabado",
+    ];
     const diaSemana = diasSemana[fechaObj.getDay()];
 
     // Convertir a formato 12 horas
     let horas = fechaObj.getHours();
 
-    const periodo = horas >= 12 ? 'PM' : 'AM';
+    const periodo = horas >= 12 ? "PM" : "AM";
     horas = horas % 12 || 12; // Convertir 0 a 12 para formato 12h
     const hora12 = horas < 10 ? `0${horas}` : `${horas}`;
-    console.log("Fecha formateada mamapollas")
+    console.log("Fecha formateada mamapollas");
 
     const fechaForm = {
       subjectId: tutorial.subjectId,
       date: fecha,
       hour: `${hora12}:00`,
       dayWeek: diaSemana,
-      period: periodo
+      period: periodo,
     };
-    console.log((fechaForm))
+    console.log(fechaForm);
     return fechaForm;
-
   }
 
   const handleDateChange = (date) => {
+    setIsDisabled(true);
     setStartDate(date);
 
     // Mantener la hora actual cuando se cambia la fecha
@@ -181,7 +202,6 @@ const TutorialForm = () => {
     newDate.setHours(hours);
     newDate.setMinutes(minutes);
     setTutorial({ ...tutorial, classDate: formatDateForBackend(newDate) });
-
   };
 
   const saveTutorial = async (e) => {
@@ -230,7 +250,6 @@ const TutorialForm = () => {
             className="border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full 2xl:p-2.5 md:p-2"
             onChange={(e) => handleChange(e, true)}
           >
-
             <option value="">Seleccione una asignatura</option>
             {dataSubject.map((item) => (
               <option key={item[0]} value={`${item[0]}-${item[2]}`}>
@@ -291,7 +310,6 @@ const TutorialForm = () => {
               </div>
             </div>
             <div>
-
               <label
                 htmlFor="hourPicker"
                 className="block text-sm font-bold text-gray-900"
@@ -336,7 +354,6 @@ const TutorialForm = () => {
           </button>
         </div>
         <div>
-
           <label
             htmlFor="tutor"
             className="block my-2 text-sm font-bold text-gray-900 text-center"
@@ -352,10 +369,7 @@ const TutorialForm = () => {
           >
             <option value="">Seleccione un tutor</option>
             {dataTutor.map((item) => (
-              <option
-                key={item[0]}
-                value={`${item[0]}-${item[1]} ${item[2]}`}
-              >
+              <option key={item[0]} value={`${item[0]}-${item[1]} ${item[2]}`}>
                 {item[1]} {item[2]}
               </option>
             ))}
@@ -364,7 +378,8 @@ const TutorialForm = () => {
         <div className="flex justify-center pt-8">
           <button
             type="submit"
-            className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
+            disabled={isDisabled}
+            className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] disabled:hover:bg-[#6f7e91] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
           >
             Confirmar tutoría
           </button>
