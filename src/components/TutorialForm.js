@@ -11,8 +11,9 @@ const TutorialForm = () => {
   //mapear la info en los componentes
   const [dataTutor, setDataTutor] = useState([]);
   const [errorTutor, setErrorTutor] = useState(null);
+  const [selectedTutor, setSelectedTutor] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
-  const [tutorSelected, setTutorSelected] = useState(null);
+  const [timeSelected, setTimeSelected] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [dataSubject, setDataSubject] = useState([]);
   const [errorSubject, setErrorSubject] = useState(null);
@@ -65,9 +66,9 @@ const TutorialForm = () => {
         throw new Error("Respuesta no valida");
       }
       const result = await response.json();
-      if (result.length > 0) {
-        setIsDisabled(false);
-      }
+      // if (result.length > 0) {
+      //   setIsDisabled(false);
+      // }
       setDataTutor(result.map((item) => Object.values(item)));
     } catch (error) {
       setErrorTutor(error.message);
@@ -106,11 +107,12 @@ const TutorialForm = () => {
   };
 
   const handleChange2 = (event, number) => {
+    setIsDisabled(true);
     const { name, value } = event.target;
-
     if (name === "tutorId") {
-      if (event.target.value === "Seleccione un tutor") {
-        setIsDisabled(true);
+      if (value != "" && timeSelected != "") {
+        setIsDisabled(false);
+        setSelectedTutor(value);
       }
       const tutorId = value.split("-")[0];
       setTutorial((prev) => ({
@@ -134,6 +136,11 @@ const TutorialForm = () => {
   };
 
   const getTime = (event) => {
+    if (event.target.value == "") {
+      setIsDisabled(true);
+      setTimeSelected("");
+      return;
+    }
     setIsDisabled(true);
     const selectedHour = event.target.value; // Solo la hora: "08", "09", etc.
     const selectedDate = new Date(startDate);
@@ -142,7 +149,7 @@ const TutorialForm = () => {
     selectedDate.setHours(parseInt(selectedHour, 10));
     selectedDate.setMinutes(0);
     selectedDate.setSeconds(0);
-
+    setTimeSelected(formatDateForBackend(selectedDate));
     setTutorial({
       ...tutorial,
       classDate: formatDateForBackend(selectedDate),
