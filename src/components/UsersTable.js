@@ -272,14 +272,14 @@ const UsersTable = ({ title }) => {
           {activeTab === "enabled" ? (
             <>
               <FaUserLock
-                size={30}
+                size={32}
                 className="hover:cursor-pointer hover:scale-110 transition-transform"
                 color="orange"
                 onClick={() => handleDisable(row.id)}
                 title="Deshabilitar Usuario"
               />
               <FaAddressCard
-                size={30}
+                size={32}
                 color="blue"
                 onClick={() => handleOpenProfile(row)}
                 className="hover:cursor-pointer hover:scale-110 transition-transform"
@@ -289,7 +289,7 @@ const UsersTable = ({ title }) => {
           ) : (
             <div className="py-1 px-4 whitespace-nowrap flex items-center justify-center gap-x-2 select-none">
               <FaUserCheck
-                size={30}
+                size={32}
                 className="hover:cursor-pointer"
                 color="green"
                 onClick={() => handleEnable(row.id)}
@@ -302,7 +302,7 @@ const UsersTable = ({ title }) => {
                           Habilitar
                         </button> */}
               <FaAddressCard
-                size={30}
+                size={32}
                 color="blue"
                 onClick={() => handleOpenProfile(user)}
                 className="hover:cursor-pointer"

@@ -146,7 +146,7 @@ export default function PersonalTutosTable({ title }) {
     if (!selectedSession) return;
     const token = Cookies.get("token");
     if (!token) return toast.error("Token no encontrado");
-    
+
     try {
       const res = await fetch(URLS.RATE, {
         method: "PUT",
@@ -166,7 +166,9 @@ export default function PersonalTutosTable({ title }) {
       // Actualizar el estado de la sesión en la lista
       setSessions((prev) =>
         prev.map((s) =>
-          s.classId === selectedSession.classId ? { ...s, classRate: parseFloat(rating) } : s
+          s.classId === selectedSession.classId
+            ? { ...s, classRate: parseFloat(rating) }
+            : s
         )
       );
       setSelectedSession(null);
@@ -175,14 +177,26 @@ export default function PersonalTutosTable({ title }) {
     }
   };
 
-
-
   // Obtener el estado como texto para mostrarlo en la tabla
   const getEstado = (row) => {
-    if (!row.registered && row.canceledBy === "NONE" && !row.accepted) return "Pendiente";
-    if (!row.registered && row.canceledBy === "NONE" && row.accepted) return "Aceptada";
-    if (row.registered && row.canceledBy === "NONE" && row.accepted && row.classRate == 0.0) return "Registrada por tutor";
-    if (row.registered && row.canceledBy === "NONE" && row.accepted && row.classRate !== 0) return "Finalizada";
+    if (!row.registered && row.canceledBy === "NONE" && !row.accepted)
+      return "Pendiente";
+    if (!row.registered && row.canceledBy === "NONE" && row.accepted)
+      return "Aceptada";
+    if (
+      row.registered &&
+      row.canceledBy === "NONE" &&
+      row.accepted &&
+      row.classRate == 0.0
+    )
+      return "Registrada por tutor";
+    if (
+      row.registered &&
+      row.canceledBy === "NONE" &&
+      row.accepted &&
+      row.classRate !== 0
+    )
+      return "Finalizada";
     if (row.canceledBy !== "NONE") return `Cancelada por ${row.canceledBy}`;
     return "Estado desconocido";
   };
@@ -190,29 +204,29 @@ export default function PersonalTutosTable({ title }) {
   const customStyles = {
     rows: {
       style: {
-        minHeight: '60px',
-        fontSize: '14px',
-        borderBottom: '1px solid #ddd',
+        minHeight: "60px",
+        fontSize: "14px",
+        borderBottom: "1px solid #ddd",
       },
     },
     headCells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontWeight: 'bold',     
-        fontSize: '15px',            
-        backgroundColor: '#f4f4f4', 
-        color: '#333',               
-        textTransform: 'uppercase',  
-        borderBottom: '2px solid #ccc',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontWeight: "bold",
+        fontSize: "15px",
+        backgroundColor: "#f4f4f4",
+        color: "#333",
+        textTransform: "uppercase",
+        borderBottom: "2px solid #ccc",
       },
     },
     cells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontSize: '14px',
-        color: '#444',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontSize: "14px",
+        color: "#444",
       },
     },
   };
@@ -220,8 +234,7 @@ export default function PersonalTutosTable({ title }) {
   const columns = [
     {
       name: "Fecha",
-      selector: (row) =>
-        moment(row.classDate).format("YYYY/MM/DD  |  hA"),
+      selector: (row) => moment(row.classDate).format("YYYY/MM/DD  |  hA"),
     },
     {
       name: "Asignatura",
@@ -248,27 +261,41 @@ export default function PersonalTutosTable({ title }) {
           <div className="flex gap-2">
             {estado === "Pendiente" && (
               <>
-                <button onClick={() => handleCancel(row.classId)} title="Cancelar">
-                  <FaMixer className="text-yellow-600" />
+                <button
+                  onClick={() => handleCancel(row.classId)}
+                  title="Cancelar"
+                >
+                  <FaMixer size={32} className="text-yellow-600" />
                 </button>
-                <button onClick={() => handlePerfilTutor(row.tutorId)} title="Perfil Tutor">
-                  <FaAddressBook className="text-blue-600" />
+                <button
+                  onClick={() => handlePerfilTutor(row.tutorId)}
+                  title="Perfil Tutor"
+                >
+                  <FaAddressBook size={32} className="text-blue-600" />
                 </button>
               </>
             )}
             {estado === "Registrada por tutor" && (
               <>
-                <button onClick={() => handlePerfilTutor(row.tutorId)} title="Perfil Tutor">
-                  <FaAddressBook className="text-blue-600" />
+                <button
+                  onClick={() => handlePerfilTutor(row.tutorId)}
+                  title="Perfil Tutor"
+                >
+                  <FaAddressBook size={32} className="text-blue-600" />
                 </button>
                 <button onClick={() => setSelectedSession(row)} title="Valorar">
-                  <FaStar className="text-purple-600" />
+                  <FaStar size={32} className="text-purple-600" />
                 </button>
               </>
             )}
-            {(estado === "Aceptada" || estado === "Finalizada" || estado.includes("Cancelada")) && (
-              <button onClick={() => handlePerfilTutor(row.tutorId)} title="Perfil Tutor">
-                <FaAddressBook className="text-blue-600" />
+            {(estado === "Aceptada" ||
+              estado === "Finalizada" ||
+              estado.includes("Cancelada")) && (
+              <button
+                onClick={() => handlePerfilTutor(row.tutorId)}
+                title="Perfil Tutor"
+              >
+                <FaAddressBook size={32} className="text-blue-600" />
               </button>
             )}
           </div>
@@ -276,11 +303,11 @@ export default function PersonalTutosTable({ title }) {
       },
     },
   ];
-    
+
   return (
     <div className="px-4">
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
-      
+
       {loading ? (
         <div className="text-center py-4">Cargando...</div>
       ) : error ? (
