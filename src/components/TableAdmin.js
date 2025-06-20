@@ -67,14 +67,11 @@ const TablePool = () => {
     const token = Cookies.get("token");
     setLoading(true);
     try {
-      const res = await fetch(
-        "http://localhost:8081/api/v1/session/tutosNew",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const res = await fetch("http://localhost:8081/api/v1/session/tutosNew", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
       if (!res.ok) {
         throw new Error("Error al cargar datos");
@@ -116,29 +113,29 @@ const TablePool = () => {
   const customStyles = {
     rows: {
       style: {
-        minHeight: '60px',
-        fontSize: '14px',
-        borderBottom: '1px solid #ddd',
+        minHeight: "60px",
+        fontSize: "14px",
+        borderBottom: "1px solid #ddd",
       },
     },
     headCells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontWeight: 'bold',
-        fontSize: '15px',
-        backgroundColor: '#f4f4f4',
-        color: '#333',
-        textTransform: 'uppercase',
-        borderBottom: '2px solid #ccc',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontWeight: "bold",
+        fontSize: "15px",
+        backgroundColor: "#f4f4f4",
+        color: "#333",
+        textTransform: "uppercase",
+        borderBottom: "2px solid #ccc",
       },
     },
     cells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontSize: '14px',
-        color: '#444',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontSize: "14px",
+        color: "#444",
       },
     },
   };
@@ -155,7 +152,7 @@ const TablePool = () => {
             })}
           </span>
           <FaRegEdit
-            size={18}
+            size={32}
             className="hover:cursor-pointer text-blue-600 hover:text-blue-800"
             onClick={() => handleModalReschedule(row)}
             title="Reprogramar tutoría"
@@ -173,7 +170,7 @@ const TablePool = () => {
     },
     {
       name: "Estado",
-      selector: (row) => row.registered ? "Registrada" : "No registrada",
+      selector: (row) => (row.registered ? "Registrada" : "No registrada"),
       sortable: true,
     },
     {
@@ -194,7 +191,7 @@ const TablePool = () => {
     },
     {
       name: "Calificación",
-      selector: (row) => row.classRate === 0 ? "..." : row.classRate,
+      selector: (row) => (row.classRate === 0 ? "..." : row.classRate),
       sortable: true,
       center: true,
     },
@@ -215,13 +212,13 @@ const TablePool = () => {
       cell: (row) => (
         <div className="flex justify-center gap-3">
           <FaRegTrashAlt
-            size={18}
+            size={32}
             className="text-red-600 hover:text-red-800 hover:cursor-pointer"
             onClick={() => handleCancel(row.classId)}
             title="Cancelar tutoría"
           />
           <FaExchangeAlt
-            size={18}
+            size={32}
             className="text-blue-600 hover:text-blue-800 hover:cursor-pointer"
             onClick={() => handleChangeTutor(row.classId)}
             title="Cambiar tutor"
@@ -240,7 +237,7 @@ const TablePool = () => {
 
   return (
     <div className="bg-white p-4 rounded-lg shadow-md">
-      <h1 className="text-lg font-semibold text-gray-700 mb-4">Tutorías</h1>      
+      <h1 className="text-lg font-semibold text-gray-700 mb-4">Tutorías</h1>
       <DataTable
         columns={columns}
         data={allTutorials}
@@ -249,7 +246,9 @@ const TablePool = () => {
         paginationPerPage={10}
         paginationRowsPerPageOptions={[5, 10, 15, 20]}
         progressPending={loading}
-        progressComponent={<div className="text-center py-4">Cargando tutorías...</div>}
+        progressComponent={
+          <div className="text-center py-4">Cargando tutorías...</div>
+        }
         noDataComponent="No hay tutorías disponibles"
         highlightOnHover
         pointerOnHover

@@ -3,7 +3,12 @@ import React, { useEffect, useState, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { FaRegAddressCard, FaCheck,FaTimes, FaAddressBook} from "react-icons/fa";
+import {
+  FaRegAddressCard,
+  FaCheck,
+  FaTimes,
+  FaAddressBook,
+} from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import moment from "moment";
 
@@ -133,130 +138,174 @@ const TablePool = () => {
   };
 
   const getEstado = (row) => {
-    if (!row.registered && row.canceledBy === "NONE" && !row.accepted) return "Pendiente";
-    if (!row.registered && row.canceledBy === "NONE" && row.accepted) return "Aceptada";
-    if (row.registered && row.canceledBy === "NONE" && row.accepted && row.classRate == 0.0) return "Registrada por tutor";
-    if (row.registered && row.canceledBy === "NONE" && row.accepted && row.classRate !== 0) return "Finalizada";
+    if (!row.registered && row.canceledBy === "NONE" && !row.accepted)
+      return "Pendiente";
+    if (!row.registered && row.canceledBy === "NONE" && row.accepted)
+      return "Aceptada";
+    if (
+      row.registered &&
+      row.canceledBy === "NONE" &&
+      row.accepted &&
+      row.classRate == 0.0
+    )
+      return "Registrada por tutor";
+    if (
+      row.registered &&
+      row.canceledBy === "NONE" &&
+      row.accepted &&
+      row.classRate !== 0
+    )
+      return "Finalizada";
     if (row.canceledBy !== "NONE") return `Cancelada por ${row.canceledBy}`;
     return "Estado desconocido";
   };
 
-    const customStyles = {
+  const customStyles = {
     rows: {
       style: {
-        minHeight: '60px',
-        fontSize: '14px',
-        borderBottom: '1px solid #ddd', // línea divisoria entre filas
+        minHeight: "60px",
+        fontSize: "14px",
+        borderBottom: "1px solid #ddd", // línea divisoria entre filas
       },
     },
     headCells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontWeight: 'bold',     
-        fontSize: '15px',            
-        backgroundColor: '#f4f4f4', 
-        color: '#333',               
-        textTransform: 'uppercase',  
-        borderBottom: '2px solid #ccc',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontWeight: "bold",
+        fontSize: "15px",
+        backgroundColor: "#f4f4f4",
+        color: "#333",
+        textTransform: "uppercase",
+        borderBottom: "2px solid #ccc",
       },
     },
     cells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontSize: '14px',
-        color: '#444',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontSize: "14px",
+        color: "#444",
       },
     },
   };
 
   const columns = [
-      {
-        name: "Fecha",
-        selector: (row) =>
-          moment(row.classDate).format("YYYY/MM/DD  |  hA"),
-      },
-      
-      {
-        name: "Asignatura",
-        selector: (row) => row.subjectName,
-      },
-      {
-        name: "Temas",
-        selector: (row) => row.classTopics,
-        wrap: true,
-      },
-      {
-        name: "Estado",
-        selector: getEstado,
-      },
-      {
-        name: "Estudiante",
-        cell: (row) => `${row.studentName} ${row.studentLastname}`,
-      },
-      {
-        name: "Acciones",
-        cell: (row) => {
-          const estado = getEstado(row);
-          return (
-            <div className="flex gap-3 text-2xl ">
-              {estado === "Pendiente" && (
-                <>
-                  <button onClick={() => handleAccept(row.classId)} title="Aceptar">
-                    <FaCheck className="text-green-600 " />
-                  </button>
-                  
-                </>
-              )}
-              {estado === "Aceptada" && (
-                <>
-                  <button onClick={() => handleCancel(row.classId)} title="Cancelar">
-                    <FaMixer className="text-yellow-600 " />
-                  </button>
-                  <button onClick={() => handleRegisterSubmit(row.classId)} title="Registrar">
-                    <FaStar className="text-purple-600" />
-                  </button>
-                </>
-              )}
-              {(estado === "Pendiente" || estado === "Aceptada" || estado.includes("Registrada") || estado.includes("Finalizada") || estado.includes("Cancelada")) && (
-                <button onClick={() => handlePerfilStudent(row.studentId)} title="Perfil">
-                  <FaAddressBook className="text-blue-600" />
+    {
+      name: "Fecha",
+      selector: (row) => moment(row.classDate).format("YYYY/MM/DD  |  hA"),
+    },
+
+    {
+      name: "Asignatura",
+      selector: (row) => row.subjectName,
+    },
+    {
+      name: "Temas",
+      selector: (row) => row.classTopics,
+      wrap: true,
+    },
+    {
+      name: "Estado",
+      selector: getEstado,
+    },
+    {
+      name: "Estudiante",
+      cell: (row) => `${row.studentName} ${row.studentLastname}`,
+    },
+    {
+      name: "Acciones",
+      cell: (row) => {
+        const estado = getEstado(row);
+        return (
+          <div className="flex gap-3 text-2xl ">
+            {estado === "Pendiente" && (
+              <>
+                <button
+                  onClick={() => handleAccept(row.classId)}
+                  title="Aceptar"
+                >
+                  <FaCheck size={32} className="text-green-600 " />
                 </button>
-              )}
-            </div>
-          );
-        },
-      },
-    ];
-  
-    return (
-      <div className="px-4 py-4">
-        <DataTable columns={columns} data={data} progressPending={loading} pagination customStyles={customStyles}/>
-  
-        {showModal && studentData && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-md w-96">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-lg font-bold">Perfil del Estudiante</h2>
-                <button onClick={() => setShowModal(false)} className="text-red-500 text-xl">
-                  &times;
+              </>
+            )}
+            {estado === "Aceptada" && (
+              <>
+                <button
+                  onClick={() => handleCancel(row.classId)}
+                  title="Cancelar"
+                >
+                  <FaMixer size={32} className="text-yellow-600 " />
                 </button>
-              </div>
-              {studentData.mensaje ? (
-                <p>{studentData.mensaje}</p>
-              ) : (
-                <div className="space-y-2">
-                  <p><strong>Nombre:</strong> {studentData.Nombre} {studentData.Apellido}</p>
-                  <p><strong>Correo:</strong> {studentData.Correo}</p>
-                  <p><strong>Teléfono:</strong> {studentData.Teléfono}</p>
-                </div>
-              )}
-            </div>
+                <button
+                  onClick={() => handleRegisterSubmit(row.classId)}
+                  title="Registrar"
+                >
+                  <FaStar size={32} className="text-purple-600" />
+                </button>
+              </>
+            )}
+            {(estado === "Pendiente" ||
+              estado === "Aceptada" ||
+              estado.includes("Registrada") ||
+              estado.includes("Finalizada") ||
+              estado.includes("Cancelada")) && (
+              <button
+                onClick={() => handlePerfilStudent(row.studentId)}
+                title="Perfil"
+              >
+                <FaAddressBook size={32} className="text-blue-600" />
+              </button>
+            )}
           </div>
-        )}
-      </div>
-    );
+        );
+      },
+    },
+  ];
+
+  return (
+    <div className="px-4 py-4">
+      <DataTable
+        columns={columns}
+        data={data}
+        progressPending={loading}
+        pagination
+        customStyles={customStyles}
+      />
+
+      {showModal && studentData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-md w-96">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-bold">Perfil del Estudiante</h2>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-red-500 text-xl"
+              >
+                &times;
+              </button>
+            </div>
+            {studentData.mensaje ? (
+              <p>{studentData.mensaje}</p>
+            ) : (
+              <div className="space-y-2">
+                <p>
+                  <strong>Nombre:</strong> {studentData.Nombre}{" "}
+                  {studentData.Apellido}
+                </p>
+                <p>
+                  <strong>Correo:</strong> {studentData.Correo}
+                </p>
+                <p>
+                  <strong>Teléfono:</strong> {studentData.Teléfono}
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default TablePool;

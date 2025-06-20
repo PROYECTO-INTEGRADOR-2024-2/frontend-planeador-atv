@@ -124,7 +124,7 @@ const TableSubjects = () => {
                     Editar
                   </button> */}
                   <FaRegEdit
-                    size={20}
+                    size={32}
                     className="hover:cursor-pointer"
                     color="blue"
                     onClick={() => {
@@ -134,7 +134,7 @@ const TableSubjects = () => {
                     title="Editar Asignatura"
                   />
                   <FaRegTrashAlt
-                    size={20}
+                    size={32}
                     color="red"
                     onClick={() => handleModalEliminar(item.subjectId)}
                     className="hover:cursor-pointer"

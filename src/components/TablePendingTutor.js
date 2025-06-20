@@ -2,7 +2,13 @@
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { FaCheck, FaMixer, FaAddressBook, FaStar, FaTimes } from "react-icons/fa";
+import {
+  FaCheck,
+  FaMixer,
+  FaAddressBook,
+  FaStar,
+  FaTimes,
+} from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import moment from "moment";
 
@@ -161,7 +167,7 @@ export default function TablePendingTutor() {
   const handleRegisterSubmit = async (classId) => {
     const token = Cookies.get("token");
     if (!token) return;
-  
+
     try {
       const res = await fetch(`${URLS.REGISTER}${classId}`, {
         method: "PUT",
@@ -171,65 +177,74 @@ export default function TablePendingTutor() {
         },
         body: JSON.stringify({ classId }),
       });
-  
+
       if (!res.ok) throw new Error("Error al registrar la sesión");
-  
+
       toast.success("Sesión registrada correctamente");
     } catch (err) {
       toast.error("Error al registrar sesión");
     }
   };
-  
 
   const getEstado = (row) => {
-    if (!row.registered && row.canceledBy === "NONE" && !row.accepted) return "Pendiente";
-    if (!row.registered && row.canceledBy === "NONE" && row.accepted) return "Aceptada";
-    if (row.registered && row.canceledBy === "NONE" && row.accepted && row.classRate == 0.0) return "Registrada por tutor";
-    if (row.registered && row.canceledBy === "NONE" && row.accepted && row.classRate !== 0) return "Finalizada";
+    if (!row.registered && row.canceledBy === "NONE" && !row.accepted)
+      return "Pendiente";
+    if (!row.registered && row.canceledBy === "NONE" && row.accepted)
+      return "Aceptada";
+    if (
+      row.registered &&
+      row.canceledBy === "NONE" &&
+      row.accepted &&
+      row.classRate == 0.0
+    )
+      return "Registrada por tutor";
+    if (
+      row.registered &&
+      row.canceledBy === "NONE" &&
+      row.accepted &&
+      row.classRate !== 0
+    )
+      return "Finalizada";
     if (row.canceledBy !== "NONE") return `Cancelada por ${row.canceledBy}`;
     return "Estado desconocido";
   };
 
-
   const customStyles = {
     rows: {
       style: {
-        minHeight: '60px',
-        fontSize: '14px',
-        borderBottom: '1px solid #ddd', // línea divisoria entre filas
+        minHeight: "60px",
+        fontSize: "14px",
+        borderBottom: "1px solid #ddd", // línea divisoria entre filas
       },
     },
     headCells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontWeight: 'bold',     
-        fontSize: '15px',            
-        backgroundColor: '#f4f4f4', 
-        color: '#333',               
-        textTransform: 'uppercase',  
-        borderBottom: '2px solid #ccc',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontWeight: "bold",
+        fontSize: "15px",
+        backgroundColor: "#f4f4f4",
+        color: "#333",
+        textTransform: "uppercase",
+        borderBottom: "2px solid #ccc",
       },
     },
     cells: {
       style: {
-        paddingLeft: '12px',
-        paddingRight: '12px',
-        fontSize: '14px',
-        color: '#444',
+        paddingLeft: "12px",
+        paddingRight: "12px",
+        fontSize: "14px",
+        color: "#444",
       },
     },
   };
-  
-  
 
   const columns = [
     {
       name: "Fecha",
-      selector: (row) =>
-        moment(row.classDate).format("YYYY/MM/DD  |  hA"),
+      selector: (row) => moment(row.classDate).format("YYYY/MM/DD  |  hA"),
     },
-    
+
     {
       name: "Asignatura",
       selector: (row) => row.subjectName,
@@ -255,27 +270,46 @@ export default function TablePendingTutor() {
           <div className="flex gap-2">
             {estado === "Pendiente" && (
               <>
-                <button onClick={() => handleAccept(row.classId)} title="Aceptar">
-                  <FaCheck className="text-green-600" />
+                <button
+                  onClick={() => handleAccept(row.classId)}
+                  title="Aceptar"
+                >
+                  <FaCheck size={32} className="text-green-600" />
                 </button>
-                <button onClick={() => handleReject(row.classId)} title="Rechazar">
-                  <FaTimes className="text-red-600" />
+                <button
+                  onClick={() => handleReject(row.classId)}
+                  title="Rechazar"
+                >
+                  <FaTimes size={32} className="text-red-600" />
                 </button>
               </>
             )}
             {estado === "Aceptada" && (
               <>
-                <button onClick={() => handleCancel(row.classId)} title="Cancelar">
-                  <FaMixer className="text-yellow-600" />
+                <button
+                  onClick={() => handleCancel(row.classId)}
+                  title="Cancelar"
+                >
+                  <FaMixer size={32} className="text-yellow-600" />
                 </button>
-                <button onClick={() => handleRegisterSubmit(row.classId)} title="Registrar">
-                  <FaStar className="text-purple-600" />
+                <button
+                  onClick={() => handleRegisterSubmit(row.classId)}
+                  title="Registrar"
+                >
+                  <FaStar size={32} className="text-purple-600" />
                 </button>
               </>
             )}
-            {(estado === "Pendiente" || estado === "Aceptada" || estado.includes("Registrada") || estado.includes("Finalizada") || estado.includes("Cancelada")) && (
-              <button onClick={() => handlePerfilStudent(row.studentId)} title="Perfil">
-                <FaAddressBook className="text-blue-600" />
+            {(estado === "Pendiente" ||
+              estado === "Aceptada" ||
+              estado.includes("Registrada") ||
+              estado.includes("Finalizada") ||
+              estado.includes("Cancelada")) && (
+              <button
+                onClick={() => handlePerfilStudent(row.studentId)}
+                title="Perfil"
+              >
+                <FaAddressBook size={32} className="text-blue-600" />
               </button>
             )}
           </div>
@@ -286,14 +320,23 @@ export default function TablePendingTutor() {
 
   return (
     <div className="px-4 py-4">
-      <DataTable columns={columns} data={sessions} progressPending={loading} pagination customStyles={customStyles}/>
+      <DataTable
+        columns={columns}
+        data={sessions}
+        progressPending={loading}
+        pagination
+        customStyles={customStyles}
+      />
 
       {showModal && studentData && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-md w-96">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-bold">Perfil del Estudiante</h2>
-              <button onClick={() => setShowModal(false)} className="text-red-500 text-xl">
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-red-500 text-xl"
+              >
                 &times;
               </button>
             </div>
@@ -301,9 +344,16 @@ export default function TablePendingTutor() {
               <p>{studentData.mensaje}</p>
             ) : (
               <div className="space-y-2">
-                <p><strong>Nombre:</strong> {studentData.Nombre} {studentData.Apellido}</p>
-                <p><strong>Correo:</strong> {studentData.Correo}</p>
-                <p><strong>Teléfono:</strong> {studentData.Teléfono}</p>
+                <p>
+                  <strong>Nombre:</strong> {studentData.Nombre}{" "}
+                  {studentData.Apellido}
+                </p>
+                <p>
+                  <strong>Correo:</strong> {studentData.Correo}
+                </p>
+                <p>
+                  <strong>Teléfono:</strong> {studentData.Teléfono}
+                </p>
               </div>
             )}
           </div>
