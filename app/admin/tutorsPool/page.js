@@ -1,7 +1,7 @@
 import React from "react";
 import NavbarHome from "@/components/NavbarHome";
 import TableTutorsPool from "@/components/TableTutorsPool";
-import Footer from "../../components/Footer";
+import Footer from "/src/components/Footer";
 
 function tutorsPool() {
   return (

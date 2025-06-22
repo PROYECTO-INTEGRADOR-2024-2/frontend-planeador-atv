@@ -1,7 +1,7 @@
 import React from "react";
 import NavbarHome from "@/components/NavbarHome";
 import TableAdmin from "@/components/TableAdmin";
-import Footer from "../../components/Footer";
+import Footer from "/src/components/Footer";
 
 function landing() {
   return (

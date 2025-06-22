@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { signIn, useSession } from "next-auth/react";
-import logoGoogle from "../../../public/images/google.png";
+import logoGoogle from "/public/images/google.png";
 import { toast } from "react-toastify";
 
 const Login = () => {
@@ -47,7 +47,22 @@ const Login = () => {
       Cookies.set("user", JSON.stringify(user));
 
       toast.success("Inicio de sesión correcto.");
-      router.push("/landing");
+      console.log(`Token: ${token}`);
+      switch (user.user_role) {
+        case "ROLE_STUDENT":
+          router.push("/student/landing");
+          break;
+        case "ROLE_TUTOR":
+          router.push("/maintutor");
+          break;
+        case "ROLE_ADMIN":
+          router.push("/admin");
+          break;
+        default:
+          toast.error("Usuario desconectado, por favor iniciar sesión.");
+          router.push("/landing");
+          return;
+      }
     } catch (error) {
       console.error("Error al iniciar sesión:", error.message);
       toast.error("Ocurrió un error inesperado.");

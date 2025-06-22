@@ -1,18 +1,16 @@
 import React from "react";
 import NavbarHome from "@/components/NavbarHome";
-import TablePool from "@/components/TablePool";
-import Footer from "../../components/Footer";
+import TablePendingTutor from "@/components/TablePendingTutor";
+import Footer from "/src/components/Footer";
 
-function Pool() {
+function MainTutor() {
   return (
     <div className="flex flex-col min-h-screen justify-between">
       <NavbarHome name={"Juan"} rol={"Student"} />
-      <TablePool
-       
-      />
+      <TablePendingTutor title={"Gestión de tutorías"} />
       <Footer />
     </div>
   );
 }
 
-export default Pool;
+export default MainTutor;

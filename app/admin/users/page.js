@@ -1,7 +1,7 @@
 import React from "react";
 import NavbarHome from "@/components/NavbarHome";
 import UsersTable from "@/components/UsersTable";
-import Footer from "../../components/Footer";
+import Footer from "../../../src/components/Footer";
 
 function users() {
   return (

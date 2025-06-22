@@ -9,8 +9,8 @@ import { useRouter } from "next/navigation";
 import logoATV from "../../public/images/logoATV.png";
 
 const ROLE = {
-  ADMIN: "Admin",
-  STUDENT: "Student",
+  ADMIN: "ROLE_ADMIN",
+  STUDENT: "ROLE_STUDENT",
 };
 
 const NavbarHome = () => {
@@ -48,13 +48,7 @@ const NavbarHome = () => {
       <div className="flex justify-between items-center h-full">
         {/* Logo */}
         <Link href="/">
-          <Image
-            src={logoATV}
-            alt="Logo ATV"
-            width={90}
-            height={60}
-            priority
-          />
+          <Image src={logoATV} alt="Logo ATV" width={90} height={60} priority />
         </Link>
 
         {user && (

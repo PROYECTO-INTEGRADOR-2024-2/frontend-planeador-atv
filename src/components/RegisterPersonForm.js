@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/legacy/image";
 import React, { useState, useEffect } from "react";
-import {signIn, useSession} from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import ModalRegister from "./ModalRegister";
 import logoGoogle from "../../public/images/google.png";
 
@@ -24,7 +24,7 @@ const RegisterPersonForm = () => {
     userDepartment: "",
     userCity: "",
     userState: "",
-    userRole: "STUDENT",
+    userRole: "ROLE_STUDENT",
     success: "",
   });
 
@@ -39,7 +39,7 @@ const RegisterPersonForm = () => {
     userDepartment: "",
     userCity: "",
     userState: "1",
-    userRole: "Student",
+    userRole: "ROLE_STUDENT",
   });
 
   const [openRegister, setOpenRegister] = useState(false);
@@ -110,7 +110,7 @@ const RegisterPersonForm = () => {
       userDepartment: "",
       userCity: "",
       userState: "1",
-      userRole: "STUDENT",
+      userRole: "ROLE_STUDENT",
     });
   };
 
@@ -129,7 +129,7 @@ const RegisterPersonForm = () => {
       userDepartment: "",
       userCity: "",
       userState: "1",
-      userRole: "STUDENT",
+      userRole: "ROLE_STUDENT",
     };
 
     // Verificamos si el email o la contraseña están vacíos
@@ -245,7 +245,7 @@ const RegisterPersonForm = () => {
     setConfirmPassword("");
   };
 
-  const {data: session} = useSession();
+  const { data: session } = useSession();
   console.log(session);
 
   return (
@@ -514,10 +514,10 @@ const RegisterPersonForm = () => {
               onClick={() => signIn("google")}
               className="w-full mt-2 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-200 font-medium rounded-lg text-sm px-5 py-2.5 flex items-center justify-center gap-2"
             >
-    <Image src={logoGoogle} alt="Google" width={20} height={20} />
-    Registrarse con Google
-  </button>
-</div>
+              <Image src={logoGoogle} alt="Google" width={20} height={20} />
+              Registrarse con Google
+            </button>
+          </div>
           <p className="text-sm font-light text-gray-500">
             ¿Ya tienes una cuenta?{" "}
             <a

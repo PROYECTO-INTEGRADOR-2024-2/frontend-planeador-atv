@@ -3,7 +3,7 @@
 import Card from "@/components/Card";
 import NavbarHome from "@/components/NavbarHome";
 import PersonalTutosTable from "@/components/PersonalTutosTable";
-import Footer from "../../components/Footer";
+import Footer from "/src/components/Footer";
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -22,10 +22,10 @@ function Landing() {
         setUser(parsedUser);
       } catch (error) {
         console.error("Error parsing user cookie:", error);
-        router.push("/landing");
+        router.push("/student/landing");
       }
     } else {
-      router.push("/landing");
+      router.push("/studentlanding");
     }
   }, [router]);
 
@@ -41,7 +41,7 @@ function Landing() {
         title="¿Quieres agendar una tutoría?"
         content="Recuerda incluir los temas que quieres ver en la tutoría. Es importante para que el tutor sepa qué temas quieres resolver en ella, y resuelve tus dudas e inquietudes con el."
         text_button="Agendar una tutoría"
-        ruta="/tutorialRegister"
+        ruta="/student/tutorialRegister"
       />
       <Card
         title="¿Quieres ser tutor?"

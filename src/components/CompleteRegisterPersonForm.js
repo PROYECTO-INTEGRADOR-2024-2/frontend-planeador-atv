@@ -38,7 +38,7 @@ const CompleteRegisterPersonForm = () => {
     userDepartment: "",
     userCity: "",
     userState: "1",
-    userRole: "STUDENT",
+    userRole: "ROLE_STUDENT",
     userEmail: "",
     userPassword: "oauth_temp_123",
   });
@@ -111,7 +111,22 @@ const CompleteRegisterPersonForm = () => {
           console.log("Token recibido:", authData.token);
           Cookies.set("token", authData.token);
           Cookies.set("user", JSON.stringify(user));
-          router.push("../landing");
+
+          switch (user.user_role) {
+            case "ROLE_STUDENT":
+              router.push("/landing");
+              break;
+            case "ROLE_TUTOR":
+              router.push("/maintutor");
+              break;
+            case "ROLE_ADMIN":
+              router.push("/admin");
+              break;
+            default:
+              toast.error("Usuario desconectado, por favor iniciar sesión.");
+              router.push("/landing");
+              return;
+          }
         })
         .catch((err) => console.error("Error al solicitar token:", err));
     } catch (error) {
