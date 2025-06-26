@@ -8,7 +8,7 @@ const footer = () => {
       <div className="mr-4 mx-1 w-full p-4 py-6 lg:py-">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0 ">
-            <a className="flex items-center">
+            <a className="flex items-center ">
               <Image
                 src={logoATV}
                 alt="Logo ATV"
@@ -22,11 +22,11 @@ const footer = () => {
             </a>
             <div className="sm:flex sm:items-center sm:justify-between">
               <div className="flex flex-col mt-4 ">
-                <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400 ">
+                <span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
                   © 2025{" "}
                   <a
                     href="https://www.fundacionantivirusparaladesercion.org/"
-                    className="hover:underline"
+                    className="hover:underline hover:text-gray-100 transition-colors"
                     target="_blank"
                   >
                     Antivirus para la deserción™
@@ -38,7 +38,7 @@ const footer = () => {
                   <a
                     href="https://www.facebook.com/antivirusparaladesercion?locale=es_LA"
                     target="_blank"
-                    className="text-white hover:text-[#0E7CE9]"
+                    className="text-white hover:text-[#0E7CE9] transition-colors duration-500"
                   >
                     <svg
                       className="w-6 h-6"
@@ -58,7 +58,7 @@ const footer = () => {
                   <a
                     href="https://discord.com/"
                     target="https://discord.com/"
-                    className="text-white hover:text-[#4451E2]  ms-5"
+                    className="text-white hover:text-[#4451E2]  ms-5 transition-colors duration-500"
                   >
                     <svg
                       className="w-6 h-6"
@@ -74,7 +74,7 @@ const footer = () => {
                   <a
                     href="https://x.com/?lang=es"
                     target="_blank"
-                    className="text-white hover:text-[#0CA2F3] ms-5"
+                    className="text-white hover:text-[#0CA2F3] ms-5 transition-colors duration-500"
                   >
                     <svg
                       className="w-6 h-6"
@@ -94,7 +94,7 @@ const footer = () => {
                   <a
                     href="https://github.com/"
                     target="_blank"
-                    className="text-white hover:text-[#16181F]  ms-5"
+                    className="text-white hover:text-[#16181F]  ms-5 transition-colors duration-500"
                   >
                     <svg
                       className="w-6 h-6"
@@ -114,7 +114,7 @@ const footer = () => {
                   <a
                     href="https://www.instagram.com/somosantivirus/"
                     target="_blank"
-                    className="text-white hover:text-[#BC1F89] ms-5"
+                    className="text-white hover:text-[#BC1F89] ms-5 transition-colors duration-500"
                   >
                     <svg
                       className="w-7 h-7"
@@ -141,7 +141,7 @@ const footer = () => {
                   <a
                     href="https://fundacionantivirusparaladesercion.org/fundacion"
                     target="_blank"
-                    className="hover:underline"
+                    className="hover:underline hover:text-gray-100 transition-colors duration-500"
                   >
                     Pagina FATV
                   </a>
@@ -150,7 +150,7 @@ const footer = () => {
                   <a
                     href="https://udea.edu.co"
                     target="_blank"
-                    className="hover:underline"
+                    className="hover:underline hover:text-gray-100 transition-colors duration-500"
                   >
                     UdeA
                   </a>
@@ -166,7 +166,7 @@ const footer = () => {
                   <a
                     href="https://api.whatsapp.com/send?phone=3173831481"
                     target="_blank"
-                    className="hover:underline "
+                    className="hover:underline hover:text-gray-100 transition-colors duration-500"
                   >
                     WhatsApp
                   </a>
@@ -175,7 +175,7 @@ const footer = () => {
                   <a
                     href="mailto:contactenos@fundacionantivirusparaladesercion.org"
                     target="_blank"
-                    className="hover:underline"
+                    className="hover:underline hover:text-gray-100 transition-colors duration-500"
                   >
                     Gmail
                   </a>
@@ -194,12 +194,18 @@ const footer = () => {
               </h2>
               <ul className="text-gray-500 dark:text-gray-400 font-medium">
                 <li className="mb-4">
-                  <a href="#" className="hover:underline">
+                  <a
+                    href="#"
+                    className="hover:underline hover:text-gray-100 transition-colors duration-500"
+                  >
                     Privacy Policy
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a
+                    href="#"
+                    className="hover:underline hover:text-gray-100 transition-colors duration-500"
+                  >
                     Terms &amp; Conditions
                   </a>
                 </li>

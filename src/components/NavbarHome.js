@@ -18,6 +18,7 @@ const NavbarHome = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState(null);
   const router = useRouter();
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -27,6 +28,7 @@ const NavbarHome = () => {
       try {
         const parsedUser = JSON.parse(userCookie);
         setUser(parsedUser);
+        setCargando(false); // terminar carga
         console.log(`user ---->>>>>> ${JSON.stringify(parsedUser)}`);
       } catch (error) {
         console.error("Error parsing user cookie:", error);
@@ -44,47 +46,38 @@ const NavbarHome = () => {
     Cookies.remove("user");
     router.push("/");
   };
-
+  if (cargando) return <p>Cargando...</p>;
   return (
     <nav className="bg-slate-500 px-8 h-[80px]">
-      <div className="flex justify-between items-center h-full">
+      <div className="px-8 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/">
-          <Image src={logoATV} alt="Logo ATV" width={90} height={60} priority />
-        </Link>
+        <div className="w-64 items-center justify-center">
+          <Link
+            href={
+              (user.user_role === ROLE.TUTOR && "/maintutor") ||
+              (user.user_role === ROLE.STUDENT && "/landing") ||
+              (user.user_role === ROLE.ADMIN && "/admin")
+            }
+          >
+            <Image
+              src={logoATV}
+              alt="Logo ATV"
+              width={90}
+              height={60}
+              priority
+            />
+          </Link>
+        </div>
+
+        <div>
+          <p className="text-white font-bold text-center flex-auto text-xl">
+            ANTIVIRUS PARA LA DESERCIÓN
+          </p>
+        </div>
 
         {user && (
           <div className="flex items-center gap-3 text-white text-base">
             {/* Icono según rol */}
-            {/* {user.user_role === ROLE.ADMIN ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth="1.5"
-                stroke="currentColor"
-                className="w-8 h-8"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M21.75 6.75a4.5 4.5 0 0 1-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 1 1-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 0 1 6.336-4.486l-3.276 3.276a3.004 3.004 0 0 0 2.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852Z"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="white"
-                className="w-8 h-8"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            )} */}
             {user.user_role === ROLE.STUDENT && (
               <svg
                 class="w-[30px] h-[30px] text-gray-800 dark:text-white"
@@ -150,7 +143,7 @@ const NavbarHome = () => {
 
       {/* Menú desplegable */}
       {menuOpen && (
-        <ul className="absolute top-16 right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+        <ul className="absolute top-16 right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 ">
           <li>
             <Link
               href="#"
@@ -178,10 +171,80 @@ const NavbarHome = () => {
           {user.user_role === ROLE.TUTOR && (
             <li>
               <Link
+                href="/tutor/maintutor"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Mis Tutorías
+              </Link>
+            </li>
+          )}
+          {user.user_role === ROLE.TUTOR && (
+            <li>
+              <Link
                 href="/tutor/pool"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Pool de Tutorías
+              </Link>
+            </li>
+          )}
+          {user.user_role === ROLE.TUTOR && (
+            <li>
+              <Link
+                href="/tutor/availability"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Disponibilidad
+              </Link>
+            </li>
+          )}
+          {user.user_role === ROLE.ADMIN && (
+            <li>
+              <Link
+                href="/admin/degree"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Gestión de Carreras
+              </Link>
+            </li>
+          )}
+          {user.user_role === ROLE.ADMIN && (
+            <li>
+              <Link
+                href="/admin/subject"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Gestión de Asignaturas
+              </Link>
+            </li>
+          )}
+          {user.user_role === ROLE.ADMIN && (
+            <li>
+              <Link
+                href="/admin/adminTutos"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Gestión de Tutorías
+              </Link>
+            </li>
+          )}
+          {user.user_role === ROLE.ADMIN && (
+            <li>
+              <Link
+                href="/admin/users"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Gestión de Usuarios
+              </Link>
+            </li>
+          )}
+          {user.user_role === ROLE.ADMIN && (
+            <li>
+              <Link
+                href="/admin/tutorsPool"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Gestión de Tutores
               </Link>
             </li>
           )}

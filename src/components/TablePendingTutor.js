@@ -2,15 +2,10 @@
 import { useEffect, useRef, useState } from "react";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import {
-  FaCheck,
-  FaMixer,
-  FaAddressBook,
-  FaStar,
-  FaTimes,
-} from "react-icons/fa";
+import { FaCheck, FaAddressBook, FaStar, FaTimes } from "react-icons/fa";
 import DataTable from "react-data-table-component";
 import moment from "moment";
+import { MdCancel } from "react-icons/md";
 
 export default function TablePendingTutor() {
   const [sessions, setSessions] = useState([]);
@@ -290,7 +285,7 @@ export default function TablePendingTutor() {
                   onClick={() => handleCancel(row.classId)}
                   title="Cancelar"
                 >
-                  <FaMixer size={32} className="text-yellow-600" />
+                  <MdCancel size={32} className="text-red-600" />
                 </button>
                 <button
                   onClick={() => handleRegisterSubmit(row.classId)}

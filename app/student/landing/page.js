@@ -47,7 +47,7 @@ function Landing() {
         title="¿Quieres ser tutor?"
         content="En la fundación Antivirus para la deserción te brindamos la oportunidad de colaborar y poder brindar apoyo a estudiantes que lo necesitan, como tú lo necesitaste en algún momento."
         text_button="¡Quiero ser parte del equipo!"
-        ruta="../tutorRegister"
+        ruta="/student/tutorRegister"
       />
       <Footer />
     </>

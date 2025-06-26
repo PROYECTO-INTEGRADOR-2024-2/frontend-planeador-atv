@@ -28,7 +28,7 @@ const TutorialForm = () => {
   const [tutorRequest, setTutorRequest] = useState({
     userId: "",
     applicationState: "pendiente",
-    applicationDate: new Date().toLocaleString('sv-SE').replace(' ', 'T'),
+    applicationDate: new Date().toLocaleString("sv-SE").replace(" ", "T"),
     userSemester: "",
   });
 
@@ -149,16 +149,13 @@ const TutorialForm = () => {
       if (!fileRes.ok) throw new Error("Error al subir el certificado.");
 
       // 3. Enviar solicitud general
-      const tutorRes = await fetch(
-        "http://localhost:8081/api/v1/application",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(tutorRequest),
-        }
-      );
+      const tutorRes = await fetch("http://localhost:8081/api/v1/application", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(tutorRequest),
+      });
 
       if (!tutorRes.ok) throw new Error("Error al enviar solicitud general.");
 
@@ -206,20 +203,20 @@ const TutorialForm = () => {
             Semestre
           </label>
           <div className="flex justify-center">
-          <select
-            value={tutorRequest.userSemester}
-            onChange={handleSemesterChange}
-            className="rounded-xl bg-[#6f7e91] text-white font-bold text-center px-4 py-2"
-          >
-            <option value="" disabled>
-              Selecciona un semestre
-            </option>
-            {numberOptions.map((opt) => (
-            <option key={opt} value={opt}>
-              {opt}
-            </option>
-          ))}
-          </select>
+            <select
+              value={tutorRequest.userSemester}
+              onChange={handleSemesterChange}
+              className="rounded-xl bg-[#6f7e91] text-white font-bold text-center px-4 py-2"
+            >
+              <option value="" disabled>
+                Selecciona un semestre
+              </option>
+              {numberOptions.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -273,7 +270,7 @@ const TutorialForm = () => {
         <div className="flex justify-between mt-4">
           <button
             type="button"
-            className="w-[45%] text-white bg-gray-500 hover:bg-gray-700 font-medium rounded-3xl text-lg py-2"
+            className="w-[45%] text-white bg-[#ff2727] hover:bg-[#7e2020] font-medium rounded-3xl text-lg py-2"
             onClick={() => router.back()}
           >
             Cancelar

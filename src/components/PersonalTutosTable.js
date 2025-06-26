@@ -3,7 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import { FaMixer, FaAddressBook, FaStar } from "react-icons/fa";
+import { FaAddressBook, FaStar } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
 import DataTable from "react-data-table-component";
 import moment from "moment";
 
@@ -265,7 +266,7 @@ export default function PersonalTutosTable({ title }) {
                   onClick={() => handleCancel(row.classId)}
                   title="Cancelar"
                 >
-                  <FaMixer size={32} className="text-yellow-600" />
+                  <MdCancel size={32} className="text-red-600" />
                 </button>
                 <button
                   onClick={() => handlePerfilTutor(row.tutorId)}
@@ -305,7 +306,7 @@ export default function PersonalTutosTable({ title }) {
   ];
 
   return (
-    <div className="px-4">
+    <div className="px-4 py-10">
       <h2 className="text-2xl font-bold mb-4">{title}</h2>
 
       {loading ? (

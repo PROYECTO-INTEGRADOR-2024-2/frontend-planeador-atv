@@ -385,13 +385,20 @@ const TutorialForm = () => {
             ))}
           </select>
         </div>
-        <div className="flex justify-center pt-8">
+        <div className="flex justify-center pt-8 gap-4">
           <button
             type="submit"
             disabled={isDisabled}
             className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] disabled:hover:bg-[#6f7e91] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
           >
             Confirmar tutoría
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push("/student/landing")}
+            className="w-[25%] text-white bg-[#ff2727] hover:bg-[#7e2020] disabled:hover:bg-[#6f7e91] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
+          >
+            Cancelar
           </button>
         </div>
       </form>

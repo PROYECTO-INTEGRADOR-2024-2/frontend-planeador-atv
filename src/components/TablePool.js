@@ -3,12 +3,8 @@ import React, { useEffect, useState, useRef } from "react";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
-import {
-  FaRegAddressCard,
-  FaCheck,
-  FaTimes,
-  FaAddressBook,
-} from "react-icons/fa";
+import { FaCheck, FaAddressBook } from "react-icons/fa";
+import { MdCancel } from "react-icons/md";
 import DataTable from "react-data-table-component";
 import moment from "moment";
 
@@ -235,7 +231,7 @@ const TablePool = () => {
                   onClick={() => handleCancel(row.classId)}
                   title="Cancelar"
                 >
-                  <FaMixer size={32} className="text-yellow-600 " />
+                  <MdCancel size={32} className="text-red-600 " />
                 </button>
                 <button
                   onClick={() => handleRegisterSubmit(row.classId)}
