@@ -5,10 +5,13 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 const TUTORIAL_API_BASE_URL = "http://localhost:8081/api/v1/session/";
 const TutorialForm = () => {
   //mapear la info en los componentes
+  const router = useRouter();
   const [dataTutor, setDataTutor] = useState([]);
   const [errorTutor, setErrorTutor] = useState(null);
   const [selectedTutor, setSelectedTutor] = useState("");
@@ -227,12 +230,12 @@ const TutorialForm = () => {
       }
 
       const _tutor = await response.json();
-      alert("Tutoría creada exitosamente");
-
+      toast.success("Tutoría creada exitosamente.");
+      router.push("/student/landing"); // Redirigir al landing de estudiante
       // Resetear el formulario o redirigir
     } catch (error) {
       console.error("Error al guardar la tutoría:", error);
-      alert("Error al guardar la tutoría");
+      toast.error("Error al guardar la tutoría");
     }
   };
 

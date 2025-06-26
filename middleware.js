@@ -2,10 +2,6 @@
 import { NextResponse } from "next/server";
 
 export function middleware(req) {
-  console.log(
-    "Middleware ejecutado: ------------------------------------------------------------------------",
-    req.nextUrl.pathname
-  );
   const token = req.cookies.get("token")?.value;
 
   if (!token) {
@@ -16,7 +12,6 @@ export function middleware(req) {
     const base64Payload = token.split(".")[1];
     const payload = JSON.parse(atob(base64Payload));
     const role = payload.user_role;
-    console.log(`Rol: ${role}`);
 
     const path = req.nextUrl.pathname;
 

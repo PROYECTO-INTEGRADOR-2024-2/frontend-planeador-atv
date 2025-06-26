@@ -53,7 +53,7 @@ const Login = () => {
           router.push("/student/landing");
           break;
         case "ROLE_TUTOR":
-          router.push("/maintutor");
+          router.push("/tutor/maintutor");
           break;
         case "ROLE_ADMIN":
           router.push("/admin");
