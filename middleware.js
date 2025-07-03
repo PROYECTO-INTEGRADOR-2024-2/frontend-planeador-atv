@@ -20,11 +20,10 @@ export function middleware(req) {
       return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
 
-    if (path.startsWith("/student") && role !== "ROLE_STUDENT") {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
-    if (path.startsWith("/tutor") && role !== "ROLE_TUTOR") {
-      return Next;
+   
+
+    if (path.startsWith("/tutor") && role == "ROLE_STUDENT") {
+      return NextResponse.redirect(new URL("/unauthorized", req.url));
     }
 
     // Si tiene el rol correcto
@@ -35,5 +34,5 @@ export function middleware(req) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/estudiante/:path*"],
+  matcher: ["/admin/:path*", "/student/:path*", "/tutor/:path*"],
 };

@@ -237,7 +237,7 @@ export default function TablePendingTutor() {
   const columns = [
     {
       name: "Fecha",
-      selector: (row) => moment(row.classDate).format("YYYY/MM/DD  |  hA"),
+      selector: (row) => row.classDate
     },
 
     {

@@ -54,8 +54,8 @@ const NavbarHome = () => {
         <div className="w-64 items-center justify-center">
           <Link
             href={
-              (user.user_role === ROLE.TUTOR && "/maintutor") ||
-              (user.user_role === ROLE.STUDENT && "/landing") ||
+              (user.user_role === ROLE.TUTOR && "/tutor/maintutor") ||
+              (user.user_role === ROLE.STUDENT && "/student/landing") ||
               (user.user_role === ROLE.ADMIN && "/admin")
             }
           >
