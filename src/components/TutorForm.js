@@ -160,7 +160,7 @@ const TutorialForm = () => {
       if (!tutorRes.ok) throw new Error("Error al enviar solicitud general.");
 
       toast.success("Solicitud enviada exitosamente. ¡Bienvenido al equipo!");
-      router.push("/landing");
+      router.push("/student/landing");
     } catch (error) {
       toast.error(`Hubo un error: ${error.message}`);
     } finally {

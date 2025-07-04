@@ -152,22 +152,8 @@ const NavbarHome = () => {
               Mi Perfil
             </Link>
           </li>
-          <li>
-            <Link
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            >
-              Configuración
-            </Link>
-          </li>
-          <li>
-            <Link
-              href="#"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            >
-              Mis Proyectos
-            </Link>
-          </li>
+          
+          
           {user.user_role === ROLE.TUTOR && (
             <li>
               <Link
@@ -245,6 +231,16 @@ const NavbarHome = () => {
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
                 Gestión de Tutores
+              </Link>
+            </li>
+          )}
+           {user.user_role === ROLE.ADMIN && (
+            <li>
+              <Link
+                href="/admin/activationRequest"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Gestión de aplicaciones
               </Link>
             </li>
           )}
