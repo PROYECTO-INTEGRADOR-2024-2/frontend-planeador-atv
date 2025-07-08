@@ -58,8 +58,13 @@ export default function ValidateEmail() {
               })
               .catch((err) => console.error("Error al solicitar token:", err));
           } else {
-            console.log("El correo es nuevo");
-            router.push("../complete-reg");
+            if (email.split("@").pop().trim() === "udea.edu.co") {
+              router.push("../complete-reg");
+              console.log("El correo es nuevo");
+            } else {
+              toast.error("El correo no pertenece a la UDEA");
+              router.push("../login");
+            }
           }
         })
         .catch((err) => console.error("Error al consultar backend:", err));
