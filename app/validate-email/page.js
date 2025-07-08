@@ -5,6 +5,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 export default function ValidateEmail() {
   const { data: session, status } = useSession();
@@ -63,7 +64,7 @@ export default function ValidateEmail() {
               console.log("El correo es nuevo");
             } else {
               toast.error("El correo no pertenece a la UDEA");
-              router.push("../login");
+              router.push("../register");
             }
           }
         })
