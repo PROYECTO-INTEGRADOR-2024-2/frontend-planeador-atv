@@ -17,7 +17,7 @@ const TutorialForm = () => {
   const [selectedTutor, setSelectedTutor] = useState("");
   const [isDisabled, setIsDisabled] = useState(true);
   const [timeSelected, setTimeSelected] = useState("");
-  const [startDate, setStartDate] = useState(new Date());
+  const [startDate, setStartDate] = useState(getTwoDaysLaterDate());
   const [dataSubject, setDataSubject] = useState([]);
   const [errorSubject, setErrorSubject] = useState(null);
   const [user, setUser] = useState(null);
@@ -28,9 +28,15 @@ const TutorialForm = () => {
     tutorId: "",
     subjectId: 0,
     classTopics: "",
-    classDate: formatDateForBackend(new Date()), // Inicializamos con la fecha actual formateada
+    classDate: formatDateForBackend(getTwoDaysLaterDate()),
     classRate: 0,
   });
+
+  function getTwoDaysLaterDate() {
+  const date = new Date();
+  date.setDate(date.getDate() + 2);
+  return date;
+}
 
   // Función para formatear la fecha correctamente para el backend
   function formatDateForBackend(date) {
@@ -41,6 +47,43 @@ const TutorialForm = () => {
   const handleChangeItem = () => {
     setIsDisabled(True);
   };
+
+  // Actualizar tutores disponibles automáticamente
+  useEffect(() => {
+  if (
+    tutorial.subjectId &&
+    tutorial.classDate &&
+    timeSelected 
+  ) {
+    fetchDataTutor(tutorial.classDate);
+  }
+}, [tutorial.subjectId, tutorial.classDate, timeSelected]);
+
+// Actualizar tutores cada minuto
+useEffect(() => {
+  const interval = setInterval(() => {
+    if (
+      tutorial.subjectId &&
+      tutorial.classDate &&
+      timeSelected
+    ) {
+      fetchDataTutor(tutorial.classDate);
+    }
+  }, 60000); 
+
+  return () => clearInterval(interval);
+}, [tutorial.subjectId, tutorial.classDate, timeSelected]);
+
+//Controlar si el botón debe estar deshabilitado
+useEffect(() => {
+  const isReady =
+    tutorial.subjectId &&
+    tutorial.classTopics.trim() !== "" &&
+    tutorial.tutorId &&
+    timeSelected;
+
+  setIsDisabled(!isReady);
+}, [tutorial.subjectId, tutorial.classTopics, tutorial.tutorId, timeSelected]);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -95,7 +138,6 @@ const TutorialForm = () => {
   }, []);
 
   const handleChange = (event, number) => {
-    setIsDisabled(true);
     const value = event.target.value;
     let value2 = "";
     value.includes("-")
@@ -110,11 +152,9 @@ const TutorialForm = () => {
   };
 
   const handleChange2 = (event, number) => {
-    setIsDisabled(true);
     const { name, value } = event.target;
     if (name === "tutorId") {
       if (value != "" && timeSelected != "") {
-        setIsDisabled(false);
         setSelectedTutor(value);
       }
       const tutorId = value.split("-")[0];
@@ -140,11 +180,9 @@ const TutorialForm = () => {
 
   const getTime = (event) => {
     if (event.target.value == "") {
-      setIsDisabled(true);
       setTimeSelected("");
       return;
     }
-    setIsDisabled(true);
     const selectedHour = event.target.value; // Solo la hora: "08", "09", etc.
     const selectedDate = new Date(startDate);
 
@@ -199,7 +237,6 @@ const TutorialForm = () => {
   }
 
   const handleDateChange = (date) => {
-    setIsDisabled(true);
     setStartDate(date);
 
     // Mantener la hora actual cuando se cambia la fecha
@@ -215,29 +252,36 @@ const TutorialForm = () => {
   };
 
   const saveTutorial = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch(TUTORIAL_API_BASE_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(tutorial),
-      });
+  e.preventDefault();
 
-      if (!response.ok) {
-        throw new Error("Something went wrong");
-      }
+  // Validación del campo temática
+  if (!tutorial.classTopics || tutorial.classTopics.trim() === "") {
+    toast.error("Por favor, complete la temática antes de confirmar la tutoría.");
+    return;
+  }
 
-      const _tutor = await response.json();
-      toast.success("Tutoría creada exitosamente.");
-      router.push("/student/landing"); // Redirigir al landing de estudiante
-      // Resetear el formulario o redirigir
-    } catch (error) {
-      console.error("Error al guardar la tutoría:", error);
-      toast.error("Error al guardar la tutoría");
+  try {
+    const response = await fetch(TUTORIAL_API_BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(tutorial),
+    });
+
+    if (!response.ok) {
+      throw new Error("Something went wrong");
     }
-  };
+
+    const _tutor = await response.json();
+    toast.success("Tutoría creada exitosamente.");
+    router.push("/student/landing");
+  } catch (error) {
+    console.error("Error al guardar la tutoría:", error);
+    toast.error("Error al guardar la tutoría");
+  }
+};
+
 
   return (
     <div className="w-[30vw] bg-[#d9d9d9] px-8 pb-8 rounded-[50px] p-2 mb-8">
@@ -302,6 +346,7 @@ const TutorialForm = () => {
                   onChange={handleDateChange}
                   className="w-[95px] pb-1"
                   dateFormat="dd/MM/yyyy"
+                  minDate={new Date(new Date().setDate(new Date().getDate() + 2))}
                 />
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -354,15 +399,7 @@ const TutorialForm = () => {
             </div>
           </div>
         </div>
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => fetchDataTutor(tutorial.classDate)}
-            className="w-[50%] text-white bg-[#6f7e91] hover:bg-[#4d5866] focus:ring-4 focus:outline-none font-medium rounded-3xl text-xl px-5 2xl:py-2.5 text-center md:p-1"
-          >
-            Buscar tutores disponibles
-          </button>
-        </div>
+        
         <div>
           <label
             htmlFor="tutor"
