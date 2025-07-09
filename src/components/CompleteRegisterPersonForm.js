@@ -114,17 +114,17 @@ const CompleteRegisterPersonForm = () => {
 
           switch (user.user_role) {
             case "ROLE_STUDENT":
-              router.push("/landing");
+              router.push("/student/landing");
               break;
             case "ROLE_TUTOR":
-              router.push("/maintutor");
+              router.push("/tutor/maintutor");
               break;
             case "ROLE_ADMIN":
               router.push("/admin");
               break;
             default:
               toast.error("Usuario desconectado, por favor iniciar sesión.");
-              router.push("/landing");
+              router.push("/login");
               return;
           }
         })

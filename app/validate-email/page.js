@@ -53,7 +53,7 @@ export default function ValidateEmail() {
                     toast.error(
                       "Usuario desconectado, por favor iniciar sesión."
                     );
-                    router.push("/landing");
+                    router.push("/login");
                     return;
                 }
               })
