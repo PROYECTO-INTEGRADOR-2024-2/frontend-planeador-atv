@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
+import Cookies from "js-cookie";
 
 function AddSubjectModal({ open, onClose, subjectToEdit }) {
   const [subject, setSubject] = useState({

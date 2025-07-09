@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
+import Cookies from "js-cookie";
 
 function AddDegreeModal({ open, onClose }) {
   const [degree, setDegree] = useState({
