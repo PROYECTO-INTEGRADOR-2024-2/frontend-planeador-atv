@@ -198,7 +198,13 @@ export default function PersonalTutosTable({ title }) {
       row.classRate !== 0
     )
       return "Finalizada";
-    if (row.canceledBy !== "NONE") return `Cancelada por ${row.canceledBy}`;
+    if (row.canceledBy !== "NONE" && row.canceledBy === "STUDENT"){
+      return `Cancelada por estudiante`;
+    } else if(row.canceledBy !== "NONE" && row.canceledBy === "TUTOR"){
+      return `Cancelada por el tutor`;
+    } else if(row.canceledBy !== "NONE" && row.canceledBy === "ADMIN"){
+      return `Cancelada por el Administrador`;}
+
     return "Estado desconocido";
   };
 

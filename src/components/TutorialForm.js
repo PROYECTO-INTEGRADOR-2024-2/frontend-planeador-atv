@@ -33,10 +33,10 @@ const TutorialForm = () => {
   });
 
   function getTwoDaysLaterDate() {
-  const date = new Date();
-  date.setDate(date.getDate() + 2);
-  return date;
-}
+    const date = new Date();
+    date.setDate(date.getDate() + 2);
+    return date;
+  }
 
   // Función para formatear la fecha correctamente para el backend
   function formatDateForBackend(date) {
@@ -50,18 +50,6 @@ const TutorialForm = () => {
 
   // Actualizar tutores disponibles automáticamente
   useEffect(() => {
-  if (
-    tutorial.subjectId &&
-    tutorial.classDate &&
-    timeSelected 
-  ) {
-    fetchDataTutor(tutorial.classDate);
-  }
-}, [tutorial.subjectId, tutorial.classDate, timeSelected]);
-
-// Actualizar tutores cada minuto
-useEffect(() => {
-  const interval = setInterval(() => {
     if (
       tutorial.subjectId &&
       tutorial.classDate &&
@@ -69,21 +57,33 @@ useEffect(() => {
     ) {
       fetchDataTutor(tutorial.classDate);
     }
-  }, 60000); 
+  }, [tutorial.subjectId, tutorial.classDate, timeSelected]);
 
-  return () => clearInterval(interval);
-}, [tutorial.subjectId, tutorial.classDate, timeSelected]);
+  // Actualizar tutores cada minuto
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (
+        tutorial.subjectId &&
+        tutorial.classDate &&
+        timeSelected
+      ) {
+        fetchDataTutor(tutorial.classDate);
+      }
+    }, 60000);
 
-//Controlar si el botón debe estar deshabilitado
-useEffect(() => {
-  const isReady =
-    tutorial.subjectId &&
-    tutorial.classTopics.trim() !== "" &&
-    tutorial.tutorId &&
-    timeSelected;
+    return () => clearInterval(interval);
+  }, [tutorial.subjectId, tutorial.classDate, timeSelected]);
 
-  setIsDisabled(!isReady);
-}, [tutorial.subjectId, tutorial.classTopics, tutorial.tutorId, timeSelected]);
+  //Controlar si el botón debe estar deshabilitado
+  useEffect(() => {
+    const isReady =
+      tutorial.subjectId &&
+      tutorial.classTopics.trim() !== "" &&
+      tutorial.tutorId &&
+      timeSelected;
+
+    setIsDisabled(!isReady);
+  }, [tutorial.subjectId, tutorial.classTopics, tutorial.tutorId, timeSelected]);
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -97,27 +97,27 @@ useEffect(() => {
   }, []);
 
   const fetchDataTutor = async (fechaISO) => {
-  try {
-    const token = Cookies.get("token"); 
-    const response = await fetch("http://localhost:8081/api/v1/listarTutores", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify(procesarFecha(fechaISO)),
-    });
+    try {
+      const token = Cookies.get("token");
+      const response = await fetch("http://localhost:8081/api/v1/listarTutores", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(procesarFecha(fechaISO)),
+      });
 
-    if (!response.ok) {
-      throw new Error("Respuesta no válida");
+      if (!response.ok) {
+        throw new Error("Respuesta no válida");
+      }
+
+      const result = await response.json();
+      setDataTutor(result.map((item) => Object.values(item)));
+    } catch (error) {
+      setErrorTutor(error.message);
     }
-
-    const result = await response.json();
-    setDataTutor(result.map((item) => Object.values(item)));
-  } catch (error) {
-    setErrorTutor(error.message);
-  }
-};
+  };
 
 
   useEffect(() => {
@@ -251,35 +251,35 @@ useEffect(() => {
   };
 
   const saveTutorial = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  // Validación del campo temática
-  if (!tutorial.classTopics || tutorial.classTopics.trim() === "") {
-    toast.error("Por favor, complete la temática antes de confirmar la tutoría.");
-    return;
-  }
-
-  try {
-    const response = await fetch(TUTORIAL_API_BASE_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(tutorial),
-    });
-
-    if (!response.ok) {
-      throw new Error("Something went wrong");
+    // Validación del campo temática
+    if (!tutorial.classTopics || tutorial.classTopics.trim() === "") {
+      toast.error("Por favor, complete la temática antes de confirmar la tutoría.");
+      return;
     }
 
-    const _tutor = await response.json();
-    toast.success("Tutoría creada exitosamente.");
-    router.push("/student/landing");
-  } catch (error) {
-    console.error("Error al guardar la tutoría:", error);
-    toast.error("Error al guardar la tutoría");
-  }
-};
+    try {
+      const response = await fetch(TUTORIAL_API_BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(tutorial),
+      });
+
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      }
+
+      const _tutor = await response.json();
+      toast.success("Tutoría creada exitosamente.");
+      router.push("/student/landing");
+    } catch (error) {
+      console.error("Error al guardar la tutoría:", error);
+      toast.error("Error al guardar la tutoría");
+    }
+  };
 
 
   return (
@@ -398,7 +398,7 @@ useEffect(() => {
             </div>
           </div>
         </div>
-        
+
         <div>
           <label
             htmlFor="tutor"

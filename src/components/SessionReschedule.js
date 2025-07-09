@@ -10,6 +10,17 @@ const formatDateForBackend = (date) => {
 
 function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
   const [startDate, setStartDate] = useState(new Date());
+  const [timeSelected, setTimeSelected] = useState("");
+  const [tutorial, setTutorial] = useState({
+      registered: false,
+      canceledBy: "NONE",
+      studentId: "",
+      tutorId: "",
+      subjectId: 0,
+      classTopics: "",
+      classDate: formatDateForBackend(getTwoDaysLaterDate()),
+      classRate: 0,
+    });
 
   useEffect(() => {
     if (open && tutorialData?.classDate) {
@@ -21,10 +32,37 @@ function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
     // Mantener la hora actual cuando se cambia la fecha
     const currentHours = startDate.getHours();
     const currentMinutes = startDate.getMinutes();
-    
+
     const updated = new Date(date);
     updated.setHours(currentHours, currentMinutes, 0);
     setStartDate(updated);
+  };
+
+   function getTwoDaysLaterDate() {
+    const date = new Date();
+    date.setDate(date.getDate() );
+    return date;
+  }
+
+  const getTime = (event) => {
+    
+    const selectedHour = event.target.value; // Solo la hora: "08", "09", etc.
+    if(selectedHour === ""){
+      setTimeSelected("");
+      return;
+    }
+
+    const updatedDate = new Date(startDate)
+
+    updatedDate.setHours(parseInt(selectedHour, 10), 0, 0)
+    setStartDate(updatedDate);
+
+    setTimeSelected(formatDateForBackend(updatedDate));
+
+    setTutorial((prev) =>({
+      ...prev,
+      classDate: formatDateForBackend(updatedDate),
+    }));
   };
 
   const handleTimeChange = (e) => {
@@ -94,11 +132,12 @@ function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
                       onChange={handleDateChange}
                       className="w-[95px] pb-1"
                       dateFormat="dd/MM/yyyy"
+                      minDate={new Date(new Date().setDate(new Date().getDate()))}
                     />
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <label htmlFor="timePicker" className="block text-sm font-bold text-gray-900">
                     Hora
                   </label>
@@ -111,6 +150,39 @@ function SessionReschedule({ open, tutorialData, onClose, onUpdate }) {
                       ).padStart(2, "0")}`}
                       onChange={handleTimeChange}
                     />
+                  </div>
+                </div> */}
+                <div>
+                  <label
+                    htmlFor="hourPicker"
+                    className="block text-sm font-bold text-gray-900"
+                  >
+                    Hora
+                  </label>
+                  <div className="border-b-2">
+                    <select
+                      id="hourPicker"
+                      name="hourPicker"
+                      onChange={getTime}
+                      className="bg-transparent border-none outline-none text-gray-900 text-sm py-1"
+                    >
+                      <option value="">Seleccionar hora</option>
+                      <option value="6">06:00 AM</option>
+                      <option value="7">07:00 AM</option>
+                      <option value="8">08:00 AM</option>
+                      <option value="9">09:00 AM</option>
+                      <option value="10">10:00 AM</option>
+                      <option value="11">11:00 AM</option>
+                      <option value="12">12:00 PM</option>
+                      <option value="13">01:00 PM</option>
+                      <option value="14">02:00 PM</option>
+                      <option value="15">03:00 PM</option>
+                      <option value="16">04:00 PM</option>
+                      <option value="17">05:00 PM</option>
+                      <option value="18">06:00 PM</option>
+                      <option value="19">07:00 PM</option>
+                      <option value="20">08:00 PM</option>
+                    </select>
                   </div>
                 </div>
               </div>

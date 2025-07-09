@@ -191,7 +191,7 @@ const TutorialForm = () => {
                   checked={checkedItems[item[0]] || false}
                   onChange={handleCheckboxChange}
                 />
-                <label htmlFor={item[0]}>{`${item[0]} - ${item[2]}`}</label>
+                <label htmlFor={item[0]}>{`${item[2]}`}</label>
               </div>
             ))}
           </div>
