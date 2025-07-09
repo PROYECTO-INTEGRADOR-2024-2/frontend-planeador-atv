@@ -11,6 +11,13 @@ import { useRouter } from "next/navigation";
 function Landing() {
   const router = useRouter();
   const [user, setUser] = useState(null);
+  
+  const ROLE = {
+    ADMIN: "ROLE_ADMIN",
+    STUDENT: "ROLE_STUDENT",
+    TUTOR: "ROLE_TUTOR",
+  };
+
 
   useEffect(() => {
     const token = Cookies.get("token");
@@ -43,13 +50,16 @@ function Landing() {
         text_button="Agendar una tutoría"
         ruta="/student/tutorialRegister"
       />
-      <Card
-        title="¿Quieres ser tutor?"
-        content="En la fundación Antivirus para la deserción te brindamos la oportunidad de colaborar y poder brindar apoyo a estudiantes que lo necesitan, como tú lo necesitaste en algún momento."
-        text_button="¡Quiero ser parte del equipo!"
-        ruta="/student/tutorRegister"
-      />
+      {user.user_role === ROLE.STUDENT &&
+        <Card
+          title="¿Quieres ser tutor?"
+          content="En la fundación Antivirus para la deserción te brindamos la oportunidad de colaborar y poder brindar apoyo a estudiantes que lo necesitan, como tú lo necesitaste en algún momento."
+          text_button="¡Quiero ser parte del equipo!"
+          ruta="/student/tutorRegister"
+        />
+      }
       <Footer />
+
     </>
   );
 }

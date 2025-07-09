@@ -8,16 +8,22 @@ function admin() {
     <div className="flex flex-col min-h-screen justify-between">
       <NavbarHome name={"Juan"} rol={"ROLE_ADMIN"} admin />
       <Card
-        title="Gestión de Carreras"
-        content="Aquí puedes administrar las carreras disponibles en la plataforma. OPCIONAL"
-        text_button="Carreras"
-        ruta="/admin/degree"
+        title="Gestión de tutorias"
+        content="Aquí puedes administrar las tutorias disponibles en la plataforma. Es importante estar al tanto de como va el flujo de asiganciones durante el dia a dia."
+        text_button="Tutorias"
+        ruta="/admin/adminTutos"
       />
       <Card
-        title="Gestión de Asignaturas"
-        content="Aquí puedes administrar las asignaturas disponibles en la plataforma. OPCIONAL"
-        text_button="Asignaturas"
-        ruta="/admin/subject"
+        title="Gestión de Aplicaciones"
+        content="Aquí puedes administrar las aplicaciones para ser tutor, es importante que respondas estas solicitudes, y que ademas notifiques a los estudiantes interesados sobre el estado de su solicitud"
+        text_button="Aplicaciones"
+        ruta="/admin/activationRequest"
+      />
+      <Card
+        title="Gestión de Usuarios"
+        content="Aquí puedes agestionar los estados de los estudiantes, si notas algun compprtamiento indebido o se notifica de algúna deserción puedes deshabilitar usuarios en la plataforma"
+        text_button="Gestionar usuarios"
+        ruta="/admin/users"
       />
       <Footer />
     </div>

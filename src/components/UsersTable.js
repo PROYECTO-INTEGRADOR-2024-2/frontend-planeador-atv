@@ -397,7 +397,7 @@ const UsersTable = ({ title }) => {
           customStyles={customStyles}
           noDataComponent={
             <div className="text-center py-8 text-gray-500">
-              No hay usuarios disponibles
+              No hay usuarios deshabilitados
             </div>
           }
           highlightOnHover

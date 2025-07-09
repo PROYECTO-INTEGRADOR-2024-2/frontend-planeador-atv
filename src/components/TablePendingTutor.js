@@ -291,7 +291,7 @@ export default function TablePendingTutor() {
                   onClick={() => handleRegisterSubmit(row.classId)}
                   title="Registrar"
                 >
-                  <FaStar size={32} className="text-purple-600" />
+                  <FaStar size={32} className="text-yellow-500" />
                 </button>
               </>
             )}
