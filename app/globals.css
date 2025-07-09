@@ -5,3 +5,23 @@
 html {
   font-family: var(--my-font-family), sans-serif;
 }
+
+@keyframes spin-and-color {
+  0% {
+    transform: rotate(0deg);
+    fill: #2563eb; /* azul */
+  }
+  50% {
+    fill: #22c55e; /* verde */
+  }
+  100% {
+    transform: rotate(360deg);
+    fill: #2563eb; /* azul otra vez */
+  }
+}
+
+@layer utilities {
+  .animate-spin-color {
+    animation: spin-and-color 2s linear infinite;
+  }
+}
