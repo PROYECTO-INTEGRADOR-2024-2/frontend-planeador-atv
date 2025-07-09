@@ -97,29 +97,28 @@ useEffect(() => {
   }, []);
 
   const fetchDataTutor = async (fechaISO) => {
-    try {
-      const response = await fetch(
-        "http://localhost:8081/api/v1/listarTutores",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(procesarFecha(fechaISO)),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Respuesta no valida");
-      }
-      const result = await response.json();
-      // if (result.length > 0) {
-      //   setIsDisabled(false);
-      // }
-      setDataTutor(result.map((item) => Object.values(item)));
-    } catch (error) {
-      setErrorTutor(error.message);
+  try {
+    const token = Cookies.get("token"); 
+    const response = await fetch("http://localhost:8081/api/v1/listarTutores", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify(procesarFecha(fechaISO)),
+    });
+
+    if (!response.ok) {
+      throw new Error("Respuesta no válida");
     }
-  };
+
+    const result = await response.json();
+    setDataTutor(result.map((item) => Object.values(item)));
+  } catch (error) {
+    setErrorTutor(error.message);
+  }
+};
+
 
   useEffect(() => {
     const fetchDataSubject = async () => {
