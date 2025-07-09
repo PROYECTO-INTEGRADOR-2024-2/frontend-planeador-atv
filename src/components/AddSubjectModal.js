@@ -53,16 +53,28 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
   };
 
   const addOrUpdateSubject = async () => {
+
+    // Valdiar campos
+    if (!subject.subjectName.trim() || !subject.degreeId.trim()) {
+      alert("Los campos son obligatorios");
+      return;
+    }
+
     const method = subjectToEdit ? "PUT" : "POST";
     const endpoint = subjectToEdit
       ? `http://localhost:8081/api/v1/subject/${subject.subject_id}` // Use the subject_id for editing
       : "http://localhost:8081/api/v1/subject/"; // For adding
+
+    const token = Cookies.get("token");
+    if (!token)
+      return toast.error("Token no encontrado, por favor inicia sesión");
 
     try {
       const response = await fetch(endpoint, {
         method,
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(subject),
       });

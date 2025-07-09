@@ -17,11 +17,21 @@ function AddDegreeModal({ open, onClose }) {
   };
 
   const addDegree = async () => {
+    if (!degree.degreeName.trim() || !degree.degreeModality.trim() || !degree.degreeDepartment.trim()) {
+      alert("Todos los campos son obligatorios");
+      return;
+    }
+
+    const token = Cookies.get("token");
+    if (!token)
+      return toast.error("Token no encontrado, por favor inicia sesión");
+
     try {
       const response = await fetch("http://localhost:8081/api/v1/degree", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
         },
         body: JSON.stringify(degree),
       });
