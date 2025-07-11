@@ -206,7 +206,7 @@ const activationRequest = () => {
                                         {solicitudes.map((solicitud, index) => (
                                             <tr key={solicitud.studentId || index} className="hover:bg-gray-50">
                                                 <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900">
-                                                    {solicitud.requestDate}
+                                                    {solicitud.requestDate.split(" ")[0]}
                                                 </td>
                                                 <td className="border border-gray-200 px-4 py-3">
                                                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getEstadoColor(solicitud.requestState)}`}>
