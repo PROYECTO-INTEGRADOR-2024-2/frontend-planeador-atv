@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { signIn, useSession } from "next-auth/react";
 import ModalRegister from "./ModalRegister";
 import logoGoogle from "../../public/images/google.png";
+import { toast } from "react-toastify";
 
 const RegisterPersonForm = () => {
   let selectedDepartment;
@@ -62,7 +63,9 @@ const RegisterPersonForm = () => {
   };
 
   const savePerson = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+
+  try {
     const response = await fetch(PERSON_API_BASE_URL, {
       method: "POST",
       headers: {
@@ -70,15 +73,40 @@ const RegisterPersonForm = () => {
       },
       body: JSON.stringify(person),
     });
+
     if (!response.ok) {
-      console.log(response);
-      throw new Error("Something went wrong");
-    } else {
-      const _person = await response.json();
-      handleModalRegister();
+      if (response.status === 409) {
+        const errorText = await response.text();
+        toast.warning(errorText, {
+          position: "top-right",
+          autoClose: 5000,
+        });
+      } else {
+        toast.error("Ocurrió un error inesperado. Intenta nuevamente.", {
+          position: "top-right",
+          autoClose: 5000,
+        });
+      }
+      return;
     }
+
+    const _person = await response.json();
+    toast.success("Registro exitoso", {
+      position: "top-right",
+      autoClose: 3000,
+    });
+    handleModalRegister();
     reset(e);
-  };
+
+  } catch (error) {
+    toast.error("Error al conectar con el servidor", {
+      position: "top-right",
+      autoClose: 5000,
+    });
+    console.error(error);
+  }
+};
+
 
   const [data, setData] = useState();
   useEffect(() => {
