@@ -167,6 +167,16 @@ const NavbarHome = () => {
           {user.user_role === ROLE.TUTOR && (
             <li>
               <Link
+                href="/student/landing"
+                className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              >
+                Tutorías pendientes
+              </Link>
+            </li>
+          )}
+          {user.user_role === ROLE.TUTOR && (
+            <li>
+              <Link
                 href="/tutor/pool"
                 className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
               >
