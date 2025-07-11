@@ -15,7 +15,7 @@ import NavbarHome from "@/components/NavbarHome";
 import Footer from "/src/components/Footer";
 import { toast } from "react-toastify";
 
-const activationRequest = () => {
+const ActivationRequest = () => {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,27 +26,38 @@ const activationRequest = () => {
 
   const fetchSolicitudes = async () => {
     try {
-      setLoading(true);
-      setError(null);
+        setLoading(true);
+        setError(null);
 
-      const response = await fetch("http://localhost:8081/api/v1/application", {
+        const response = await fetch("http://localhost:8081/api/v1/application", {
         headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
         },
-      });
+        });
 
-      if (!response.ok) {
+        if (!response.ok) {
         throw new Error(`Error ${response.status}`);
-      }
-      const data = await response.json();
-      setSolicitudes(data || []);
+        }
+        
+        const data = await response.json();
+        
+        // Filtrar duplicados usando Map para mejor rendimiento
+        const solicitudesMap = new Map();
+        data?.forEach(solicitud => {
+        solicitudesMap.set(solicitud.requestId, solicitud);
+        });
+        
+        const solicitudesUnicas = Array.from(solicitudesMap.values());
+        setSolicitudes(solicitudesUnicas);
+        
     } catch (err) {
-      setError(err.message);
+        setError(err.message);
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+    };
+
 
   const aceptarSolicitud = async (studentId, aplicationId) => {
     setProcesando((prev) => ({ ...prev, [studentId]: true }));
@@ -66,7 +77,6 @@ const activationRequest = () => {
       if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
       }
-      // Actualizar el estado local
       setSolicitudes((prev) =>
         prev.map((sol) =>
           sol.studentId === studentId
@@ -84,38 +94,42 @@ const activationRequest = () => {
   };
 
   const rechazarSolicitud = async (applicationId) => {
-    setProcesando((prev) => ({ ...prev, [applicationId]: true }));
+    const solicitud = solicitudes.find((s) => s.requestId === applicationId);
+    const studentId = solicitud?.studentId;
+
+    setProcesando((prev) => ({ ...prev, [studentId]: true }));
 
     try {
-      const response = await fetch(
+        const response = await fetch(
         `http://localhost:8081/api/v1/application/reject/${applicationId}`,
         {
-          method: "PUT",
-          headers: {
+            method: "PUT",
+            headers: {
             "Content-Type": "application/json",
-          },
+            },
         }
-      );
+        );
 
-      if (!response.ok) {
+        if (!response.ok) {
         throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-      // Actualizar el estado local
-      setSolicitudes((prev) =>
+        }
+
+        setSolicitudes((prev) =>
         prev.map((sol) =>
-          sol.studentId === studentId
-            ? { ...sol, requestState: "aceptada" }
+            sol.requestId === applicationId
+            ? { ...sol, requestState: "rechazada" }
             : sol
         )
-      );
+        );
 
-      toast.error(" Solicitud rechazada - Notificar al estudiante");
+        toast.warning("Solicitud rechazada - Notificar al estudiante");
     } catch (err) {
-      toast.error(`Error al aceptar la solicitud: ${err.message}`);
+        toast.error(`Error al rechazar la solicitud: ${err.message}`);
     } finally {
-      setProcesando((prev) => ({ ...prev, [studentId]: false }));
+        setProcesando((prev) => ({ ...prev, [studentId]: false }));
     }
-  };
+    };
+
 
   const getEstadoColor = (estado) => {
     switch (estado?.toLowerCase()) {
@@ -131,8 +145,56 @@ const activationRequest = () => {
   };
 
   useEffect(() => {
-    fetchSolicitudes();
-  }, []);
+  let isMounted = true;
+  
+  const loadSolicitudes = async () => {
+    if (!token) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await fetch("http://localhost:8081/api/v1/application", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}`);
+      }
+      
+      const data = await response.json();
+      
+      if (isMounted) {
+        const solicitudesUnicas = data?.reduce((acc, current) => {
+          const existe = acc.find(item => item.requestId === current.requestId);
+          if (!existe) {
+            acc.push(current);
+          }
+          return acc;
+        }, []) || [];
+        
+        setSolicitudes(solicitudesUnicas);
+      }
+    } catch (err) {
+      if (isMounted) {
+        setError(err.message);
+      }
+    } finally {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }
+  };
+
+  loadSolicitudes();
+  
+  return () => {
+    isMounted = false;
+  };
+}, [token]); 
 
   return (
     <>
@@ -317,4 +379,4 @@ const activationRequest = () => {
   );
 };
 
-export default activationRequest;
+export default ActivationRequest;
