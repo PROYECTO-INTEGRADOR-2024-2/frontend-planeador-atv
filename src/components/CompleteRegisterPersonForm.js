@@ -6,6 +6,7 @@ import ModalRegister from "./ModalRegister";
 import { useRouter } from "next/navigation";
 import { jwtDecode } from "jwt-decode";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const CompleteRegisterPersonForm = () => {
   const PERSON_API_BASE_URL = "http://localhost:8081/api/v1/auth/register";

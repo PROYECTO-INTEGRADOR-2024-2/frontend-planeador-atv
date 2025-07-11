@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Modal from "react-modal";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 function AddDegreeModal({ open, onClose }) {
   const [degree, setDegree] = useState({
@@ -18,8 +19,12 @@ function AddDegreeModal({ open, onClose }) {
   };
 
   const addDegree = async () => {
-    if (!degree.degreeName.trim() || !degree.degreeModality.trim() || !degree.degreeDepartment.trim()) {
-      alert("Todos los campos son obligatorios");
+    if (
+      !degree.degreeName.trim() ||
+      !degree.degreeModality.trim() ||
+      !degree.degreeDepartment.trim()
+    ) {
+      toast.error("Todos los campos son obligatorios");
       return;
     }
 
@@ -32,7 +37,7 @@ function AddDegreeModal({ open, onClose }) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(degree),
       });
@@ -44,7 +49,7 @@ function AddDegreeModal({ open, onClose }) {
       const result = await response.json();
       onClose();
       window.location.reload();
-      console.log(result)
+      console.log(result);
     } catch (error) {
       console.error("Error al agregar carrera:", error.message);
     }

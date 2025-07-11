@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 function AddSubjectModal({ open, onClose, subjectToEdit }) {
   const [subject, setSubject] = useState({
@@ -15,7 +16,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
     const fetchDegrees = async () => {
       try {
         const response = await fetch("http://localhost:8081/api/v1/degree");
-        console.log(response)
+        console.log(response);
         if (!response.ok) {
           throw new Error("Error al obtener las carreras");
         }
@@ -54,10 +55,9 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
   };
 
   const addOrUpdateSubject = async () => {
-
     // Valdiar campos
     if (!subject.subjectName.trim() || !subject.degreeId.trim()) {
-      alert("Los campos son obligatorios");
+      toast.error("Los campos son obligatorios");
       return;
     }
 
@@ -75,7 +75,7 @@ function AddSubjectModal({ open, onClose, subjectToEdit }) {
         method,
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(subject),
       });
