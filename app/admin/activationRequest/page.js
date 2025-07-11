@@ -218,14 +218,102 @@ const ActivationRequest = () => {
                 Actualizar
               </button>
             </div>
-
-            {/* Error */}
-            {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-                <AlertCircle className="w-5 h-5 text-red-600" />
-                <span className="text-red-800">{error}</span>
-              </div>
-            )}
+                        {!loading && solicitudes.length > 0 && (
+                            <div className="overflow-x-auto">
+                                <table className="w-full border-collapse">
+                                    <thead>
+                                        <tr className="bg-gray-50">
+                                            <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
+                                                <div className="flex items-center gap-2">
+                                                    <Calendar className="w-4 h-4" />
+                                                    Fecha de Solicitud
+                                                </div>
+                                            </th>
+                                            <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
+                                                Estado
+                                            </th>
+                                            <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
+                                                ID Estudiante
+                                            </th>
+                                            <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
+                                                <div className="flex items-center gap-2">
+                                                    <User className="w-4 h-4" />
+                                                    Nombre
+                                                </div>
+                                            </th>
+                                            <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
+                                                <div className="flex items-center gap-2">
+                                                    <BookOpen className="w-4 h-4" />
+                                                    Semestre
+                                                </div>
+                                            </th>
+                                            <th className="border border-gray-200 px-4 py-3 text-left text-sm font-medium text-gray-700">
+                                                Archivo
+                                            </th>
+                                            <th className="border border-gray-200 px-4 py-3 text-center text-sm font-medium text-gray-700">
+                                                Acciones
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {solicitudes.map((solicitud, index) => (
+                                            <tr key={solicitud.studentId || index} className="hover:bg-gray-50">
+                                                <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900">
+                                                    {solicitud.requestDate.split(" ")[0]}
+                                                </td>
+                                                <td className="border border-gray-200 px-4 py-3">
+                                                    <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full border ${getEstadoColor(solicitud.requestState)}`}>
+                                                        {solicitud.requestState}
+                                                    </span>
+                                                </td>
+                                                <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900 font-mono">
+                                                    {solicitud.studentId}
+                                                </td>
+                                                <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900 font-medium">
+                                                    {solicitud.studentName}
+                                                </td>
+                                                <td className="border border-gray-200 px-4 py-3 text-sm text-gray-900 text-center">
+                                                    {solicitud.semester}
+                                                </td>
+                                                <td className="border border-gray-200 px-4 py-3">
+                                                    {solicitud.fileUrl && (
+                                                        <a
+                                                            href={solicitud.fileUrl}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                                                        >
+                                                            <ExternalLink className="w-4 h-4" />
+                                                            Ver archivo
+                                                        </a>
+                                                    )}
+                                                </td>
+                                                <td className="border border-gray-200 px-4 py-3">
+                                                    <div className="flex gap-2 justify-center">
+                                                        <button
+                                                            onClick={() => aceptarSolicitud(solicitud.studentId, solicitud.requestId)}
+                                                            disabled={procesando[solicitud.studentId] || solicitud.requestState !== 'pendiente'}
+                                                            className="flex items-center gap-1 px-3 py-1 bg-green-600 text-white rounded text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                        >
+                                                            <Check className="w-4 h-4" />
+                                                            Aceptar
+                                                        </button>
+                                                        <button
+                                                            onClick={() => rechazarSolicitud(solicitud.requestId)}
+                                                            disabled={procesando[solicitud.studentId] || solicitud.requestState !== 'pendiente'}
+                                                            className="flex items-center gap-1 px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                                        >
+                                                            <X className="w-4 h-4" />
+                                                            Rechazar
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        )}
 
             {/* Loading */}
             {loading && (
