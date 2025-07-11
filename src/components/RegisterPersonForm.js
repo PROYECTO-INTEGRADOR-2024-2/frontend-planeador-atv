@@ -379,15 +379,11 @@ const RegisterPersonForm = () => {
               value={person.userDepartment}
             >
               {data?.map((item, index) => (
-                <option
-                  key={index}
-                  onClick={
-                    (selectedDepartment = document.getElementById("department"))
-                  }
-                >
+                <option key={index} value={item.departamento}>
                   {item.departamento}
                 </option>
               ))}
+
             </select>
             <p className="text-red-500 text-xs">{formError.department}</p>
           </div>
@@ -405,15 +401,13 @@ const RegisterPersonForm = () => {
               onChange={(e) => handleChange(e)}
               value={person.userCity}
             >
-              {
-                (selected =
-                  selectedDepartment?.options[selectedDepartment.selectedIndex]
-                    ?.text)
-              }
+              <option value="">Seleccione una ciudad</option>
               {data
-                ?.find((element) => element.departamento == `${selected}`)
+                ?.find((element) => element.departamento === person.userDepartment)
                 ?.ciudades?.map((item, index) => (
-                  <option key={index}>{item}</option>
+                  <option key={index} value={item}>
+                    {item}
+                  </option>
                 ))}
             </select>
             <p className="text-red-500 text-xs">{formError.city}</p>
